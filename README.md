@@ -1,6 +1,6 @@
-# Nosl-guma-darba-t-mas-apstiprin-ana
+# Noslēguma darba tēmas apstiprināšana
  Investācijas izglītība website 
-(Website that imitates how Investing should work)
+(Website that imitates how Investing should work for educatinal purposes)
 
 ## Things it should have:
   1. Log in system.
