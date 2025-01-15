@@ -7,9 +7,8 @@
   2. Explaning how it works with popups simplify how the program works and telling multiple times that this is an educatinal purposes website.
   3. Settings with quality of life chocies (Dark/Light mode, font options, color changes).
   4. multiple saved investments (4-6).
-  5. middle of the screen being 1- 4or6 investments that you can watch develop.
-  6. Pause option for specific investments and have update speed to speed up or slow the changes.
-  7. Able to start with specific amount of numbers that are invested like starting value, how many people are investing on it, how valuable it is and how likely massive changes might happen.
+  5. Pause option for specific investments and have update speed to speed up or slow the changes.
+  6. Able to start with specific amount of numbers that are invested like starting value, how many people are investing on it, how valuable it is and how likely massive changes might happen.
    
 ## Custom changes for your simulation
   1. Custom creation system where you imitate a possible(random) changes of investment going rising/lowering.
