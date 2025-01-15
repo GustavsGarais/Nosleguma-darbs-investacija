@@ -3,12 +3,12 @@
 (Website that imitates how Investing should work for educatinal purposes)
 
 ## Things it should have:
-  1. Log in system.
+  1. Log in system. (Simple username or gmail and password)
   2. Explaning how it works with popups simplify how the program works and telling multiple times that this is an educatinal purposes website.
-  3. Settings with quality of life chocies (Dark/Light mode, font options, color changes).
-  4. multiple saved investments (4-6).
+  3. Settings with quality of life chocies (Dark/Light mode and font options).
+  4. multiple saved investments (Showing in custom website tabs to the side)
   5. Pause option for specific investments and have update speed to speed up or slow the changes.
-  6. Able to start with specific amount of numbers that are invested like starting value, how many people are investing on it, how valuable it is and how likely massive changes might happen.
+  6. Able to start with specific amount of values that are invested like (starting value, how many people are investing on it, how valuable it is and how likely massive changes might happen).
    
 ## Custom changes for your simulation
   1. Custom creation system where you imitate a possible(random) changes of investment going rising/lowering.
