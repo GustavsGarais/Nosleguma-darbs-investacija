@@ -16,6 +16,7 @@
   2. Be able to pause and continue the imitated investment.
   3. hovering over showing more information and possible chances of it changing.
   4. Influence the changes and how much "money" goes inside and calculates the possible effects it might add.
+  5. Able to select favorites for easier access (add and removing any simulation by choice). 
 
 ## Possible strength and weaknesses
   ### Strengths:
