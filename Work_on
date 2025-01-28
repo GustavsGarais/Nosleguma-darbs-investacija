@@ -5,4 +5,4 @@
   4. working buttons
   5. option to change pages.
   6. Light and Dark mode
-  7. 
+  7. Login system has to create a folder with the users name. inside will be all the simulations that are gonna be updated. creating a new simulation creates a folder inisde of it. storing all info inisde the folder of the users own folder.
