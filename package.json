@@ -1,0 +1,13 @@
+{
+  "name": "nosleguma-darbs-investacija",
+  "version": "1.0.0",
+  "description": "Investācijas izglītība website  (Website that imitates how Investing should work for educatinal purposes)",
+  "main": "index.js",
+  "scripts": {
+  
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
