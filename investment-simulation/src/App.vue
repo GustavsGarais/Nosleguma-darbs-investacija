@@ -6,9 +6,9 @@
 </template>
 
 <script>
-import Sidebar from './components/Sidebar.vue';
-import Login from './components/Login.vue';
-import Dashboard from './components/Dashboard.vue';
+import Sidebar from '/components/Sidebar.vue';
+import Login from '/components/Login.vue';
+import Dashboard from '/components/Dashboard.vue';
 
 export default {
   components: { Sidebar, Login, Dashboard },
