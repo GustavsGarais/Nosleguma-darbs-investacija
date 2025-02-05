@@ -12,9 +12,9 @@
   export default {
     data() {
       return {
-        username: '',
-        password: '',
-        error: '',
+        username: "",
+        password: "",
+        error: "",
       };
     },
     methods: {
