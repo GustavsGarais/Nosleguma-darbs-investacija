@@ -1,34 +1,49 @@
 <template>
-  <div :class="{ 'dark-mode': isDarkMode }">
-    <Sidebar @toggle-theme="toggleTheme" />
-    <component :is="currentView" @login-success="handleLogin" />
+  <div v-if="!loggedIn">
+    <Login @loginSuccess="loggedIn = true" />
+  </div>
+  
+  <div v-else>
+    <button @click="logout">Log Out</button>
+    <button @click="showSetup = true">Simulation Startup</button>
+
+    <SimulationSetup v-if="showSetup" @startSimulation="startSimulation" />
+    
+    <div v-if="activeSimulation">
+      <InvestmentChart :investmentData="investmentData" />
+      <button @click="toggleSimulation">{{ isPaused ? 'Run' : 'Pause' }}</button>
+    </div>
   </div>
 </template>
 
 <script>
-import Sidebar from './components/Sidebar.vue';
-import Login from './components/Login.vue';
-import Dashboard from './components/Dashboard.vue';
+import Login from "./components/Login.vue";
+import SimulationSetup from "./components/SimulationSetup.vue";
+import InvestmentChart from "./components/InvestmentChart.vue";
 
 export default {
-  components: { Sidebar, Login, Dashboard },
+  components: { Login, SimulationSetup, InvestmentChart },
   data() {
     return {
-      isLoggedIn: false,
-      isDarkMode: false,
+      loggedIn: false,
+      showSetup: false,
+      activeSimulation: false,
+      isPaused: false,
+      investmentData: [],
     };
   },
-  computed: {
-    currentView() {
-      return this.isLoggedIn ? Dashboard : Login;
-    },
-  },
   methods: {
-    handleLogin() {
-      this.isLoggedIn = true;
+    logout() {
+      localStorage.removeItem("currentUser");
+      this.loggedIn = false;
     },
-    toggleTheme() {
-      this.isDarkMode = !this.isDarkMode;
+    startSimulation(data) {
+      this.investmentData = data;
+      this.showSetup = false;
+      this.activeSimulation = true;
+    },
+    toggleSimulation() {
+      this.isPaused = !this.isPaused;
     },
   },
 };
