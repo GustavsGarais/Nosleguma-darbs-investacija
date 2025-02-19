@@ -15,7 +15,11 @@
   2. Spēt apturēt un turpināt imitēto ieguldījumu.
   3. virzot kursoru virs, parādot vairāk informācijas un iespējamās iespējas, ka tā mainīsies.
   4. Ietekmējiet izmaiņas un to, cik daudz "naudas" nonāk iekšā, un aprēķina iespējamos efektus, ko tas varētu pievienot.
-  5. Iespēja izvēlēties izlasi, lai vieglāk piekļūtu (pievienot un noņemt jebkuru simulāciju pēc izvēles). 
+  5. Iespēja izvēlēties izlasi, lai vieglāk piekļūtu (pievienot un noņemt jebkuru simulāciju pēc izvēles).
+
+## Pabeigtais darbs:
+1. Pieteikšanās sistēma darbojās, taču, pievienojot jaunu kodu, tā tika sabojāta un nevar atrast veidu, kā to labot. (Nepieciešams labojums)
+2. Lietotājs var izveidot simulāciju, bet ar dažiem ierobežojumiem un nedarbojas kā nepieciešams. (Nepieciešams labojums)
 
 ## Iespējamās stiprās un vājās puses
   ### Stiprās puses:
