@@ -1,22 +1,23 @@
 <script>
 import { ref } from "vue";
 import InvestmentChart from "./InvestmentChart.vue";
+import SimulationControl from "./SimulationControl.vue";
 
 export default {
-  components: { InvestmentChart },
+  components: { InvestmentChart, SimulationControl },
   setup() {
     const initialValue = ref(1000);
     const investors = ref(10);
     const volatility = ref(5);
     const isRunning = ref(false);
     const investmentData = ref([]);
-    let interval = null;
     const simulationStarted = ref(false);
+    let interval = null;
 
     const startSimulation = () => {
       if (interval) clearInterval(interval);
       investmentData.value = [initialValue.value];
-      simulationStarted.value = true; // Show the graph after starting
+      simulationStarted.value = true;
 
       interval = setInterval(() => {
         if (!isRunning.value) return;
@@ -30,6 +31,10 @@ export default {
       isRunning.value = !isRunning.value;
     };
 
+    const updateInvestment = (newValue) => {
+      investmentData.value.push(newValue);
+    };
+
     return {
       initialValue,
       investors,
@@ -39,6 +44,7 @@ export default {
       simulationStarted,
       startSimulation,
       toggleSimulation,
+      updateInvestment,
     };
   },
 };
@@ -54,12 +60,6 @@ export default {
     <button v-if="simulationStarted" @click="toggleSimulation">{{ isRunning ? "Pause" : "Run" }}</button>
 
     <InvestmentChart v-if="simulationStarted" :investmentData="investmentData" />
+    <SimulationControl v-if="simulationStarted" :investmentData="investmentData" @update-investment="updateInvestment" />
   </div>
 </template>
-
-<style>
-.simulation-container {
-  text-align: center;
-  margin-top: 20px;
-}
-</style>

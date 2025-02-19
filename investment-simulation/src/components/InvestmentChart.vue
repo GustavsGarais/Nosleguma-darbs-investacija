@@ -1,49 +1,39 @@
 <script>
-import { ref, onMounted, watch } from "vue";
-import { Chart, registerables } from "chart.js";
-
-Chart.register(...registerables);
+import { ref } from "vue";
+import InvestmentChart from "./InvestmentChart.vue";
 
 export default {
-  props: {
-    investmentData: Array,
-  },
-  setup(props) {
-    const chartRef = ref(null);
-    let chartInstance = null;
+  components: { InvestmentChart },
+  setup() {
+    const simulationStarted = ref(false);
+    const investmentData = ref([]); // Array to store investment values
 
-    const createChart = () => {
-      if (chartInstance) chartInstance.destroy();
+    const startSimulation = () => {
+      simulationStarted.value = true;
+      investmentData.value = [1000]; // Initial investment value
 
-      chartInstance = new Chart(chartRef.value, {
-        type: "line",
-        data: {
-          labels: props.investmentData.map((_, i) => i + 1),
-          datasets: [
-            {
-              label: "Investment Value",
-              data: props.investmentData,
-              borderColor: "blue",
-              backgroundColor: "lightblue",
-              fill: false,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-        },
-      });
+      // Simulate investment growth over time
+      let value = 1000;
+      setInterval(() => {
+        value += Math.random() * 100 - 50; // Random increase/decrease
+        investmentData.value.push(value);
+      }, 1000);
     };
 
-    onMounted(createChart);
-    watch(() => props.investmentData, createChart, { deep: true });
-
-    return { chartRef };
+    return { simulationStarted, investmentData, startSimulation };
   },
 };
 </script>
 
 <template>
-  <canvas ref="chartRef"></canvas>
+  <div>
+    <button @click="startSimulation" v-if="!simulationStarted">
+      Start Simulation
+    </button>
+
+    <div v-if="simulationStarted">
+      <InvestmentChart :investmentData="investmentData" />
+      <p>Current Investment Value: {{ investmentData[investmentData.length - 1].toFixed(2) }}</p>
+    </div>
+  </div>
 </template>
