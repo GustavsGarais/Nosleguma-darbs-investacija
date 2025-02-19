@@ -2,27 +2,27 @@
  Investācijas izglītība website 
 (Website that imitates how Investing should work for educatinal purposes)
 
-## Things it should have:
-  1. Log in system. (Simple username or gmail and password)
-  2. Explaning how it works with popups simplify how the program works and telling multiple times that this is an educatinal purposes website.
-  3. Settings with quality of life chocies (Dark/Light mode and font options).
-  4. multiple saved investments (Showing in custom website tabs to the side)
-  5. Pause option for specific investments and have update speed to speed up or slow the changes.
-  6. Able to start with specific amount of values that are invested like (starting value, how many people are investing on it, how valuable it is and how likely massive changes might happen).
+## Lietas, kurām tai vajadzētu būt:
+  1. Piesakieties sistēmā. (Vienkāršs lietotājvārds vai gmail un parole)
+  2. Paskaidrojot, kā tā darbojas, izmantojot uznirstošos logus, vienkāršojiet programmas darbību un vairākas reizes paziņojiet, ka šī ir izglītojoša vietne.
+  3. Iestatījumi ar dzīves kvalitātes izvēlēm (tumšs/gaišs režīms un fonta opcijas).
+  4. vairākas ietaupītas investīcijas (tiek rādītas pielāgotās vietņu cilnēs sānos)
+  5. Pauzes opciju noteiktiem ieguldījumiem un izmantojiet atjaunināšanas ātrumu, lai paātrinātu vai palēninātu izmaiņas.
+  6. Spēj sākt ar noteiktu vērtību daudzumu, kas tiek ieguldīts, piemēram (sākumvērtība, cik cilvēku tajā iegulda, cik tā ir vērtīga un cik lielas izmaiņas varētu notikt).
    
-## Custom changes for your simulation
-  1. Custom creation system where you imitate a possible(random) changes of investment going rising/lowering.
-  2. Be able to pause and continue the imitated investment.
-  3. hovering over showing more information and possible chances of it changing.
-  4. Influence the changes and how much "money" goes inside and calculates the possible effects it might add.
-  5. Able to select favorites for easier access (add and removing any simulation by choice). 
+## Pielāgotas izmaiņas jūsu simulācijai
+  1. Pielāgota izveides sistēma, kurā jūs imitējat iespējamās (random) investīciju izmaiņas, kas pieaug/samazinās.
+  2. Spēt apturēt un turpināt imitēto ieguldījumu.
+  3. virzot kursoru virs, parādot vairāk informācijas un iespējamās iespējas, ka tā mainīsies.
+  4. Ietekmējiet izmaiņas un to, cik daudz "naudas" nonāk iekšā, un aprēķina iespējamos efektus, ko tas varētu pievienot.
+  5. Iespēja izvēlēties izlasi, lai vieglāk piekļūtu (pievienot un noņemt jebkuru simulāciju pēc izvēles). 
 
-## Possible strength and weaknesses
-  ### Strengths:
-   1. Leaning possibility on how actual investments can work.
-   2. Education on the randomness of investments and understanding the best chance of success.
-   3. It being not real, no real loss will happen.
-  ### Weaknesses:
-   1. It won't be accurate with real life investments.
-   2. Will have random chances that possibly won't happen.
-   3. Might give a person the wrong ideas about investing.
+## Iespējamās stiprās un vājās puses
+  ### Stiprās puses:
+   1. Iespēja balstīties uz to, kā var darboties faktiskās investīcijas.
+   2. Izglītība par investīciju nejaušību un izpratni par labākajām izredzēm gūt panākumus.
+   3. Tā kā tas nav reāls, reāls zaudējums nenotiks.
+  ### Trūkumi:
+   1. Tas nebūs precīzs ar reāliem ieguldījumiem.
+   2. Būs nejaušas iespējas, kas, iespējams, nenotiks.
+   3. Var radīt nepareizus priekšstatus par investīcijām.
