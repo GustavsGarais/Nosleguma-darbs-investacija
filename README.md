@@ -18,5 +18,5 @@
   5. Iespēja izvēlēties izlasi, lai vieglāk piekļūtu (pievienot un noņemt jebkuru simulāciju pēc izvēles).
 
 ## Pabeigtais darbs:
-1. Pieteikšanās sistēma darbojās, taču, pievienojot jaunu kodu, tā tika sabojāta un nevar atrast veidu, kā to labot. (Nepieciešams labojums)
-2. Lietotājs var izveidot simulāciju, bet ar dažiem ierobežojumiem un nedarbojas kā nepieciešams. (Nepieciešams labojums)
+1. login sistēma darbojās, taču, pievienojot jaunu kontu, tā tika sabojāta un nevar atrast veidu, kā to labot.
+2. Lietotājs var izveidot simulāciju, bet ar dažiem ierobežojumiem un nedarbojas kā nepieciešams.
