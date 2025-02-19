@@ -4,11 +4,11 @@
 
 ## Lietas, kurām tai vajadzētu būt:
   1. Piesakieties sistēmā. (Vienkāršs lietotājvārds vai gmail un parole)
-  2. Paskaidrojot, kā tā darbojas, izmantojot uznirstošos logus, vienkāršojiet programmas darbību un vairākas reizes paziņojiet, ka šī ir izglītojoša vietne.
-  3. Iestatījumi ar dzīves kvalitātes izvēlēm (tumšs/gaišs režīms un fonta opcijas).
-  4. vairākas ietaupītas investīcijas (tiek rādītas pielāgotās vietņu cilnēs sānos)
-  5. Pauzes opciju noteiktiem ieguldījumiem un izmantojiet atjaunināšanas ātrumu, lai paātrinātu vai palēninātu izmaiņas.
-  6. Spēj sākt ar noteiktu vērtību daudzumu, kas tiek ieguldīts, piemēram (sākumvērtība, cik cilvēku tajā iegulda, cik tā ir vērtīga un cik lielas izmaiņas varētu notikt).
+  2. Paskaidrojot, kā tā darbojas, izmantojot uznirstošos logus, vienkāršojiet programmas darbību un vairākas reizes paziņojiet, ka šī ir izglītojoša vietne.
+  1. Iestatījumi ar dzīves kvalitātes izvēlēm (tumšs/gaišs režīms un fonta opcijas).
+  2. vairākas ietaupītas investīcijas (tiek rādītas pielāgotās vietņu cilnēs sānos)
+  3. Pauzes opciju noteiktiem ieguldījumiem un izmantojiet atjaunināšanas ātrumu, lai paātrinātu vai palēninātu izmaiņas.
+  4. Spēj sākt ar noteiktu vērtību daudzumu, kas tiek ieguldīts, piemēram (sākumvērtība, cik cilvēku tajā iegulda, cik tā ir vērtīga un cik lielas izmaiņas varētu notikt).
    
 ## Pielāgotas izmaiņas jūsu simulācijai
   1. Pielāgota izveides sistēma, kurā jūs imitējat iespējamās (random) investīciju izmaiņas, kas pieaug/samazinās.
@@ -20,13 +20,3 @@
 ## Pabeigtais darbs:
 1. Pieteikšanās sistēma darbojās, taču, pievienojot jaunu kodu, tā tika sabojāta un nevar atrast veidu, kā to labot. (Nepieciešams labojums)
 2. Lietotājs var izveidot simulāciju, bet ar dažiem ierobežojumiem un nedarbojas kā nepieciešams. (Nepieciešams labojums)
-
-## Iespējamās stiprās un vājās puses
-  ### Stiprās puses:
-   1. Iespēja balstīties uz to, kā var darboties faktiskās investīcijas.
-   2. Izglītība par investīciju nejaušību un izpratni par labākajām izredzēm gūt panākumus.
-   3. Tā kā tas nav reāls, reāls zaudējums nenotiks.
-  ### Trūkumi:
-   1. Tas nebūs precīzs ar reāliem ieguldījumiem.
-   2. Būs nejaušas iespējas, kas, iespējams, nenotiks.
-   3. Var radīt nepareizus priekšstatus par investīcijām.
