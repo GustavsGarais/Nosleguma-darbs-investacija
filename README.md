@@ -19,4 +19,4 @@
 
 ## Pabeigtais darbs:
 1. login sistēma darbojās, bet vairs nedarbojas un nevaru saprast kapēc.
-2. Lietotājs var izveidot simulāciju, bet ar dažiem ierobežojumiem un nedarbojas kā nepieciešams.
+2. Lietotājs var izveidot simulāciju, bet ar dažiem ierobežojumiem un nedarbojas kā nepieciešams. Kā pati simulācija nestrādā vairāk.
