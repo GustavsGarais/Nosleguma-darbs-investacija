@@ -1,21 +1,19 @@
 <script>
 import { ref } from "vue";
-import InvestmentChart from "./InvestmentChart.vue";
-
+import InvestmentGraph from "./InvestmentGraph.vue";
 export default {
-  components: { InvestmentChart },
+  components: { InvestmentGraph },
   setup() {
     const simulationStarted = ref(false);
-    const investmentData = ref([]); // Array to store investment values
+    const investmentData = ref([]); // Store investment values
 
     const startSimulation = () => {
       simulationStarted.value = true;
       investmentData.value = [1000]; // Initial investment value
 
-      // Simulate investment growth over time
       let value = 1000;
       setInterval(() => {
-        value += Math.random() * 100 - 50; // Random increase/decrease
+        value += Math.random() * 100 - 50; // Simulate fluctuations
         investmentData.value.push(value);
       }, 1000);
     };
@@ -32,7 +30,7 @@ export default {
     </button>
 
     <div v-if="simulationStarted">
-      <InvestmentChart :investmentData="investmentData" />
+      <InvestmentGraph :investmentData="investmentData" />
       <p>Current Investment Value: {{ investmentData[investmentData.length - 1].toFixed(2) }}</p>
     </div>
   </div>
