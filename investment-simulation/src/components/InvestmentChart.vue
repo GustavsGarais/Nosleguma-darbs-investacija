@@ -1,37 +1,68 @@
+<template>
+  <div>
+    <h2>Investment Chart</h2>
+    <div v-if="selectedSimulation">
+      <canvas ref="chartCanvas"></canvas>
+      <p>Current Investment Value: {{ selectedSimulation.data[selectedSimulation.data.length - 1].toFixed(2) }}</p>
+    </div>
+    <p v-else>No simulation selected.</p>
+  </div>
+</template>
+
 <script>
-import { ref } from "vue";
-import InvestmentGraph from "./InvestmentGraph.vue";
+import { ref, watch, onMounted } from "vue";
+import Chart from "chart.js/auto";
+import { getUserSimulations } from "/server/utils/simulationStorage.js";  // Fixed import path
+
 export default {
-  components: { InvestmentGraph },
-  setup() {
-    const simulationStarted = ref(false);
-    const investmentData = ref([]); // Store investment values
+  props: ["userId", "selectedSimulationId"],
+  setup(props) {
+    const chartCanvas = ref(null);
+    const chartInstance = ref(null);
+    const simulations = ref([]);
+    const selectedSimulation = ref(null);
 
-    const startSimulation = () => {
-      simulationStarted.value = true;
-      investmentData.value = [1000]; // Initial investment value
+    // Fetch user's simulations
+    onMounted(async () => {
+      simulations.value = await getUserSimulations(props.userId);
+      selectedSimulation.value = simulations.value.find(sim => sim.id === props.selectedSimulationId);
+      renderChart();
+    });
 
-      let value = 1000;
-      setInterval(() => {
-        value += Math.random() * 100 - 50; // Simulate fluctuations
-        investmentData.value.push(value);
-      }, 1000);
+    watch(() => props.selectedSimulationId, (newId) => {
+      selectedSimulation.value = simulations.value.find(sim => sim.id === newId);
+      renderChart();
+    });
+
+    const renderChart = () => {
+      if (!selectedSimulation.value || !chartCanvas.value) return;
+      
+      if (chartInstance.value) {
+        chartInstance.value.destroy();
+      }
+
+      chartInstance.value = new Chart(chartCanvas.value, {
+        type: "line",
+        data: {
+          labels: selectedSimulation.value.data.map((_, index) => `Day ${index + 1}`),
+          datasets: [{
+            label: "Investment Value",
+            data: selectedSimulation.value.data,
+            borderColor: "#42A5F5",
+            fill: false,
+          }],
+        },
+      });
     };
 
-    return { simulationStarted, investmentData, startSimulation };
+    return { chartCanvas, selectedSimulation };
   },
 };
 </script>
 
-<template>
-  <div>
-    <button @click="startSimulation" v-if="!simulationStarted">
-      Start Simulation
-    </button>
-
-    <div v-if="simulationStarted">
-      <InvestmentGraph :investmentData="investmentData" />
-      <p>Current Investment Value: {{ investmentData[investmentData.length - 1].toFixed(2) }}</p>
-    </div>
-  </div>
-</template>
+<style>
+canvas {
+  max-width: 100%;
+  height: 400px;
+}
+</style>

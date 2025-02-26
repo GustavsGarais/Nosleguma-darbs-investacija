@@ -1,65 +1,59 @@
+<template>
+  <div>
+    <h2>Simulation Setup</h2>
+    <input v-model="initialInvestment" type="number" placeholder="Initial Investment" />
+    <input v-model="investors" type="number" placeholder="Investors" />
+    <input v-model="volatility" type="number" placeholder="Volatility" />
+    <button @click="saveSimulation">Save Simulation</button>
+
+    <h3>My Simulations</h3>
+    <ul>
+      <li v-for="sim in userSimulations" :key="sim.id">
+        {{ sim.name }} - <button @click="deleteSimulation(sim.id)">Delete</button>
+      </li>
+    </ul>
+  </div>
+</template>
+
 <script>
-import { ref } from "vue";
-import InvestmentChart from "./InvestmentChart.vue";
-import SimulationControl from "./SimulationControl.vue";
+import { ref, onMounted } from "vue";
+import { getUserSimulations, saveUserSimulation, deleteUserSimulation } from "/server/utils/simulationStorage.js"; // Fixed import path
 
 export default {
-  components: { InvestmentChart, SimulationControl },
-  setup() {
-    const initialValue = ref(1000);
+  props: ["userId"],
+  setup(props) {
+    const initialInvestment = ref(1000);
     const investors = ref(10);
     const volatility = ref(5);
-    const isRunning = ref(false);
-    const investmentData = ref([]);
-    const simulationStarted = ref(false);
-    let interval = null;
+    const userSimulations = ref([]);
 
-    const startSimulation = () => {
-      if (interval) clearInterval(interval);
-      investmentData.value = [initialValue.value];
-      simulationStarted.value = true;
+    onMounted(async () => {
+  simulations.value = await getUserSimulations(props.userId);
+  console.log("Loaded Simulations:", simulations.value); // Debugging
+});
 
-      interval = setInterval(() => {
-        if (!isRunning.value) return;
-        let lastValue = investmentData.value[investmentData.value.length - 1];
-        let change = (Math.random() * volatility.value * 2 - volatility.value) * (investors.value / 10);
-        investmentData.value.push(Math.max(0, lastValue + change));
-      }, 1000);
+
+    const saveSimulation = async () => {
+      const newSim = {
+        id: Date.now(),
+        name: `Simulation ${userSimulations.value.length + 1}`,
+        data: [initialInvestment.value],
+        investors: investors.value,
+        volatility: volatility.value,
+      };
+
+      await saveUserSimulation(props.userId, newSim);
+      userSimulations.value = await getUserSimulations(props.userId);
     };
 
-    const toggleSimulation = () => {
-      isRunning.value = !isRunning.value;
+    const deleteSimulation = async (id) => {
+      await deleteUserSimulation(props.userId, id);
+      userSimulations.value = await getUserSimulations(props.userId);
     };
 
-    const updateInvestment = (newValue) => {
-      investmentData.value.push(newValue);
-    };
-
-    return {
-      initialValue,
-      investors,
-      volatility,
-      isRunning,
-      investmentData,
-      simulationStarted,
-      startSimulation,
-      toggleSimulation,
-      updateInvestment,
-    };
+    return { initialInvestment, investors, volatility, userSimulations, saveSimulation, deleteSimulation };
   },
 };
 </script>
 
-<template>
-  <div class="simulation-container">
-    <h3>Setup Simulation</h3>
-    <input v-model.number="initialValue" type="number" placeholder="Initial Value" />
-    <input v-model.number="investors" type="number" placeholder="Investors" />
-    <input v-model.number="volatility" type="number" placeholder="Volatility" />
-    <button @click="startSimulation">Done</button>
-    <button v-if="simulationStarted" @click="toggleSimulation">{{ isRunning ? "Pause" : "Run" }}</button>
-
-    <InvestmentChart v-if="simulationStarted" :investmentData="investmentData" />
-    <SimulationControl v-if="simulationStarted" :investmentData="investmentData" @update-investment="updateInvestment" />
-  </div>
-</template>
+console.log(localStorage.getItem("userSimulations"));
