@@ -1,6 +1,7 @@
 // src/utils/simulationStorage.js
 
 const STORAGE_KEY = "userSimulations";
+const USER_KEY = "users"; // Store all users
 
 // Get simulations for a specific user
 export function getUserSimulations(userId) {
@@ -9,8 +10,30 @@ export function getUserSimulations(userId) {
   return simulations[userId] || []; // Return user's simulations or an empty array
 }
 
+// Login logic
 export function loginUser(username, password) {
-    // Login logic here...
+  const users = JSON.parse(localStorage.getItem(USER_KEY) || "{}");
+
+  if (users[username] && users[username].password === password) {
+    return { username }; // Return user object if login is successful
+  }
+  return null; // Invalid credentials
+}
+
+// Register new user
+export function registerUser(username, password) {
+  const users = JSON.parse(localStorage.getItem(USER_KEY) || "{}");
+
+  // Check if user already exists
+  if (users[username]) {
+    return false; // Username already exists
+  }
+
+  // Register the new user
+  users[username] = { password }; // Store password (consider using hashing in a real app)
+  localStorage.setItem(USER_KEY, JSON.stringify(users));
+
+  return true; // Successful registration
 }
 
 // Save a new simulation

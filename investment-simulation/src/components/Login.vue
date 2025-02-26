@@ -1,6 +1,6 @@
 <script>
 import { ref, onMounted } from "vue";
-import { loginUser } from "/server/utils/simulationStorage";
+import { loginUser, registerUser } from "/server/utils/simulationStorage";
 
 export default {
   setup() {
@@ -47,10 +47,17 @@ export default {
       }
     };
 
-
-    return { 
-      username, password, newUsername, newPassword, login, register, 
-      isLoggedIn, showRegister, showSimulationSetup, currentUser
+    return {
+      username,
+      password,
+      newUsername,
+      newPassword,
+      login,
+      register,
+      isLoggedIn,
+      showRegister,
+      showSimulationSetup,
+      currentUser,
     };
   },
 };
