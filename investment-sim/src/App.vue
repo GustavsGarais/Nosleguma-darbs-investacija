@@ -43,8 +43,12 @@ transition: background-color 0.3s, color 0.3s;
 
 /* Dark mode */
 .dark body {
-background-color: #121212;
-color: white;
+  background-color: #121212;
+  color: white;
+}
+.dark button {
+  background-color: #333;
+  color: white
 }
 
 /* Ensure all content adapts */
