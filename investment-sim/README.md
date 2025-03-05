@@ -1,35 +1,61 @@
-# investment-sim
+<button @click="toggleTheme">
+      {{ darkMode ? "Light Mode" : "Dark Mode" }}
+</button>
 
-This template should help get you started developing with Vue 3 in Vite.
 
-## Recommended IDE Setup
+<template>
+  <div :class="{ dark: isDarkMode }">
+    <div class="app-container">
+      <header class="p-4 text-center">
+        <button @click="toggleTheme" class="p-2 rounded bg-gray-300 dark:bg-gray-700">
+          {{ isDarkMode ? "Light Mode" : "Dark Mode" }}
+        </button>
+      </header>
+      <main class="p-4">
+        <router-view />
+      </main>
+    </div>
+  </div>
+</template>
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+<script>
+export default {
+  data() {
+    return {
+      isDarkMode: localStorage.getItem("theme") === "dark",
+    };
+  },
+  methods: {
+    toggleTheme() {
+      this.isDarkMode = !this.isDarkMode;
+      localStorage.setItem("theme", this.isDarkMode ? "dark" : "light");
+      document.documentElement.classList.toggle("dark", this.isDarkMode);
+    },
+  },
+  mounted() {
+    document.documentElement.classList.toggle("dark", this.isDarkMode);
+  },
+};
+</script>
 
-## Customize configuration
+<style>
+/* Light mode (default) */
+body {
+  background-color: white;
+  color: black;
+  transition: background-color 0.3s, color 0.3s;
+}
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+/* Dark mode */
+.dark body {
+  background-color: #121212;
+  color: white;
+}
 
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+/* Ensure all content adapts */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+</style>

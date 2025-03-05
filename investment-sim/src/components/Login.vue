@@ -10,7 +10,7 @@
 
       <button type="submit">{{ isRegistering ? "Register" : "Login" }}</button>
       <p @click="toggleMode" class="toggle-text">
-        {{ isRegistering ? "Already have an account? Login" : "No account? Register" }}
+        {{ isRegistering ? "Login" : "Register" }}
       </p>
     </form>
 
@@ -83,7 +83,7 @@ button {
 }
 .toggle-text {
   cursor: pointer;
-  color: blue;
+  color: #40b840;
   text-decoration: underline;
 }
 .error {
