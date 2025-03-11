@@ -18,5 +18,5 @@
   5. Iespēja izvēlēties izlasi, lai vieglāk piekļūtu (pievienot un noņemt jebkuru simulāciju pēc izvēles).
 
 ## Pabeigtais darbs:
-1. login sistēma darbojās, bet vairs nedarbojas un nevaru saprast kapēc.
-2. Lietotājs var izveidot simulāciju, bet ar dažiem ierobežojumiem un nedarbojas kā nepieciešams. Kā pati simulācija nestrādā vairāk.
+1. login sistēma darbojās, bet tikai localfile
+2. Lietotājs var izveidot simulāciju, bet ar dažiem ierobežojumiem un nedarbojas kā nepieciešams.
