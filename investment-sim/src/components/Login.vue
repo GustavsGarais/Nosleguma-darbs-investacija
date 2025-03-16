@@ -1,20 +1,22 @@
 <template>
   <div class="login-container">
     <h2>{{ isRegistering ? "Register" : "Login" }}</h2>
-    <form @submit.prevent="handleSubmit">
+
+    <form @submit.prevent="handleAuth">
       <label>Username:</label>
       <input type="text" v-model="username" required />
 
       <label>Password:</label>
       <input type="password" v-model="password" required />
 
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+
       <button type="submit">{{ isRegistering ? "Register" : "Login" }}</button>
-      <p @click="toggleMode" class="toggle-text">
-        {{ isRegistering ? "Login" : "Register" }}
-      </p>
     </form>
 
-    <p v-if="error" class="error">{{ error }}</p>
+    <button @click="toggleMode">
+      {{ isRegistering ? "Switch to Login" : "Switch to Register" }}
+    </button>
   </div>
 </template>
 
@@ -24,47 +26,44 @@ export default {
     return {
       username: "",
       password: "",
-      isRegistering: false, // ✅ Now correctly defined
-      error: ""
+      isRegistering: false,
+      errorMessage: "",
     };
   },
   methods: {
+    async handleAuth() {
+      const endpoint = this.isRegistering ? "register" : "login";
+      try {
+        const response = await fetch(`http://localhost:8000/api/${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include", // Required for Laravel sessions
+          body: JSON.stringify({
+            username: this.username,
+            password: this.password,
+          }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          console.log(`${this.isRegistering ? "Registered" : "Logged in"} successfully`);
+          this.$router.push("/simulation"); // Redirect after login
+        } else {
+          this.errorMessage = data.error || "An error occurred.";
+        }
+      } catch (error) {
+        this.errorMessage = "Connection error. Make sure the backend is running.";
+      }
+    },
     toggleMode() {
       this.isRegistering = !this.isRegistering;
-      this.error = ""; // Clear errors when switching mode
+      this.errorMessage = ""; // Clear errors when switching modes
     },
-    async handleSubmit() {
-  this.error = "";
-  const endpoint = this.isRegistering ? "register" : "login";
-
-  try {
-    const response = await fetch(`http://localhost:3000/${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: this.username, password: this.password })
-    });
-
-    const data = await response.json();
-    if (!data.success) {
-      throw new Error(data.message || "Request failed");
-    }
-
-    alert(this.isRegistering ? "Registration successful!" : "Login successful!");
-
-    // ✅ Redirect to simulation page after successful login
-    if (!this.isRegistering) {
-      this.$router.push("/simulation");
-    }
-  } catch (err) {
-    this.error = err.message;
-  }
-}
-
-  }
+  },
 };
 </script>
 
-<style>
+<style scoped>
 .login-container {
   width: 300px;
   margin: auto;
@@ -81,12 +80,7 @@ button {
   padding: 10px;
   cursor: pointer;
 }
-.toggle-text {
-  cursor: pointer;
-  color: #40b840;
-  text-decoration: underline;
-}
-.error {
+.error-message {
   color: red;
 }
 </style>
