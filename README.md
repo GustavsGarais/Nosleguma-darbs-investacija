@@ -20,3 +20,12 @@
 ## Pabeigtais darbs:
 1. login sistēma darbojās, bet tikai localfile
 2. Lietotājs var izveidot simulāciju, bet ar dažiem ierobežojumiem un nedarbojas kā nepieciešams.
+
+## Programma lai ietu commandas:
+### Frontend:
+ 1. cd investment-sim/
+ 2. npm run dev
+### Backend:
+ 1. cd investment-sim/
+ 2. cd backend/
+ 3. node server.js
