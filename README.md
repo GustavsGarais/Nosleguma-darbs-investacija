@@ -18,7 +18,7 @@
   5. Iespēja izvēlēties izlasi, lai vieglāk piekļūtu (pievienot un noņemt jebkuru simulāciju pēc izvēles).
 
 ## Pabeigtais darbs:
-1. login sistēma darbojās, bet tikai localfile
+1. login sistēma darbojās, bet tikai localfile ( Ja nestrādā tad nozimē, ka meiģinu pārtaisīt par Laravel)
 2. Lietotājs var izveidot simulāciju, bet ar dažiem ierobežojumiem un nedarbojas kā nepieciešams.
 
 ## Programma lai ietu commandas:
