@@ -1,36 +1,44 @@
 version: '3.8'
 
 services:
-  app:
-    build: ./Backend
-    container_name: laravel_app
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     volumes:
-      - ./Backend:/var/www/html
+      - ./backend:/app
+    environment:
+      - APP_ENV=local
+      - APP_KEY=
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8000
     depends_on:
       - db
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+
   db:
     image: mysql:8.0
-    container_name: mysql_db
     ports:
       - "3306:3306"
     environment:
+      MYSQL_DATABASE: investment_simulation
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: investment_sim
     volumes:
       - db_data:/var/lib/mysql
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    ports:
-      - "8080:80"
-    environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: root
 
 volumes:
   db_data:
-
