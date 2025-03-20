@@ -2,54 +2,55 @@
   <div :class="['app', theme]">
     <header>
       <button @click="toggleTheme">Toggle {{ theme === 'light' ? 'Dark' : 'Light' }} Mode</button>
-      <button @click="goToLogin">Login</button>
     </header>
-    <main>
-      <h1>Welcome to the Investment Simulation</h1>
-      <p>Explore and simulate investment strategies to learn how they work.</p>
-    </main>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { defineComponent, ref, provide } from 'vue';
+import { useRouter } from 'vue-router';
 
-export default {
+export default defineComponent({
+  name: 'App',
   setup() {
+    const router = useRouter();
     const theme = ref('light');
 
     const toggleTheme = () => {
       theme.value = theme.value === 'light' ? 'dark' : 'light';
     };
 
-    const goToLogin = () => {
-      // Redirect to login (placeholder for now)
-      alert('Redirecting to login...');
-    };
+    provide('theme', theme);
+    provide('toggleTheme', toggleTheme);
 
-    return { theme, toggleTheme, goToLogin };
+    return { router, theme, toggleTheme };
   }
-};
+});
 </script>
 
-<style scoped>
-.app {
-  min-height: 100vh;
+<style>
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+#app {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: Arial, sans-serif;
+  height: 100vh;
 }
 
 header {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 10px;
+  right: 10px;
 }
 
 button {
-  margin: 0 10px;
   padding: 10px 20px;
   border: none;
   cursor: pointer;
