@@ -34,11 +34,12 @@ export default {
     // Example API call for login
     async login(username, password) {
       try {
-        const response = await fetch('http://localhost:3000/api/login', {
+        const response = await fetch('http://localhost:3000/api/' + (isRegistering ? 'register' : 'login'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password }),
         });
+
         const data = await response.json();
         if (response.ok) {
           console.log(`${this.isRegistering ? "Registered" : "Logged in"} successfully`);
