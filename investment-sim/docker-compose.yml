@@ -1,13 +1,13 @@
 services:
   postgres:
     image: postgres:16
-    container_name: postgres_container
     environment:
-      POSTGRES_DB: investment_db
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: your_username
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: your_database
     ports:
       - "5432:5432"
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
