@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  backend:
+    environment:
+      APP_ENV: local
+      APP_DEBUG: true
+      APP_KEY: base64:$(openssl rand -base64 32)
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: investment_db
+      DB_USERNAME: user
+      DB_PASSWORD: password
+    volumes:
+      - ./storage:/var/www/html/storage
+      - ./vendor:/var/www/html/vendor
