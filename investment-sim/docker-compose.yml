@@ -12,16 +12,21 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   backend:
-    build:
-      context: ./Backend
-      dockerfile: Dockerfile
     container_name: backend_container
+    build:
+      context: ./backend
     ports:
       - "8000:8000"
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres_container
+      - DB_PORT=5432
+      - DB_DATABASE=investment_db
+      - DB_USERNAME=your_username
+      - DB_PASSWORD=your_password
     depends_on:
       - postgres
-    volumes:
-      - ./Backend:/var/www/html
+
 
   frontend:
     build:
