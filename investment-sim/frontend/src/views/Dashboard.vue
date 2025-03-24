@@ -1,20 +1,19 @@
 <template>
-    <div>
-      <h2>Welcome to your Dashboard</h2>
-      <button @click="logout">Logout</button>
-    </div>
-  </template>
-  
-  <script setup>
-  import { useAuthStore } from "../store/auth.js";
-  import { useRouter } from "vue-router";
-  
-  const authStore = useAuthStore();
-  const router = useRouter();
-  
-  const logout = () => {
-    authStore.logout();
-    router.push("/login");
-  };
-  </script>
-  
+  <div class="dashboard">
+    <h1>Welcome to Your Dashboard</h1>
+    <p>Your investment simulations will appear here.</p>
+
+    <button @click="logout">Logout</button>
+  </div>
+</template>
+
+<script setup>
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const logout = () => {
+  localStorage.removeItem("userToken"); // Clear session
+  router.push("/login");
+};
+</script>

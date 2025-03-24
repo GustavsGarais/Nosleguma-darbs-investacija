@@ -5,10 +5,10 @@ import Register from "./views/Register.vue";
 import Dashboard from "./views/Dashboard.vue";
 
 const routes = [
-  { path: "/Home", component: Home },
-  { path: "/Login", component: Login },
-  { path: "/Register", component: Register },
-  { path: "/Dashboard", component: Dashboard, meta: { requiresAuth: true } }
+  { path: "/", component: Home },
+  { path: "/login", component: Login },
+  { path: "/register", component: Register },
+  { path: "/dashboard", component: Dashboard, meta: { requiresAuth: true } }
 ];
 
 const router = createRouter({

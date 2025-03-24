@@ -14,6 +14,10 @@ app.use(express.json());
 // Connect to Database
 connectDB();
 
+app.get("/api/status", (req, res) => {
+    res.json({ message: "Backend is running" });
+  });
+
 // Routes
 app.use("/api/auth", authRoutes);
 
