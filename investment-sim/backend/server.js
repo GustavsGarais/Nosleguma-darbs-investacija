@@ -1,25 +1,18 @@
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const authRoutes = require("./routes/auth");
-const { connectDB } = require("./database");
-
-dotenv.config();
+const express = require('express');
+const cors = require('cors');
 const app = express();
+const port = 3000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Connect to Database
-connectDB();
+// Sample API endpoint
+app.get('/api/status', (req, res) => {
+  res.json({ message: 'Backend is running' });
+});
 
-app.get("/api/status", (req, res) => {
-    res.json({ message: "Backend is running" });
-  });
-
-// Routes
-app.use("/api/auth", authRoutes);
-
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Start the server
+app.listen(port, () => {
+  console.log(`Backend server is running at http://localhost:${port}`);
+});

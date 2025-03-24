@@ -1,46 +1,33 @@
-version: '3.8'
+version: "3.8"
+
 services:
   backend:
     build:
       context: ./backend
     ports:
-      - "3001:3001"
-    environment:
-      - PORT=3001
-      - DB_HOST=db
-      - DB_USER=your_username
-      - DB_PASS=your_password
-      - DB_NAME=your_database
-      - JWT_SECRET=your_secret_key
-    depends_on:
-      - db
+      - "3000:3000"
+    networks:
+      - app-network
     volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
 
   frontend:
     build:
       context: ./frontend
     ports:
       - "5173:5173"
+    networks:
+      - app-network
     depends_on:
       - backend
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    stdin_open: true
-    tty: true
-
-  db:
-    image: postgres:latest
     environment:
-      POSTGRES_USER: your_username
-      POSTGRES_PASSWORD: your_password
-      POSTGRES_DB: your_database
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
+      - VITE_API_URL=http://backend:3000
+    command: ["npm", "run", "dev", "--", "--host"]
 
-volumes:
-  db_data:
+networks:
+  app-network:
+    driver: bridge

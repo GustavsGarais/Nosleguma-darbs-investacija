@@ -1,20 +1,18 @@
 # Use Node.js as the base image
 FROM node:18
 
-# Set the working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and install dependencies
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the application
+# Copy all frontend files into the container
 COPY . .
 
-# Expose the development port
+# Expose the Vite development server port
 EXPOSE 5173
 
-# Start the application
-CMD ["npm", "run", "dev"]
+# Start Vite with proper host binding
+CMD ["npm", "run", "dev", "--", "--host"]
