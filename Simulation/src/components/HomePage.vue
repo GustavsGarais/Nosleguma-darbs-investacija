@@ -1,7 +1,38 @@
 <template>
-    <div>
-      <h1>Welcome to the Investment Simulation</h1>
-      <button @click="$emit('navigate', 'LoginPage')">Go to Login</button>
-    </div>
-  </template>
-  
+  <div class="homepage">
+    <h1>Investment Simulator</h1>
+    <p>Understand how markets work — safely and interactively.</p>
+    <button @click="$emit('navigate', 'LoginPage')">Start Simulation</button>
+  </div>
+</template>
+
+<script>
+export default {}
+</script>
+
+<style scoped>
+.homepage {
+  text-align: center;
+  margin-top: 20vh;
+}
+
+h1 {
+  font-family: monospace;
+  font-size: 2.5rem;
+}
+
+p {
+  margin: 1rem 0 2rem;
+  font-style: italic;
+}
+
+button {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #282c34;
+  color: white;
+  cursor: pointer;
+}
+</style>
