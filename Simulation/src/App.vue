@@ -1,5 +1,5 @@
 <template>
-  <div :class="themeClass">
+  <div :class="themeClass" class="app-wrapper">
     <button @click="toggleTheme" class="theme-toggle">Toggle Theme</button>
     <component :is="currentPage" @navigate="navigate" />
   </div>
@@ -14,7 +14,7 @@ export default {
   components: { HomePage, LoginPage, SimulationPage },
   data() {
     return {
-      currentPage: 'HomePage',
+      currentPage: 'SimulationPage', // now opens SimulationPage by default
       darkMode: JSON.parse(localStorage.getItem('darkMode')) || false
     }
   },
@@ -33,10 +33,6 @@ export default {
     }
   }
 }
-function toggleTheme() {
-  document.body.classList.toggle('dark-theme');
-}
-
 </script>
 
 <style>
