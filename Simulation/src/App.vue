@@ -33,9 +33,18 @@ export default {
     }
   }
 }
+function toggleTheme() {
+  document.body.classList.toggle('dark-theme');
+}
+
 </script>
 
 <style>
+.app-wrapper {
+  min-height: 100vh;
+  background-color: var(--background-color);
+  transition: background-color 0.3s ease;
+}
 body, html, #app {
   margin: 0;
   padding: 0;

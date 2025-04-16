@@ -1,0 +1,25 @@
+/* Reset and base layout */
+html, body, #app {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background-color: var(--background-color);
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Theme defaults */
+  :root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+  }
+  
+  .dark-theme {
+    --background-color: #121212;
+    --text-color: #ffffff;
+  }
+  
+  body {
+    color: var(--text-color);
+  }
+  

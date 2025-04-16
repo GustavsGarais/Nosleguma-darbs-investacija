@@ -35,4 +35,10 @@ button {
   color: white;
   cursor: pointer;
 }
+.page-container {
+  min-height: 100vh; /* Ensures it takes full viewport height */
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease;
+}
 </style>
