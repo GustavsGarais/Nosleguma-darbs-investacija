@@ -14,7 +14,7 @@ export default {
   components: { HomePage, LoginPage, SimulationPage },
   data() {
     return {
-      currentPage: 'SimulationPage', // now opens SimulationPage by default
+      currentPage: 'HomePage', // now opens Homepage by default
       darkMode: JSON.parse(localStorage.getItem('darkMode')) || false
     }
   },
