@@ -1,19 +1,37 @@
+<script setup>
+import { ref } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const username = ref('')
+const password = ref('')
+const router = useRouter()
+
+const login = async () => {
+  try {
+    const res = await axios.post('http://localhost:3000/api/login', {
+      username: username.value,
+      password: password.value
+    });
+
+    if (res.data.success) {
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      router.push('/home');
+    }
+  } catch (err) {
+    alert(err.response?.data?.message || 'Login failed');
+  }
+}
+</script>
+
 <template>
-  <div class="login-container">
-    <div class="login-box">
-      <h2>{{ isRegistering ? 'Register' : 'Login' }}</h2>
-      <input v-model="username" placeholder="Username" />
-      <input type="password" v-model="password" placeholder="Password" />
-      <button @click="isRegistering ? register() : login()">
-        {{ isRegistering ? 'Create Account' : 'Login' }}
-      </button>
-      <p @click="isRegistering = !isRegistering" class="switch">
-        {{ isRegistering ? 'Have an account? Login' : 'New user? Register here' }}
-      </p>
-      <p class="error">{{ error }}</p>
-    </div>
+  <div class="page-fill">
+    <input v-model="username" placeholder="Username" />
+    <input v-model="password" placeholder="Password" type="password" />
+    <button @click="login">Login</button>
   </div>
 </template>
+
 
 <script>
 export default {

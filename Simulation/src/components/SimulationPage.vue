@@ -1,5 +1,5 @@
 <template>
-  <div class="sim-page">
+  <div class="page-fill">
     <h2>Simulation Running...</h2>
     <p>Welcome, {{ user }}</p>
     <button @click="logout">Logout</button>

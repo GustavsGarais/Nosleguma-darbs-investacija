@@ -1,25 +1,23 @@
-/* Reset and base layout */
+/* Reset layout and ensure full height */
 html, body, #app {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: sans-serif;
-    background-color: var(--background-color);
-    transition: background-color 0.3s ease;
   }
   
-  /* Theme defaults */
-  :root {
-    --background-color: #ffffff;
-    --text-color: #000000;
-  }
-  
+  /* Theme Styles */
   .dark-theme {
-    --background-color: #121212;
-    --text-color: #ffffff;
+    background: linear-gradient(to bottom right, purple, black);
+    color: white;
   }
   
-  body {
-    color: var(--text-color);
+  .light-theme {
+    background: linear-gradient(to bottom right, #edc988, #5b8c5a);
+    color: black;
+  }
+  
+  /* Make sure all page content fills full height */
+  .page-fill {
+    min-height: 100vh;
   }
   

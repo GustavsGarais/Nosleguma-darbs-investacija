@@ -23,9 +23,9 @@
 
 ## Programma lai ietu commandas:
 ### Frontend:
- 1. cd investment-sim/
+ 1. cd Simulation
  2. npm run dev
 ### Backend:
- 1. cd investment-sim/
- 2. cd backend/
- 3. node server.js
+ 1. cd Simulation
+ 2. cd src
+ 3. node server.cjs

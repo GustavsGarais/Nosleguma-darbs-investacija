@@ -1,5 +1,5 @@
 <template>
-  <div class="homepage">
+  <div class="page-fill">
     <h1>Investment Simulator</h1>
     <p>Understand how markets work — safely and interactively.</p>
     <button @click="$emit('navigate', 'LoginPage')">Start Simulation</button>
