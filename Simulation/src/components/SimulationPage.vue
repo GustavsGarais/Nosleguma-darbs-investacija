@@ -1,21 +1,15 @@
 <template>
   <div class="p-6">
-    <h1 class="text-3xl font-bold mb-4 text-center">Investment Simulations</h1>
+    <h1 class="text-3xl font-bold mb-6 text-center">Investment Simulations</h1>
 
-    <button
-      @click="addSimulation"
-      class="mb-6 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl"
-    >
-      + Add New Simulation
-    </button>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <!-- 🧩 Grid of Simulations -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
       <div
         v-for="simulation in simulations"
         :key="simulation.id"
-        class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow"
+        class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-lg space-y-4"
       >
-        <h2 class="text-xl font-semibold mb-2">Simulation {{ simulation.id }}</h2>
+        <h2 class="text-xl font-semibold dark:text-white">Simulation {{ simulation.id }}</h2>
 
         <SimulationSetup
           :simulation="simulation"
@@ -30,25 +24,21 @@
         />
 
         <InvestmentChart :simulation="simulation" />
-
-        <div class="mt-4">
-          <p>
-            💰 Current Value:
-            <span
-              :class="{
-                'text-green-500': simulation.trend === 'up',
-                'text-red-500': simulation.trend === 'down'
-              }"
-              class="font-bold"
-            >
-              {{ simulation.currentValue.toFixed(2) }} €
-            </span>
-          </p>
-        </div>
       </div>
+    </div>
+
+    <!-- ➕ Add Simulation Button -->
+    <div class="flex justify-center">
+      <button
+        @click="addSimulation"
+        class="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
+      >
+        ➕ Add New Simulation
+      </button>
     </div>
   </div>
 </template>
+
 
 <script>
 import SimulationSetup from '@/components/SimulationSetup.vue'
@@ -70,6 +60,7 @@ export default {
   },
   methods: {
     addSimulation() {
+      console.log('Adding new simulation');
       const newSim = {
         id: this.nextId++,
         currentValue: 1000,
@@ -85,8 +76,8 @@ export default {
           marketInfluence: 0.7
         },
         data: []
-      }
-      this.simulations.push(newSim)
+      };
+      this.simulations.push(newSim);
     },
     updateSettings(id, newSettings) {
       const sim = this.simulations.find(s => s.id === id)

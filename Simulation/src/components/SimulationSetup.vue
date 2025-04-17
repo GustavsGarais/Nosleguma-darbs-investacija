@@ -51,15 +51,6 @@
         class="w-full px-2 py-1 rounded border dark:bg-gray-700 dark:text-white"
       />
     </div>
-
-    <div class="pt-2">
-      <button
-        @click="$emit('toggle')"
-        class="w-full px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl"
-      >
-        {{ simulation.isRunning ? '⏸ Pause Simulation' : '▶ Start Simulation' }}
-      </button>
-    </div>
   </div>
 </template>
 
