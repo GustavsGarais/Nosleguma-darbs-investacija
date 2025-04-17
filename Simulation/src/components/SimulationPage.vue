@@ -2,43 +2,54 @@
   <div class="p-6">
     <h1 class="text-3xl font-bold mb-6 text-center">Investment Simulations</h1>
 
-    <!-- 🧩 Grid of Simulations -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
-      <div
-        v-for="simulation in simulations"
-        :key="simulation.id"
-        class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-lg space-y-4"
-      >
-        <h2 class="text-xl font-semibold dark:text-white">Simulation {{ simulation.id }}</h2>
-
-        <SimulationSetup
-          :simulation="simulation"
-          @update-settings="updateSettings(simulation.id, $event)"
-        />
-
-        <SimulationControl
-          :simulation="simulation"
-          @toggle="toggleSimulation(simulation.id)"
-          @reset="resetSimulation(simulation.id)"
-          @change-speed="changeSpeed(simulation.id, $event)"
-        />
-
-        <InvestmentChart :simulation="simulation" />
-      </div>
-    </div>
-
-    <!-- ➕ Add Simulation Button -->
-    <div class="flex justify-center">
+    <div class="mb-6 text-center">
       <button
         @click="addSimulation"
-        class="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
+        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
       >
-        ➕ Add New Simulation
+        + Add New Simulation
       </button>
+    </div>
+
+    <div class="flex gap-6">
+      <!-- Side simulations (condensed) -->
+      <div class="w-1/3 space-y-4" v-if="simulations.length > 1">
+        <div
+          v-for="sim in simulations.filter(s => s.id !== focusedId)"
+          :key="sim.id"
+          class="bg-white dark:bg-gray-700 p-4 rounded-xl shadow"
+        >
+          <p class="text-sm font-semibold dark:text-white">Simulation {{ sim.id }}</p>
+          <p class="text-xs text-gray-500">€{{ sim.currentValue.toFixed(2) }}</p>
+          <button @click="focusedId = sim.id" class="text-blue-600 hover:underline text-xs mt-1">
+            Focus
+          </button>
+        </div>
+      </div>
+
+      <!-- Focused simulation -->
+      <div class="flex-1" v-if="focusedSimulation">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+          <h2 class="text-xl font-bold mb-4">Simulation {{ focusedSimulation.id }}</h2>
+
+          <SimulationSetup
+            :simulation="focusedSimulation"
+            @update-settings="updateSettings(focusedSimulation.id, $event)"
+          />
+
+          <SimulationControl
+            :simulation="focusedSimulation"
+            @toggle="toggleSimulation(focusedSimulation.id)"
+            @reset="resetSimulation(focusedSimulation.id)"
+            @change-speed="changeSpeed(focusedSimulation.id, $event)"
+          />
+
+          <InvestmentChart :simulation="focusedSimulation" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
-
 
 <script>
 import SimulationSetup from '@/components/SimulationSetup.vue'
@@ -55,12 +66,17 @@ export default {
   data() {
     return {
       nextId: 1,
+      focusedId: null,
       simulations: []
+    }
+  },
+  computed: {
+    focusedSimulation() {
+      return this.simulations.find(sim => sim.id === this.focusedId)
     }
   },
   methods: {
     addSimulation() {
-      console.log('Adding new simulation');
       const newSim = {
         id: this.nextId++,
         currentValue: 1000,
@@ -76,8 +92,9 @@ export default {
           marketInfluence: 0.7
         },
         data: []
-      };
-      this.simulations.push(newSim);
+      }
+      this.simulations.push(newSim)
+      this.focusedId = newSim.id
     },
     updateSettings(id, newSettings) {
       const sim = this.simulations.find(s => s.id === id)
@@ -143,11 +160,22 @@ export default {
 }
 </script>
 
+
 <style scoped>
 body.light {
   background: linear-gradient(to right, #f5e9b3, #a8d87b);
 }
 body.dark {
   background: linear-gradient(to right, #4a148c, #000000);
+}
+body {
+  display: block;
+  text-align: left;
+}
+
+#app {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 </style>
