@@ -10,7 +10,11 @@
     </button>
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      <div v-for="simulation in simulations" :key="simulation.id" class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow">
+      <div
+        v-for="simulation in simulations"
+        :key="simulation.id"
+        class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow"
+      >
         <h2 class="text-xl font-semibold mb-2">Simulation {{ simulation.id }}</h2>
 
         <SimulationSetup
@@ -23,12 +27,9 @@
           @toggle="toggleSimulation(simulation.id)"
           @reset="resetSimulation(simulation.id)"
           @change-speed="changeSpeed(simulation.id, $event)"
-          
         />
 
-        <InvestmentChart
-          :simulation="simulation"
-        />
+        <InvestmentChart :simulation="simulation" />
 
         <div class="mt-4">
           <p>
@@ -75,6 +76,7 @@ export default {
         trend: 'neutral',
         isRunning: false,
         interval: null,
+        speed: 1000,
         settings: {
           initialInvestment: 1000,
           investors: 10,
@@ -88,7 +90,9 @@ export default {
     },
     updateSettings(id, newSettings) {
       const sim = this.simulations.find(s => s.id === id)
-      if (sim) sim.settings = newSettings
+      if (sim) {
+        sim.settings = { ...sim.settings, ...newSettings }
+      }
     },
     toggleSimulation(id) {
       const sim = this.simulations.find(s => s.id === id)
@@ -102,8 +106,7 @@ export default {
         sim.isRunning = true
         sim.interval = setInterval(() => {
           const randomFactor = (Math.random() - 0.5) * sim.settings.riskAppetite
-          const growth =
-            sim.settings.growthRate + randomFactor * sim.settings.marketInfluence
+          const growth = sim.settings.growthRate + randomFactor * sim.settings.marketInfluence
           const newValue = sim.currentValue * (1 + growth)
 
           sim.trend = newValue > sim.currentValue ? 'up' : 'down'
@@ -113,8 +116,31 @@ export default {
             value: sim.currentValue
           })
 
-          if (sim.data.length > 30) sim.data.shift() // Limit data length
-        }, 1000)
+          if (sim.data.length > 50) sim.data.shift()
+        }, sim.speed)
+      }
+    },
+    resetSimulation(id) {
+      const sim = this.simulations.find(s => s.id === id)
+      if (!sim) return
+
+      clearInterval(sim.interval)
+      sim.currentValue = sim.settings.initialInvestment
+      sim.data = []
+      sim.isRunning = false
+      sim.trend = 'neutral'
+      sim.interval = null
+    },
+    changeSpeed(id, newSpeed) {
+      const sim = this.simulations.find(s => s.id === id)
+      if (!sim) return
+
+      const wasRunning = sim.isRunning
+      this.toggleSimulation(id) // stop it
+      sim.speed = newSpeed
+
+      if (wasRunning) {
+        this.toggleSimulation(id) // restart with new speed
       }
     }
   },
@@ -127,11 +153,9 @@ export default {
 </script>
 
 <style scoped>
-/* Light/dark theme example */
 body.light {
   background: linear-gradient(to right, #f5e9b3, #a8d87b);
 }
-
 body.dark {
   background: linear-gradient(to right, #4a148c, #000000);
 }
