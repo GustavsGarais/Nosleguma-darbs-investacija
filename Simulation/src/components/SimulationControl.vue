@@ -1,58 +1,36 @@
 <template>
-    <div class="control-container">
-      <button @click="$emit('togglePause')">
-        {{ isPaused ? 'Resume' : 'Pause' }}
-      </button>
-      <label>
-        Speed:
-        <input
-          type="range"
-          v-model.number="localSpeed"
-          min="0.5"
-          max="5"
-          step="0.5"
-          @change="speedChanged"
-        />
-        {{ localSpeed }}x
-      </label>
+  <div class="flex flex-col gap-2 text-sm">
+    <button
+      @click="$emit('toggle')"
+      class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl"
+    >
+      {{ simulation.isRunning ? '⏸ Pause' : '▶ Start' }}
+    </button>
+
+    <button
+      @click="$emit('reset')"
+      class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl"
+    >
+      🔄 Reset
+    </button>
+
+    <div>
+      <label class="block mb-1 font-medium">⚡ Speed (ms)</label>
+      <input
+        type="number"
+        :value="simulation.speed"
+        @input="$emit('change-speed', Number($event.target.value))"
+        class="w-full px-2 py-1 rounded border dark:bg-gray-700 dark:text-white"
+      />
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'SimulationControl',
-    props: {
-      isPaused: Boolean,
-      speed: Number
-    },
-    data() {
-      return {
-        localSpeed: this.speed
-      }
-    },
-    methods: {
-      speedChanged() {
-        this.$emit('speedChange', this.localSpeed)
-      }
-    }
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'SimulationControl',
+  props: {
+    simulation: Object
   }
-  </script>
-  
-  <style scoped>
-  .control-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin: 1rem 0;
-  }
-  input[type="range"] {
-    vertical-align: middle;
-  }
-  button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  </style>
+}
+</script>

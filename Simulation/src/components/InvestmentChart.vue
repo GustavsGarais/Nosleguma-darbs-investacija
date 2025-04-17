@@ -1,59 +1,62 @@
 <template>
-    <div class="chart-container">
-      <canvas ref="canvas" width="600" height="300"></canvas>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'InvestmentChart',
-    props: {
-      data: {
-        type: Array,
-        default: () => []
-      }
+  <div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+    <h3 class="text-lg font-bold mb-2 dark:text-white">
+      📈 Simulation {{ simulation.id }} – €{{ latestValue.toFixed(2) }}
+    </h3>
+
+    <LineChart
+      :width="400"
+      :height="200"
+      :data="formattedChartData"
+    >
+      <Line type="monotone" dataKey="value" stroke="#10b981" stroke-width="2" dot={false} />
+      <XAxis dataKey="time" hide />
+      <YAxis :domain="['auto', 'auto']" />
+      <Tooltip />
+      <CartesianGrid stroke="#ccc" stroke-dasharray="5 5" />
+    </LineChart>
+  </div>
+</template>
+
+<script>
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid
+} from 'recharts'
+
+export default {
+  name: 'InvestmentChart',
+  components: {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    Tooltip,
+    CartesianGrid
+  },
+  props: {
+    simulation: Object
+  },
+  computed: {
+    formattedChartData() {
+      return this.simulation.history.map((value, index) => ({
+        time: index,
+        value: value
+      }))
     },
-    watch: {
-      data() {
-        this.drawChart()
-      }
-    },
-    mounted() {
-      this.drawChart()
-    },
-    methods: {
-      drawChart() {
-        const canvas = this.$refs.canvas
-        if (!canvas || this.data.length < 2) return
-        const ctx = canvas.getContext('2d')
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-        const values = this.data.map(pt => pt.value)
-        const min = Math.min(...values)
-        const max = Math.max(...values)
-        const len = this.data.length
-        const padding = 40
-        const w = canvas.width - padding * 2
-        const h = canvas.height - padding * 2
-        ctx.beginPath()
-        this.data.forEach((pt, i) => {
-          const x = padding + (i / (len - 1)) * w
-          const y = padding + h - ((pt.value - min) / (max - min)) * h
-          if (i === 0) ctx.moveTo(x, y)
-          else ctx.lineTo(x, y)
-        })
-        ctx.stroke()
-        // axes
-        ctx.beginPath()
-        ctx.moveTo(padding, padding)
-        ctx.lineTo(padding, padding + h)
-        ctx.lineTo(padding + w, padding + h)
-        ctx.stroke()
-      }
+    latestValue() {
+      if (this.simulation.history.length === 0) return this.simulation.settings.initialInvestment
+      return this.simulation.history[this.simulation.history.length - 1]
     }
   }
-  </script>
+}
+</script>
   
-  <style scoped>
+<style scoped>
   .chart-container {
     text-align: center;
     margin: 0 auto;
@@ -63,5 +66,8 @@
     display: block;
     margin: 0 auto;
   }
-  </style>
+  .positive { color: limegreen; transition: color 0.3s ease; }
+  .negative { color: red; transition: color 0.3s ease; }
+
+</style>
   

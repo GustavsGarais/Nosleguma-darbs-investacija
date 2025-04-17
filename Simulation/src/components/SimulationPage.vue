@@ -1,89 +1,138 @@
 <template>
-  <div class="sim-page">
-    <h2>Investment Simulation</h2>
-    <p v-if="!started">Define your simulation parameters below</p>
-    <SimulationSetup v-if="!started" @start="startSimulation" />
-    <div v-else>
-      <SimulationControl
-        :isPaused="paused"
-        :speed="speed"
-        @togglePause="togglePause"
-        @speedChange="updateSpeed"
-      />
-      <InvestmentChart :data="history" />
+  <div class="p-6">
+    <h1 class="text-3xl font-bold mb-4 text-center">Investment Simulations</h1>
+
+    <button
+      @click="addSimulation"
+      class="mb-6 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl"
+    >
+      + Add New Simulation
+    </button>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div v-for="simulation in simulations" :key="simulation.id" class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow">
+        <h2 class="text-xl font-semibold mb-2">Simulation {{ simulation.id }}</h2>
+
+        <SimulationSetup
+          :simulation="simulation"
+          @update-settings="updateSettings(simulation.id, $event)"
+        />
+
+        <SimulationControl
+          :simulation="simulation"
+          @toggle="toggleSimulation(simulation.id)"
+          @reset="resetSimulation(simulation.id)"
+          @change-speed="changeSpeed(simulation.id, $event)"
+          
+        />
+
+        <InvestmentChart
+          :simulation="simulation"
+        />
+
+        <div class="mt-4">
+          <p>
+            💰 Current Value:
+            <span
+              :class="{
+                'text-green-500': simulation.trend === 'up',
+                'text-red-500': simulation.trend === 'down'
+              }"
+              class="font-bold"
+            >
+              {{ simulation.currentValue.toFixed(2) }} €
+            </span>
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import SimulationSetup from './SimulationSetup.vue'
-import SimulationControl from './SimulationControl.vue'
-import InvestmentChart from './InvestmentChart.vue'
+import SimulationSetup from '@/components/SimulationSetup.vue'
+import SimulationControl from '@/components/SimulationControl.vue'
+import InvestmentChart from '@/components/InvestmentChart.vue'
 
 export default {
   name: 'SimulationPage',
-  components: { SimulationSetup, SimulationControl, InvestmentChart },
+  components: {
+    SimulationSetup,
+    SimulationControl,
+    InvestmentChart
+  },
   data() {
     return {
-      started: false,
-      paused: false,
-      speed: 1,
-      initialParams: null,
-      currentValue: 0,
-      history: []
+      nextId: 1,
+      simulations: []
     }
   },
   methods: {
-    startSimulation(params) {
-      this.initialParams = params
-      this.currentValue = params.startValue
-      this.history = [ { time: 0, value: this.currentValue } ]
-      this.started = true
-      this.runLoop()
-    },
-    runLoop() {
-      const step = () => {
-        if (!this.started) return
-        if (!this.paused) {
-          const { marketInfluence, riskAppetite, growthRate } = this.initialParams
-          const change = ((Math.random() - 0.5) * riskAppetite * marketInfluence) / 100 + (growthRate / 100)
-          this.currentValue += this.currentValue * change
-          this.history.push({ time: this.history.length, value: this.currentValue })
-        }
-        setTimeout(step, 1000 / this.speed)
+    addSimulation() {
+      const newSim = {
+        id: this.nextId++,
+        currentValue: 1000,
+        trend: 'neutral',
+        isRunning: false,
+        interval: null,
+        settings: {
+          initialInvestment: 1000,
+          investors: 10,
+          growthRate: 0.03,
+          riskAppetite: 0.5,
+          marketInfluence: 0.7
+        },
+        data: []
       }
-      step()
+      this.simulations.push(newSim)
     },
-    togglePause() {
-      this.paused = !this.paused
+    updateSettings(id, newSettings) {
+      const sim = this.simulations.find(s => s.id === id)
+      if (sim) sim.settings = newSettings
     },
-    updateSpeed(newSpeed) {
-      this.speed = newSpeed
+    toggleSimulation(id) {
+      const sim = this.simulations.find(s => s.id === id)
+      if (!sim) return
+
+      if (sim.isRunning) {
+        clearInterval(sim.interval)
+        sim.interval = null
+        sim.isRunning = false
+      } else {
+        sim.isRunning = true
+        sim.interval = setInterval(() => {
+          const randomFactor = (Math.random() - 0.5) * sim.settings.riskAppetite
+          const growth =
+            sim.settings.growthRate + randomFactor * sim.settings.marketInfluence
+          const newValue = sim.currentValue * (1 + growth)
+
+          sim.trend = newValue > sim.currentValue ? 'up' : 'down'
+          sim.currentValue = newValue
+          sim.data.push({
+            time: new Date().toLocaleTimeString(),
+            value: sim.currentValue
+          })
+
+          if (sim.data.length > 30) sim.data.shift() // Limit data length
+        }, 1000)
+      }
     }
+  },
+  beforeDestroy() {
+    this.simulations.forEach(sim => {
+      if (sim.interval) clearInterval(sim.interval)
+    })
   }
 }
 </script>
 
 <style scoped>
-
-.page-container {
-  min-height: 100vh; /* Ensures it takes full viewport height */
-  background-color: var(--background-color);
-  color: var(--text-color);
-  transition: background-color 0.3s ease;
+/* Light/dark theme example */
+body.light {
+  background: linear-gradient(to right, #f5e9b3, #a8d87b);
 }
 
-.sim-page {
-  padding: 2rem;
-  text-align: center;
-}
-button {
-  padding: 0.5rem 1rem;
-  margin-top: 1rem;
-  background: #444;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+body.dark {
+  background: linear-gradient(to right, #4a148c, #000000);
 }
 </style>
