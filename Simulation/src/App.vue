@@ -1,7 +1,10 @@
 <template>
   <div :class="themeClass" class="app-wrapper">
     <button @click="toggleTheme" class="theme-toggle">Toggle Theme</button>
-    <component :is="currentPage" @navigate="navigate" />
+    
+    <div class="content-container">
+      <component :is="currentPage" @navigate="navigate" />
+    </div>
   </div>
 </template>
 
@@ -38,9 +41,12 @@ export default {
 <style>
 .app-wrapper {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background-color: var(--background-color);
   transition: background-color 0.3s ease;
 }
+
 body, html, #app {
   margin: 0;
   padding: 0;
@@ -72,4 +78,13 @@ body, html, #app {
   border-radius: 5px;
   z-index: 100;
 }
+
+.content-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
 </style>

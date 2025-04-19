@@ -1,8 +1,8 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-3xl font-bold mb-6 text-center">Investment Simulations</h1>
+  <div class="flex flex-col w-full h-screen items-center px-4">
+    <h1 class="text-3xl font-bold mb-4 text-center">Investment Simulations</h1>
 
-    <div class="mb-6 text-center">
+    <div class="mb-4">
       <button
         @click="addSimulation"
         class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
@@ -11,26 +11,29 @@
       </button>
     </div>
 
-    <div class="flex gap-6">
-      <!-- Side simulations (condensed) -->
-      <div class="w-1/3 space-y-4" v-if="simulations.length > 1">
+    <div class="flex justify-center items-start gap-10 w-full max-w-screen-xl">
+      <!-- Left Column: Unfocused Simulations -->
+      <div class="flex flex-col gap-4 w-72">
         <div
           v-for="sim in simulations.filter(s => s.id !== focusedId)"
           :key="sim.id"
-          class="bg-white dark:bg-gray-700 p-4 rounded-xl shadow"
+          class="login-box"
         >
-          <p class="text-sm font-semibold dark:text-white">Simulation {{ sim.id }}</p>
-          <p class="text-xs text-gray-500">€{{ sim.currentValue.toFixed(2) }}</p>
-          <button @click="focusedId = sim.id" class="text-blue-600 hover:underline text-xs mt-1">
+          <p class="text-sm font-semibold text-white">Simulation {{ sim.id }}</p>
+          <p class="text-xs text-gray-300">💰 €{{ sim.currentValue.toFixed(2) }}</p>
+          <button @click="focusedId = sim.id" class="text-blue-300 hover:underline text-xs mt-1">
             Focus
           </button>
         </div>
       </div>
 
-      <!-- Focused simulation -->
-      <div class="flex-1" v-if="focusedSimulation">
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
-          <h2 class="text-xl font-bold mb-4">Simulation {{ focusedSimulation.id }}</h2>
+      <!-- Center Column: Focused Simulation -->
+      <div class="flex-grow max-w-2xl">
+        <div
+          v-if="focusedSimulation"
+          class="login-box w-full"
+        >
+          <h2 class="text-xl font-bold mb-4 text-white">Simulation {{ focusedSimulation.id }}</h2>
 
           <SimulationSetup
             :simulation="focusedSimulation"
@@ -48,6 +51,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -160,22 +164,21 @@ export default {
 }
 </script>
 
-
 <style scoped>
 body.light {
-  background: linear-gradient(to right, #f5e9b3, #a8d87b);
-}
-body.dark {
-  background: linear-gradient(to right, #4a148c, #000000);
-}
-body {
-  display: block;
-  text-align: left;
+  background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
 }
 
-#app {
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
+body.dark {
+  background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%);
+}
+
+.login-box {
+  background-color: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(5px);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
 }
 </style>
