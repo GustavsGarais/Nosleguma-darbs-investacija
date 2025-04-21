@@ -1,5 +1,7 @@
 <template>
   <div class="login-wrapper">
+    <button class="top-left-back" @click="$emit('navigate', 'HomePage')">← Back</button>
+
     <div class="login-box">
       <h2>Login</h2>
       <input v-model="username" placeholder="Username" />
@@ -42,6 +44,23 @@ export default {
   align-items: center;
   height: 100vh;
   width: 100%;
+  position: relative;
+}
+
+.top-left-back {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #007bff;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.top-left-back:hover {
+  background-color: #0056b3;
 }
 
 .login-box {

@@ -1,44 +1,76 @@
 <template>
-  <div class="page-fill">
-    <h1>Investment Simulator</h1>
-    <p>Understand how markets work — safely and interactively.</p>
-    <button @click="$emit('navigate', 'LoginPage')">Start Simulation</button>
+  <div class="home-page">
+    <header class="header">
+      <h1>📈 Investify</h1>
+    </header>
+
+    <section class="hero">
+      <h2>Welcome to Investify</h2>
+      <p>
+        Our investment simulator helps you understand how different factors affect your investments over time. 
+        Whether you're a beginner or just curious, you can experiment with values like market influence, risk appetite, 
+        and growth rates — all in a risk-free environment.
+      </p>
+      <button @click="$emit('navigate', 'LoginPage')" class="cta-button">Start Now</button>
+    </section>
+
+    <footer class="footer">
+      <p>&copy; 2025 Investify</p>
+    </footer>
   </div>
 </template>
 
-<script>
-export default {}
-</script>
-
 <style scoped>
-.homepage {
+.home-page {
+  font-family: Arial, sans-serif;
   text-align: center;
-  margin-top: 20vh;
+  padding: 20px;
 }
 
-h1 {
-  font-family: monospace;
-  font-size: 2.5rem;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
 }
 
-p {
-  margin: 1rem 0 2rem;
-  font-style: italic;
+.nav a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #333;
 }
 
-button {
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
+.hero {
+  margin: 40px 0;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero p {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin: 20px 0;
+}
+
+.cta-button {
+  padding: 10px 25px;
+  background-color: #007bff;
+  color: white;
   border: none;
   border-radius: 8px;
-  background-color: #282c34;
-  color: white;
+  font-size: 1em;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
-.page-container {
-  min-height: 100vh; /* Ensures it takes full viewport height */
-  background-color: var(--background-color);
-  color: var(--text-color);
-  transition: background-color 0.3s ease;
+
+.cta-button:hover {
+  background-color: #0056b3;
+}
+
+.footer {
+  margin-top: 60px;
+  font-size: 0.9em;
+  color: #666;
 }
 </style>
