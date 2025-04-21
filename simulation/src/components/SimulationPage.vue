@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-col w-full h-screen items-center px-4 overflow-auto">
-    <h1 class="text-3xl font-bold mb-4 text-center">Investment Simulations</h1>
+  <div class="w-full h-screen flex flex-col px-4">
+    <h1 class="text-3xl font-bold text-center mt-4 mb-6">Investment Simulations</h1>
 
-    <div class="mb-4">
+    <div class="mb-4 text-center">
       <button
         @click="addSimulation"
         class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
@@ -11,9 +11,10 @@
       </button>
     </div>
 
-    <div class="flex justify-center items-start gap-10 w-full max-w-screen-xl">
-      <!-- Unfocused Simulations -->
-      <div class="flex flex-col gap-4 w-72">
+    <!-- Main Content Layout: Side Simulations + Focused Simulation -->
+    <div class="flex flex-row gap-6 flex-1 overflow-hidden">
+      <!-- Side Simulations -->
+      <div class="w-64 flex flex-col gap-4 overflow-y-auto">
         <div
           v-for="sim in simulations.filter(s => s.id !== focusedId)"
           :key="sim.id"
@@ -31,7 +32,7 @@
       </div>
 
       <!-- Focused Simulation -->
-      <div class="flex-grow max-w-2xl">
+      <div class="flex-1 overflow-auto">
         <div
           v-if="focusedSimulation"
           class="login-box w-full bg-gray-900 text-white p-6 rounded shadow"
@@ -166,7 +167,6 @@ export default {
 }
 </script>
 
-
 <style scoped>
 body.light {
   background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
@@ -184,4 +184,14 @@ body.dark {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   text-align: center;
 }
+
+.login-box {
+  background-color: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(5px);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
 </style>
