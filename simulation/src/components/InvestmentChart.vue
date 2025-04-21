@@ -1,23 +1,31 @@
 <template>
   <div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md space-y-4">
+    <!-- Chart Title -->
     <h3 class="text-lg font-bold mb-2 dark:text-white">
-      📈 Simulation {{ simulation.id }} – €{{ latestValue }}
+      📈 Simulation ID: {{ typeof simulation.id }} – Value: {{ typeof latestValue }}
     </h3>
 
+    <!-- Growth Line Chart -->
     <LineChart
       v-if="formattedChartData.length > 0"
       :width="400"
       :height="200"
       :data="formattedChartData"
     >
-      <Line type="monotone" dataKey="value" stroke="#10b981" stroke-width="2" :dot="false" />
+      <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
       <XAxis dataKey="time" hide />
       <YAxis :domain="['auto', 'auto']" />
       <Tooltip />
-      <CartesianGrid stroke="#ccc" stroke-dasharray="5 5" />
+      <Line
+        type="monotone"
+        dataKey="value"
+        stroke="#10b981"
+        stroke-width="2"
+        :dot="false"
+      />
     </LineChart>
 
-    <!-- 💾 Save Button -->
+    <!-- Save Button -->
     <div class="flex justify-end">
       <button
         class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
@@ -50,7 +58,10 @@ export default {
     CartesianGrid
   },
   props: {
-    simulation: Object
+    simulation: {
+      type: Object,
+      required: true
+    }
   },
   computed: {
     formattedChartData() {
@@ -61,11 +72,13 @@ export default {
       }))
     },
     latestValue() {
-      if (!this.simulation || !this.simulation.data || this.simulation.data.length === 0) {
-        return this.simulation?.settings?.initialInvestment?.toFixed(2) || '0.00'
+      const data = this.simulation?.data || []
+      if (data.length === 0) {
+        return (
+          this.simulation?.settings?.initialInvestment?.toFixed(2) || '0.00'
+        )
       }
-      const latest = this.simulation.data[this.simulation.data.length - 1]
-      return latest.value.toFixed(2)
+      return data[data.length - 1].value.toFixed(2)
     }
   },
   methods: {
@@ -86,6 +99,12 @@ canvas {
   display: block;
   margin: 0 auto;
 }
-.positive { color: limegreen; transition: color 0.3s ease; }
-.negative { color: red; transition: color 0.3s ease; }
+.positive {
+  color: limegreen;
+  transition: color 0.3s ease;
+}
+.negative {
+  color: red;
+  transition: color 0.3s ease;
+}
 </style>

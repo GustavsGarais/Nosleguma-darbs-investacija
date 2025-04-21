@@ -1,39 +1,42 @@
 <template>
-  <div class="flex flex-col w-full h-screen items-center px-4">
+  <div class="flex flex-col w-full h-screen items-center px-4 overflow-auto">
     <h1 class="text-3xl font-bold mb-4 text-center">Investment Simulations</h1>
 
     <div class="mb-4">
       <button
         @click="addSimulation"
-        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
       >
         + Add New Simulation
       </button>
     </div>
 
     <div class="flex justify-center items-start gap-10 w-full max-w-screen-xl">
-      <!-- Left Column: Unfocused Simulations -->
+      <!-- Unfocused Simulations -->
       <div class="flex flex-col gap-4 w-72">
         <div
           v-for="sim in simulations.filter(s => s.id !== focusedId)"
           :key="sim.id"
-          class="login-box"
+          class="login-box bg-gray-800 text-white p-4 rounded shadow"
         >
-          <p class="text-sm font-semibold text-white">Simulation {{ sim.id }}</p>
+          <p class="text-sm font-semibold">Simulation {{ sim.id }}</p>
           <p class="text-xs text-gray-300">💰 €{{ sim.currentValue.toFixed(2) }}</p>
-          <button @click="focusedId = sim.id" class="text-blue-300 hover:underline text-xs mt-1">
+          <button
+            @click="focusedId = sim.id"
+            class="text-blue-300 hover:underline text-xs mt-1"
+          >
             Focus
           </button>
         </div>
       </div>
 
-      <!-- Center Column: Focused Simulation -->
+      <!-- Focused Simulation -->
       <div class="flex-grow max-w-2xl">
         <div
           v-if="focusedSimulation"
-          class="login-box w-full"
+          class="login-box w-full bg-gray-900 text-white p-6 rounded shadow"
         >
-          <h2 class="text-xl font-bold mb-4 text-white">Simulation {{ focusedSimulation.id }}</h2>
+          <h2 class="text-xl font-bold mb-4">Simulation {{ focusedSimulation.id }}</h2>
 
           <SimulationSetup
             :simulation="focusedSimulation"
@@ -51,7 +54,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -124,7 +126,7 @@ export default {
           sim.trend = newValue > sim.currentValue ? 'up' : 'down'
           sim.currentValue = newValue
           sim.data.push({
-            time: new Date().toLocaleTimeString(),
+            label: new Date().toLocaleTimeString(),
             value: sim.currentValue
           })
 
@@ -163,6 +165,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 body.light {
