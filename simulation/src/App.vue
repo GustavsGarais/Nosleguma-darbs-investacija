@@ -11,7 +11,7 @@
 <script>
 import HomePage from './components/HomePage.vue'
 import LoginPage from './components/LoginPage.vue'
-import SimulationPage from './components/SimulationPage.vue'
+import SimulationPage from './components/Simulations/SimulationPage.vue'
 
 export default {
   components: { HomePage, LoginPage, SimulationPage },

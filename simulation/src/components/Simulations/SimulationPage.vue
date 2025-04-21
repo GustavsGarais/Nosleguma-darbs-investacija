@@ -1,43 +1,45 @@
 <template>
-  <div class="w-full h-screen flex flex-col px-4">
-    <h1 class="text-3xl font-bold text-center mt-4 mb-6">Investment Simulations</h1>
+  <div class="sim-page">
+    <h1 class="sim-title">Investment Simulations</h1>
 
-    <div class="mb-4 text-center">
-      <button
-        @click="addSimulation"
-        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-      >
+    <div class="text-center mb-4">
+      <button @click="addSimulation" class="add-sim-btn">
         + Add New Simulation
       </button>
     </div>
 
-    <!-- Main Content Layout: Side Simulations + Focused Simulation -->
-    <div class="flex flex-row gap-6 flex-1 overflow-hidden">
+    <div class="sim-content">
       <!-- Side Simulations -->
-      <div class="w-64 flex flex-col gap-4 overflow-y-auto">
+      <div class="side-sim-list">
         <div
           v-for="sim in simulations.filter(s => s.id !== focusedId)"
           :key="sim.id"
-          class="login-box bg-gray-800 text-white p-4 rounded shadow"
+          class="side-sim"
         >
-          <p class="text-sm font-semibold">Simulation {{ sim.id }}</p>
+          <input
+            v-model="sim.name"
+            class="text-sm font-semibold w-full bg-transparent border-b border-gray-500 mb-1"
+          />
           <p class="text-xs text-gray-300">💰 €{{ sim.currentValue.toFixed(2) }}</p>
-          <button
-            @click="focusedId = sim.id"
-            class="text-blue-300 hover:underline text-xs mt-1"
-          >
-            Focus
-          </button>
+          <div class="flex gap-2">
+            <button @click="focusedId = sim.id">Focus</button>
+            <button @click="deleteSimulation(sim.id)">Delete</button>
+          </div>
         </div>
       </div>
 
       <!-- Focused Simulation -->
-      <div class="flex-1 overflow-auto">
-        <div
-          v-if="focusedSimulation"
-          class="login-box w-full bg-gray-900 text-white p-6 rounded shadow"
-        >
-          <h2 class="text-xl font-bold mb-4">Simulation {{ focusedSimulation.id }}</h2>
+      <div class="focused-sim-container">
+        <div v-if="focusedSimulation" class="focused-sim">
+          <div class="flex items-center justify-between mb-2">
+            <input
+              v-model="focusedSimulation.name"
+              class="text-lg font-bold bg-transparent border-b border-gray-400 flex-1"
+            />
+            <button @click="deleteSimulation(focusedSimulation.id)" class="ml-2 text-red-400 hover:text-red-600">
+              Delete
+            </button>
+          </div>
 
           <SimulationSetup
             :simulation="focusedSimulation"
@@ -59,9 +61,10 @@
 </template>
 
 <script>
-import SimulationSetup from '@/components/SimulationSetup.vue'
-import SimulationControl from '@/components/SimulationControl.vue'
+import SimulationSetup from '@/components/Simulations/SimulationSetup.vue'
+import SimulationControl from '@/components/Simulations/SimulationControl.vue'
 import InvestmentChart from '@/components/InvestmentChart.vue'
+import './SimulationPage.css'
 
 export default {
   name: 'SimulationPage',
@@ -86,6 +89,7 @@ export default {
     addSimulation() {
       const newSim = {
         id: this.nextId++,
+        name: `Simulation ${this.nextId - 1}`,
         currentValue: 1000,
         trend: 'neutral',
         isRunning: false,
@@ -151,11 +155,21 @@ export default {
       if (!sim) return
 
       const wasRunning = sim.isRunning
-      this.toggleSimulation(id) // stop it
+      this.toggleSimulation(id)
       sim.speed = newSpeed
 
       if (wasRunning) {
-        this.toggleSimulation(id) // restart with new speed
+        this.toggleSimulation(id)
+      }
+    },
+    deleteSimulation(id) {
+      const sim = this.simulations.find(s => s.id === id)
+      if (sim?.interval) clearInterval(sim.interval)
+
+      this.simulations = this.simulations.filter(s => s.id !== id)
+
+      if (this.focusedId === id) {
+        this.focusedId = this.simulations.length > 0 ? this.simulations[0].id : null
       }
     }
   },
@@ -167,31 +181,4 @@ export default {
 }
 </script>
 
-<style scoped>
-body.light {
-  background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
-}
 
-body.dark {
-  background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%);
-}
-
-.login-box {
-  background-color: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(5px);
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
-}
-
-.login-box {
-  background-color: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(5px);
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
-}
-
-</style>
