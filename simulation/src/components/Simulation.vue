@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <!-- Simulation content -->
-    <InvestmentChart v-if="isFocused" :data="growthData" />
+  <div class="flex flex-col items-center">
+    <!-- Only show chart for focused simulation -->
+    <InvestmentChart v-if="focusedSimulation" :simulation="focusedSimulation" />
   </div>
 </template>
 
@@ -9,22 +9,46 @@
 import InvestmentChart from './InvestmentChart.vue'
 
 export default {
+  name: 'Simulation',
   components: {
     InvestmentChart
   },
-  props: {
-    isFocused: {
-      type: Boolean,
-      default: false
-    },
-    growthData: {
-      type: Array,
-      default: () => []
+  data() {
+    return {
+      simulations: [
+        {
+          id: 1,
+          data: [
+            { value: 100 },
+            { value: 105 },
+            { value: 110 }
+          ],
+          settings: {
+            initialInvestment: 100
+          }
+        },
+        {
+          id: 2,
+          data: [
+            { value: 100 },
+            { value: 98 },
+            { value: 102 }
+          ],
+          settings: {
+            initialInvestment: 100
+          }
+        }
+      ],
+      focusedId: 1 // ← this changes which simulation is "focused"
+    }
+  },
+  computed: {
+    focusedSimulation() {
+      return this.simulations.find(sim => sim.id === this.focusedId)
     }
   }
 }
 </script>
-
   
   <style scoped>
   .focused {
