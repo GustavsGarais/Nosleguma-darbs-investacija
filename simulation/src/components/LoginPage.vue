@@ -42,9 +42,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: calc(100vh - 80px);
   width: 100%;
   position: relative;
+  margin-top: 80px;
 }
 
 .top-left-back {

@@ -63,7 +63,7 @@
 <script>
 import SimulationSetup from '@/components/Simulations/SimulationSetup.vue'
 import SimulationControl from '@/components/Simulations/SimulationControl.vue'
-import InvestmentChart from '@/components/InvestmentChart.vue'
+import InvestmentChart from '@/components/Simulations/InvestmentChart.vue'
 import './SimulationPage.css'
 
 export default {
@@ -180,5 +180,3 @@ export default {
   }
 }
 </script>
-
-

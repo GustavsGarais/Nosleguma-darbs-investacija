@@ -1,7 +1,7 @@
 <template>
   <div :class="themeClass" class="app-wrapper">
-    <button @click="toggleTheme" class="theme-toggle">Toggle Theme</button>
-    
+    <TopBar :toggle-theme="toggleTheme" />
+
     <div class="content-container">
       <component :is="currentPage" @navigate="navigate" />
     </div>
@@ -12,12 +12,13 @@
 import HomePage from './components/HomePage.vue'
 import LoginPage from './components/LoginPage.vue'
 import SimulationPage from './components/Simulations/SimulationPage.vue'
+import TopBar from './components/TopBar.vue'
 
 export default {
-  components: { HomePage, LoginPage, SimulationPage },
+  components: { HomePage, LoginPage, SimulationPage, TopBar },
   data() {
     return {
-      currentPage: 'HomePage', // now opens Homepage by default
+      currentPage: 'HomePage',
       darkMode: JSON.parse(localStorage.getItem('darkMode')) || false
     }
   },
@@ -36,7 +37,6 @@ export default {
     }
   }
 }
-
 </script>
 
 <style>
@@ -55,7 +55,6 @@ body, html, #app {
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* Theme Styles */
 .dark-theme {
   background: linear-gradient(to bottom right, purple, black);
   color: white;
@@ -66,26 +65,12 @@ body, html, #app {
   color: black;
 }
 
-/* Toggle Button Style */
-.theme-toggle {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  background: #444;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  z-index: 100;
-}
-
 .content-container {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 2rem;
+  margin-top: 80px; /* Push content down below the top bar */
 }
-
 </style>
