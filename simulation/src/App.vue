@@ -2,6 +2,11 @@
   <div :class="themeClass" class="app-wrapper">
     <TopBar :toggle-theme="toggleTheme" />
 
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" @click="toggleTheme">
+      Toggle Theme
+    </button>
+
     <div class="content-container">
       <component :is="currentPage" @navigate="navigate" />
     </div>
@@ -55,14 +60,37 @@ body, html, #app {
   font-family: 'Segoe UI', sans-serif;
 }
 
+/* Theme styles */
 .dark-theme {
+  --background-color: black;
   background: linear-gradient(to bottom right, purple, black);
   color: white;
 }
 
 .light-theme {
+  --background-color: white;
   background: linear-gradient(to bottom right, #edc988, #5b8c5a);
   color: black;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+  z-index: 999;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .content-container {
