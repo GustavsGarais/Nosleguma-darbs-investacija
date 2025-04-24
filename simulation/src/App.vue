@@ -2,11 +2,6 @@
   <div :class="themeClass" class="app-wrapper">
     <TopBar :toggle-theme="toggleTheme" />
 
-    <!-- Theme Toggle Button -->
-    <button class="theme-toggle" @click="toggleTheme">
-      Toggle Theme
-    </button>
-
     <div class="content-container">
       <component :is="currentPage" @navigate="navigate" />
     </div>
@@ -49,7 +44,6 @@ export default {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--background-color);
   transition: background-color 0.3s ease;
 }
 
@@ -60,37 +54,18 @@ body, html, #app {
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* Theme styles */
 .dark-theme {
-  --background-color: black;
   background: linear-gradient(to bottom right, purple, black);
   color: white;
+  --background-blur: rgba(255, 255, 255, 0.07);
+  --text-color: white;
 }
 
 .light-theme {
-  --background-color: white;
   background: linear-gradient(to bottom right, #edc988, #5b8c5a);
   color: black;
-}
-
-/* Theme toggle button */
-.theme-toggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s;
-  z-index: 999;
-}
-
-.theme-toggle:hover {
-  background: rgba(255, 255, 255, 0.4);
+  --background-blur: rgba(0, 0, 0, 0.07);
+  --text-color: black;
 }
 
 .content-container {
@@ -99,6 +74,6 @@ body, html, #app {
   justify-content: center;
   align-items: center;
   padding: 2rem;
-  margin-top: 80px; /* Push content down below the top bar */
+  margin-top: 80px;
 }
 </style>
