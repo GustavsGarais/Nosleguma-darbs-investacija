@@ -1,6 +1,11 @@
 <template>
   <div class="login-wrapper">
-    <button class="top-left-back" @click="$emit('navigate', 'HomePage')">Back</button>
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <button @click="$emit('navigate', 'HomePage')">Back</button>
+    </div>
+
+    <!-- Login Box -->
     <div class="login-box">
       <h2>Login</h2>
       <input type="text" placeholder="Username" v-model="username" />
@@ -30,7 +35,7 @@ export default {
       } else if (this.username === 'admin' && this.password === '1234') {
         this.error = ''
         alert('Logged in successfully!')
-        this.$emit('navigate', 'SimulationPage')  // 👈 go to HomePage
+        this.$emit('navigate', 'SimulationPage')
       } else {
         this.error = 'Invalid username or password.'
       }
@@ -42,17 +47,22 @@ export default {
         this.error = ''
         alert(`Registering as ${this.username}`)
       }
-    }
+    },
   }
 }
 </script>
 
 <style scoped>
-
-.top-left-back {
+/* Top Bar with Back and Theme Toggle buttons */
+.top-bar {
   position: absolute;
   top: 20px;
-  left: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.top-bar button {
   background: var(--background-blur);
   color: var(--text-color);
   padding: 6px 12px;
@@ -61,8 +71,19 @@ export default {
   cursor: pointer;
 }
 
-.top-left-back:hover {
+.top-bar button:hover {
   opacity: 0.85;
+}
+
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  padding: 60px 20px;
+  box-sizing: border-box;
 }
 
 .login-box {
@@ -78,18 +99,8 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  margin: auto 0; /* <--- this is the key to push it away from top and bottom */
 }
-.login-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: calc(100vh - 80px);
-  width: 100%;
-  position: relative;
-  margin-top: 80px;
-}
-
-
 
 h2 {
   margin-bottom: 1rem;
@@ -124,11 +135,8 @@ input {
   opacity: 0.85;
 }
 
-
 .error {
   color: red;
   margin-top: 1rem;
 }
-
-
 </style>
