@@ -98,9 +98,11 @@ export default {
         settings: {
           initialInvestment: 1000,
           investors: 10,
-          growthRate: 0.03,
+          growthRate: 0.05,
           riskAppetite: 0.5,
-          marketInfluence: 0.7
+          marketInfluence: 0.7,
+          monthlyContribution: 100,
+          inflationRate: 0.02
         },
         data: []
       }
@@ -113,6 +115,7 @@ export default {
         sim.settings = { ...sim.settings, ...newSettings }
       }
     },
+    // ✅ Toggle simulation state
     toggleSimulation(id) {
       const sim = this.simulations.find(s => s.id === id)
       if (!sim) return
@@ -123,19 +126,43 @@ export default {
         sim.isRunning = false
       } else {
         sim.isRunning = true
-        sim.interval = setInterval(() => {
-          const randomFactor = (Math.random() - 0.5) * sim.settings.riskAppetite
-          const growth = sim.settings.growthRate + randomFactor * sim.settings.marketInfluence
-          const newValue = sim.currentValue * (1 + growth)
 
-          sim.trend = newValue > sim.currentValue ? 'up' : 'down'
-          sim.currentValue = newValue
+        const monthlyContribution = sim.settings.monthlyContribution || 100
+        const annualReturn = sim.settings.growthRate || 0.05
+        const annualInflation = sim.settings.inflationRate || 0.02
+        const monthlyReturnRate = annualReturn / 12
+        const monthlyInflationRate = annualInflation / 12
+
+        sim.interval = setInterval(() => {
+          sim.currentValue += monthlyContribution
+
+          // ✅ Generate new randomness each tick
+          const randomness = (Math.random() * 2 - 1) // range -1 to 1
+          const riskImpact = randomness * sim.settings.riskAppetite * sim.settings.marketInfluence
+          const adjustedReturn = monthlyReturnRate + riskImpact
+          const interestEarned = sim.currentValue * adjustedReturn
+
+          // ✅ Apply interest (gain or loss), cap at 0
+          sim.currentValue = Math.max(0, sim.currentValue + interestEarned)
+
+          const monthsElapsed = sim.data.length
+          const inflationAdjusted = sim.currentValue / Math.pow(1 + monthlyInflationRate, monthsElapsed)
+
+          const now = new Date()
+          const label = now.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
+
           sim.data.push({
-            label: new Date().toLocaleTimeString(),
-            value: sim.currentValue
+            label,
+            value: sim.currentValue,
+            inflationAdjusted,
+            contributions: (monthsElapsed + 1) * monthlyContribution,
+            interestEarned
           })
 
           if (sim.data.length > 50) sim.data.shift()
+
+          const lastValue = sim.data.length > 1 ? sim.data[sim.data.length - 2].value : sim.currentValue
+          sim.trend = sim.currentValue > lastValue ? 'up' : 'down'
         }, sim.speed)
       }
     },

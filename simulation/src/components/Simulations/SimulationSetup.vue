@@ -14,7 +14,7 @@
       <input
         v-model.number="localSettings.investors"
         type="number"
-        class="w-full px-2 py-1 rounded border dark:bg-gray-700 dark:text-white"
+        class="w-full px-2 pcalcy-1 rounded border dark:bg-gray-700 dark:text-white"
       />
     </div>
 

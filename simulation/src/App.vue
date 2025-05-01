@@ -3,10 +3,15 @@
     <TopBar :toggle-theme="toggleTheme" />
 
     <div class="content-container">
-      <component :is="currentPage" @navigate="navigate" />
+      <component 
+        :is="currentPage" 
+        @navigate="navigate" 
+        @toggleTheme="toggleTheme"
+      />
     </div>
   </div>
 </template>
+
 
 <script>
 import HomePage from './components/HomePage.vue'
