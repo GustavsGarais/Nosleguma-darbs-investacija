@@ -1,29 +1,45 @@
 # Noslēguma darba tēmas apstiprināšana
- Investācijas izglītība website 
-(Website that imitates how Investing should work for educatinal purposes)
+
+Investīciju izglītības website (website, kas imitē, kā investīcijas darbojas izglītojošiem nolūkiem)
 
 ## Lietas, kurām tai vajadzētu būt:
-  1. Piesakieties sistēmā. (Vienkāršs lietotājvārds vai gmail un parole)
-  2. Paskaidrojot, kā tā darbojas, izmantojot uznirstošos logus, vienkāršojiet programmas darbību un vairākas reizes paziņojiet, ka šī ir izglītojoša vietne.
-  1. Iestatījumi ar dzīves kvalitātes izvēlēm (tumšs/gaišs režīms un fonta opcijas).
-  2. vairākas ietaupītas investīcijas (tiek rādītas pielāgotās vietņu cilnēs sānos)
-  3. Pauzes opciju noteiktiem ieguldījumiem un izmantojiet atjaunināšanas ātrumu, lai paātrinātu vai palēninātu izmaiņas.
-  4. Spēj sākt ar noteiktu vērtību daudzumu, kas tiek ieguldīts, piemēram (sākumvērtība, cik cilvēku tajā iegulda, cik tā ir vērtīga un cik lielas izmaiņas varētu notikt).
-   
-## Pielāgotas izmaiņas jūsu simulācijai
-  1. Pielāgota izveides sistēma, kurā jūs imitējat iespējamās (random) investīciju izmaiņas, kas pieaug/samazinās.
-  2. Spēt apturēt un turpināt imitēto ieguldījumu.
-  3. virzot kursoru virs, parādot vairāk informācijas un iespējamās iespējas, ka tā mainīsies.
-  4. Ietekmējiet izmaiņas un to, cik daudz "naudas" nonāk iekšā, un aprēķina iespējamos efektus, ko tas varētu pievienot.
-  5. Iespēja izvēlēties izlasi, lai vieglāk piekļūtu (pievienot un noņemt jebkuru simulāciju pēc izvēles).
+
+1. Piesakieties sistēmā (lietotājvārds un parole).
+2. Paskaidrojumi ar uznirstošiem logiem, kas vairākas reizes norāda, ka šī ir izglītojoša vietne.
+3. Iestatījumi ar dzīves kvalitātes opcijām (tumšs/gaišs režīms un fonta izvēle).
+4. Vairākas saglabātas investīcijas, kas tiek rādītas pielāgotās vietnes cilnēs sānos.
+5. Pauzes iespēja noteiktiem ieguldījumiem un atjaunināšanas ātruma maiņa.
+6. Sākuma vērtību un parametru iestatīšana (sākumvērtība, investoru skaits, vērtības, izmaiņu iespējamība).
+
+## Pielāgotas izmaiņas jūsu simulācijai:
+
+1. Pielāgota izveides sistēma, kur imitēt investīciju izmaiņas (random pieaugums/samazinājums).
+2. Iespēja apturēt un turpināt simulāciju.
+3. Papildu informācijas parādīšana, uzbraucot ar kursoru.
+4. Iespēja ietekmēt izmaiņas, ieguldījumu apjomu un aprēķināt iespējamos efektus.
+5. Izlases (favorite) sistēma, lai ātrāk piekļūtu simulācijām.
 
 ## Pabeigtais darbs:
 
+1. Izveidota sākumlapa (vēl nav pabeigta).
+2. Pieslēgšanās lapa ar vienu admin kontu (bez reģistrācijas vai lietotāju datu saglabāšanas).
+3. Investīciju simulācijas lapa ar strādājošu grafiku, vērtību skaitīšanu un izvietojumu (dažas funkcijas vēl jāpielabo).
+
 ## Programma lai ietu commandas:
+
 ### Frontend:
- 1. cd Simulation
- 2. npm run dev
+
+1. cd Simulation
+2. npm run dev
+
 ### Backend:
- 1. cd Simulation
- 2. cd src
- 3. node server.cjs
+
+1. cd Simulation
+2. cd src
+3. node server.cjs
+
+## Tehnoloģijas:
+
+Frontend — Vue.js
+Backend — Node.js
+Plānots — Docker, Laravel
