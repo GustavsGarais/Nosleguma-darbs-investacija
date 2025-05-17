@@ -1,10 +1,11 @@
+<!-- src/components/TopBar.vue -->
 <template>
   <header class="top-bar">
     <div class="top-bar-content">
       <h1 class="logo">📈 Investify</h1>
       <div class="button-group">
-        <button @click="emitNavigate('HomePage')" class="nav-button">🏠 Home</button>
-        <button v-if="showLogin" @click="showLoginModal" class="nav-button">🔐 Login</button>
+        <button @click="$emit('navigate', 'HomePage')" class="nav-button">🏠 Home</button>
+        <button v-if="showLogin" @click="$emit('navigate', 'LoginPage')" class="nav-button">🔐 Login</button>
         <button @click="toggleTheme" class="theme-toggle">🌙 Toggle Theme</button>
       </div>
     </div>
@@ -14,15 +15,11 @@
 <script setup>
 const props = defineProps({
   toggleTheme: Function,
-  showLogin: Boolean,
-  showLoginModal: Function
+  showLogin: {
+    type: Boolean,
+    default: true
+  }
 })
-
-const emit = defineEmits(['navigate'])
-
-function emitNavigate(page) {
-  emit('navigate', page)
-}
 </script>
 
 <style scoped>

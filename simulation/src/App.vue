@@ -18,9 +18,18 @@ import HomePage from './components/HomePage.vue'
 import LoginPage from './components/LoginPage.vue'
 import SimulationPage from './components/Simulations/SimulationPage.vue'
 import TopBar from './components/TopBar.vue'
+import BeginnerGuidePage from './components/BeginnerGuidePage.vue'
+import SimulationInfoPage from './components/SimulationInfoPage.vue'
 
 export default {
-  components: { HomePage, LoginPage, SimulationPage, TopBar },
+  components: { 
+    HomePage,
+    LoginPage,
+    SimulationPage,
+    SimulationInfoPage,
+    BeginnerGuidePage,
+    TopBar
+  },
   data() {
     return {
       currentPage: 'HomePage',
