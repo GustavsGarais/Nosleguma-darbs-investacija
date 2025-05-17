@@ -2,6 +2,8 @@
   <div class="login-wrapper">
     <!-- Top Bar -->
     <div class="top-bar">
+      <!-- Inside LoginPage.vue -->
+      <button @click="$emit('close')">Close</button>
       <button @click="$emit('navigate', 'HomePage')">Back</button>
     </div>
 

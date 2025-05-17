@@ -1,134 +1,119 @@
 <template>
-  <div class="home-wrapper">
+  <div class="homepage">
+    <TopBar :toggleTheme="toggleTheme" :showLogin="true" :showLoginModal="() => showLoginModal = true" @navigate="navigateTo" />
 
-    <!-- Top Bar -->
-    <div class="top-bar">
-      <button @click="$emit('toggleTheme')">Toggle Theme</button>
-      <button @click="$emit('navigate', 'LoginPage')">Login</button>
-    </div>
+    <section class="hero">
+      <h1>📈 Investify</h1>
+      <p class="tagline">Simulate. Learn. Dominate the markets.</p>
+    </section>
 
-    <!-- Hero Section -->
-    <div class="section-box">
-      <h1>📊 Investify</h1>
-      <p>Master the Market — Risk-Free</p>
-      <button @click="$emit('navigate', 'LoginPage')">🚀 Start Simulation</button>
-    </div>
+    <section class="nav-cards">
+      <div class="card" @click="navigateTo('SimulationPage')">
+        <h2>🎮 Start Simulation</h2>
+        <p>Launch your custom investment simulation with adjustable parameters.</p>
+      </div>
 
-    <!-- About Section -->
-    <div class="section-box">
-      <h2>Why Choose Investify?</h2>
-      <p>Invest safely, test strategies, and learn without risking real money.</p>
-    </div>
+      <div class="card" @click="navigateTo('SimulationInfoPage')">
+        <h2>📊 Simulation Basics</h2>
+        <p>Learn how simulations work, and what each stat means for your portfolio.</p>
+      </div>
 
-    <!-- Features Section -->
-    <div class="section-box">
-      <h2>✨ Key Features</h2>
-      <ul>
-        <li>📈 Real-Time Simulation</li>
-        <li>🎛️ Customizable Parameters</li>
-        <li>🎓 Learn by Doing</li>
-      </ul>
-    </div>
+      <div class="card" @click="navigateTo('BeginnerGuidePage')">
+        <h2>📚 Beginner's Guide</h2>
+        <p>Follow this quick-start guide and dive right in.</p>
+      </div>
 
-    <!-- Testimonial Section -->
-    <div class="section-box">
-      <p><em>"I never thought I'd understand market shifts — until I tried Investify!"</em></p>
-      <p>— A Happy User</p>
-    </div>
+      <div class="card" @click="navigateTo('ChangelogPage')">
+        <h2>📝 Changelog</h2>
+        <p>See what's new, improved, or broken since the last update.</p>
+      </div>
+    </section>
 
+    <footer class="footer">
+      <p>&copy; 2025 Investify Project. Built for learning and simulation only.</p>
+    </footer>
+
+    <LoginPage v-if="showLoginModal" @close="showLoginModal = false" />
   </div>
 </template>
 
 <script setup>
-// No script logic needed here
+import TopBar from '@/components/TopBar.vue'
+import LoginPage from '@/components/LoginPage.vue'
+import { ref } from 'vue'
+
+const showLoginModal = ref(false)
+
+function toggleTheme() {
+  document.body.classList.toggle('dark-theme')
+}
+
+function navigateTo(page) {
+  console.log('Navigating to:', page)
+  // This is where you’d integrate router.push() or page state swapping
+}
 </script>
 
 <style scoped>
-/* Reuse top-bar from LoginPage */
-.top-bar {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-.top-bar button {
-  background: var(--background-blur);
+.homepage {
+  max-width: 1200px;
+  margin: 100px auto 60px;
+  padding: 0 2rem;
+  font-family: 'Inter', sans-serif;
   color: var(--text-color);
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
 }
 
-.top-bar button:hover {
-  opacity: 0.85;
-}
-
-/* Main wrapper */
-.home-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-  padding: 80px 20px;
-  min-height: 100vh;
-  box-sizing: border-box;
-}
-
-/* Box for each section */
-.section-box {
-  background-color: var(--background-blur);
-  backdrop-filter: blur(5px);
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  width: 90%;
-  max-width: 500px;
+.hero {
   text-align: center;
-  color: var(--text-color);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  margin-bottom: 3rem;
 }
 
-.section-box h1 {
-  font-size: 2rem;
+.hero h1 {
+  font-size: 4rem;
   margin-bottom: 0.5rem;
 }
 
-.section-box h2 {
-  font-size: 1.6rem;
-  margin-bottom: 0.5rem;
+.tagline {
+  font-size: 1.4rem;
+  color: var(--text-muted-color);
 }
 
-.section-box p,
-.section-box li {
-  font-size: 1rem;
+.nav-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
 }
 
-.section-box button {
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 8px;
+.card {
+  background: var(--card-bg);
+  border-radius: 18px;
+  padding: 2rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
   cursor: pointer;
-  background: var(--background-blur);
-  color: var(--text-color);
-  font-weight: bold;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  text-align: left;
 }
 
-.section-box button:hover {
-  opacity: 0.85;
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.card h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.8rem;
 }
 
-li {
-  margin-bottom: 0.5rem;
+.card p {
+  font-size: 1.05rem;
+  color: var(--text-muted-color);
+  line-height: 1.5;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 4rem;
+  font-size: 0.9rem;
+  color: var(--text-muted-color);
 }
 </style>

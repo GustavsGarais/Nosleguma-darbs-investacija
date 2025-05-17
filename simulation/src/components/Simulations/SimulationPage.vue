@@ -1,5 +1,7 @@
 <template>
   <div class="sim-page">
+    <h2></h2>
+    <h2></h2>
     <h1 class="sim-title">Investment Simulations</h1>
 
     <div class="text-center mb-4">
