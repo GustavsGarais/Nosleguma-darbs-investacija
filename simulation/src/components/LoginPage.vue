@@ -2,20 +2,32 @@
   <div class="login-wrapper">
     <!-- Top Bar -->
     <div class="top-bar">
-      <!-- Inside LoginPage.vue -->
       <button @click="$emit('close')">Close</button>
       <button @click="$emit('navigate', 'HomePage')">Back</button>
     </div>
 
-    <!-- Login Box -->
+    <!-- Login/Register Box -->
     <div class="login-box">
-      <h2>Login</h2>
+      <h2>{{ mode === 'login' ? 'Login' : 'Register' }}</h2>
+
       <input type="text" placeholder="Username" v-model="username" />
       <input type="password" placeholder="Password" v-model="password" />
+
+      <input
+        v-if="mode === 'register'"
+        type="password"
+        placeholder="Confirm Password"
+        v-model="confirmPassword"
+      />
+
       <div class="button-row">
-        <button @click="login">Login</button>
-        <button @click="register">Register</button>
+        <button v-if="mode === 'login'" @click="login">Login</button>
+        <button v-if="mode === 'register'" @click="register">Register</button>
+        <button @click="toggleMode">
+          {{ mode === 'login' ? 'Register' : 'Back to Login' }}
+        </button>
       </div>
+
       <div class="error" v-if="error">{{ error }}</div>
     </div>
   </div>
@@ -27,7 +39,9 @@ export default {
     return {
       username: '',
       password: '',
-      error: ''
+      confirmPassword: '',
+      error: '',
+      mode: 'login' // can be 'login' or 'register'
     }
   },
   methods: {
@@ -43,19 +57,28 @@ export default {
       }
     },
     register() {
-      if (!this.username || !this.password) {
-        this.error = 'Please fill out both fields.'
+      if (!this.username || !this.password || !this.confirmPassword) {
+        this.error = 'Please fill out all fields.'
+      } else if (this.password !== this.confirmPassword) {
+        this.error = 'Passwords do not match.'
       } else {
         this.error = ''
-        alert(`Registering as ${this.username}`)
+        alert(`Registered as ${this.username}`)
+        this.mode = 'login'
       }
     },
+    toggleMode() {
+      this.error = ''
+      this.username = ''
+      this.password = ''
+      this.confirmPassword = ''
+      this.mode = this.mode === 'login' ? 'register' : 'login'
+    }
   }
 }
 </script>
 
 <style scoped>
-/* Top Bar with Back and Theme Toggle buttons */
 .top-bar {
   position: absolute;
   top: 20px;
@@ -101,7 +124,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin: auto 0; /* <--- this is the key to push it away from top and bottom */
+  margin: auto 0;
 }
 
 h2 {
@@ -119,12 +142,13 @@ input {
 
 .button-row {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 0.6rem;
 }
 
 .button-row button {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 5px;

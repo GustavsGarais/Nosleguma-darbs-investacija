@@ -1,35 +1,35 @@
 <template>
   <div class="homepage">
     <section class="hero">
-      <h1>📈 Investify</h1>
-      <p class="tagline">Simulate. Learn. Dominate the markets.</p>
-      <button @click="$emit('navigate', 'LoginPage')" class="cta-button">🚀 Start Simulation</button>
+      <h1>📈 Welcome to Investify</h1>
+      <p class="tagline">Test strategies. Track trends. Learn risk-free.</p>
+      <button @click="$emit('navigate', 'LoginPage')" class="cta-button">Start Simulating</button>
     </section>
 
     <section class="grid-section">
       <div class="feature-tile" @click="$emit('navigate', 'SimulationInfoPage')">
         <div class="tile-content">
-          <h2>📊 Simulation Basics</h2>
-          <p>Understand how simulations work and analyze investment outcomes.</p>
+          <h2>📊 What is a Simulation?</h2>
+          <p>Discover how investment simulations help sharpen your market sense without real money on the line.</p>
         </div>
       </div>
 
       <div class="feature-tile" @click="$emit('navigate', 'BeginnerGuidePage')">
         <div class="tile-content">
-          <h2>📚 Beginner's Guide</h2>
-          <p>Start with simple steps to learn how to invest confidently.</p>
+          <h2>📚 Getting Started</h2>
+          <p>New to investing? Follow our beginner-friendly guide to confidently start experimenting.</p>
         </div>
       </div>
     </section>
 
     <footer class="footer">
-      &copy; 2025 Investify. Built for learning and simulation only.
+      &copy; 2025 Investify. This platform is for educational simulations only.
     </footer>
   </div>
 </template>
 
 <script setup>
-// No JS needed unless you want to add more logic.
+// no JS needed for now
 </script>
 
 <style scoped>
@@ -52,16 +52,16 @@
 }
 
 .tagline {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   color: var(--text-muted-color);
   margin-bottom: 1.5rem;
 }
 
 .cta-button {
-  padding: 0.8rem 2rem;
+  padding: 0.85rem 2.2rem;
   background-color: #4CAF50;
-  color: white;
-  font-size: 1.2rem;
+  color: #fff;
+  font-size: 1.15rem;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -80,7 +80,6 @@
 }
 
 .feature-tile {
-  position: relative;
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
@@ -93,12 +92,6 @@
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
 }
 
-.tile-image {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
 .tile-content {
   background-color: var(--background-blur);
   padding: 1.5rem;
@@ -107,8 +100,8 @@
 }
 
 .tile-content h2 {
-  font-size: 1.4rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.35rem;
+  margin-bottom: 0.6rem;
 }
 
 .tile-content p {
