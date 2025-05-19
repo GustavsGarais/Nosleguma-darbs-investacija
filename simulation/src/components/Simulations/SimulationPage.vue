@@ -5,7 +5,7 @@
     <h1 class="sim-title">Investment Simulations</h1>
 
     <div class="text-center mb-4">
-      <button @click="addSimulation" class="add-sim-btn">
+      <button @click="addSimulation" class="btn-primary">
         + Add New Simulation
       </button>
     </div>
@@ -24,8 +24,12 @@
           />
           <p class="text-xs text-gray-300">💰 €{{ sim.currentValue.toFixed(2) }}</p>
           <div class="flex gap-2">
-            <button @click="focusedId = sim.id">Focus</button>
-            <button @click="deleteSimulation(sim.id)">Delete</button>
+            <button @click="focusedId = sim.id" class="btn-primary">
+              Focus
+            </button>
+            <button @click="deleteSimulation(sim.id)" class="btn-danger">
+              Delete
+            </button>
           </div>
         </div>
       </div>
@@ -38,7 +42,10 @@
               v-model="focusedSimulation.name"
               class="text-lg font-bold bg-transparent border-b border-gray-400 flex-1"
             />
-            <button @click="deleteSimulation(focusedSimulation.id)" class="ml-2 text-red-400 hover:text-red-600">
+            <button
+              @click="deleteSimulation(focusedSimulation.id)"
+              class="btn-danger ml-2"
+            >
               Delete
             </button>
           </div>

@@ -1,6 +1,9 @@
 <template>
   <div :class="themeClass" class="app-wrapper">
-    <TopBar :toggle-theme="toggleTheme" />
+    <TopBar 
+      :toggle-theme="toggleTheme" 
+      @navigate="navigate"
+    />
 
     <div class="content-container">
       <component 
@@ -11,7 +14,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 import HomePage from './components/HomePage.vue'
