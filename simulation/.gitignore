@@ -28,3 +28,7 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+/src/generated/prisma
+
+/src/generated/prisma
