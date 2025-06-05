@@ -36,7 +36,7 @@ Investīciju izglītības website (website, kas imitē, kā investīcijas darboj
 
 1. cd Simulation
 2. cd src
-3. node server.cjs
+3. node server.js
 
 ## Tehnoloģijas:
 
