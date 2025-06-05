@@ -1,35 +1,19 @@
 <template>
-  <div class="login-wrapper">
-    <!-- Top Bar -->
-    <div class="top-bar">
-      <button @click="$emit('close')">Close</button>
-      <button @click="$emit('navigate', 'HomePage')">Back</button>
-    </div>
-
-    <!-- Login/Register Box -->
-    <div class="login-box">
-      <h2>{{ mode === 'login' ? 'Login' : 'Register' }}</h2>
-
-      <input type="text" placeholder="Username" v-model="username" />
-      <input type="password" placeholder="Password" v-model="password" />
-
-      <input
-        v-if="mode === 'register'"
-        type="password"
-        placeholder="Confirm Password"
-        v-model="confirmPassword"
-      />
-
-      <div class="button-row">
-        <button v-if="mode === 'login'" @click="login">Login</button>
-        <button v-if="mode === 'register'" @click="register">Register</button>
-        <button @click="toggleMode">
-          {{ mode === 'login' ? 'Register' : 'Back to Login' }}
-        </button>
+  <div class="login-box">
+    <h2>Login / Register</h2>
+    <form @submit.prevent="login">
+      <div class="user-box">
+        <input v-model="username" type="text" required />
+        <label>Username</label>
       </div>
-
-      <div class="error" v-if="error">{{ error }}</div>
-    </div>
+      <div class="user-box">
+        <input v-model="password" type="password" required />
+        <label>Password</label>
+      </div>
+      <p style="color: white;">{{ message }}</p>
+      <button type="button" @click="login">Login</button>
+      <button type="button" @click="register">Register</button>
+    </form>
   </div>
 </template>
 
@@ -37,132 +21,98 @@
 export default {
   data() {
     return {
-      username: '',
-      password: '',
-      confirmPassword: '',
-      error: '',
-      mode: 'login' // can be 'login' or 'register'
-    }
+      username: "",
+      password: "",
+      message: "",
+    };
   },
   methods: {
-    login() {
-      if (!this.username || !this.password) {
-        this.error = 'Please enter both username and password.'
-      } else if (this.username === 'admin' && this.password === '1234') {
-        this.error = ''
-        alert('Logged in successfully!')
-        this.$emit('navigate', 'SimulationPage')
-      } else {
-        this.error = 'Invalid username or password.'
+    async login() {
+      try {
+        const response = await fetch("http://localhost:3000/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: this.username,
+            password: this.password,
+          }),
+        });
+        const data = await response.json();
+        this.message = data.message;
+        if (data.success) {
+          this.$router.push("/simulation");
+        }
+      } catch (error) {
+        console.error("Login failed:", error);
+        this.message = "Login failed.";
       }
     },
-    register() {
-      if (!this.username || !this.password || !this.confirmPassword) {
-        this.error = 'Please fill out all fields.'
-      } else if (this.password !== this.confirmPassword) {
-        this.error = 'Passwords do not match.'
-      } else {
-        this.error = ''
-        alert(`Registered as ${this.username}`)
-        this.mode = 'login'
+    async register() {
+      try {
+        const response = await fetch("http://localhost:3000/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: this.username,
+            password: this.password,
+          }),
+        });
+        const data = await response.json();
+        this.message = data.message;
+      } catch (error) {
+        console.error("Registration failed:", error);
+        this.message = "Registration failed.";
       }
     },
-    toggleMode() {
-      this.error = ''
-      this.username = ''
-      this.password = ''
-      this.confirmPassword = ''
-      this.mode = this.mode === 'login' ? 'register' : 'login'
-    }
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
-.top-bar {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-.top-bar button {
-  background: var(--background-blur);
-  color: var(--text-color);
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.top-bar button:hover {
-  opacity: 0.85;
-}
-
-.login-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  width: 100%;
-  position: relative;
-  padding: 60px 20px;
-  box-sizing: border-box;
-}
-
 .login-box {
-  background-color: var(--background-blur);
-  backdrop-filter: blur(5px);
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  width: 300px;
-  max-width: 90vw;
-  text-align: center;
-  color: var(--text-color);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin: auto 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  padding: 40px;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.8);
+  box-shadow: 0 15px 25px rgba(0,0,0,0.6);
+  border-radius: 10px;
+  color: #fff;
 }
-
-h2 {
-  margin-bottom: 1rem;
+.user-box {
+  position: relative;
 }
-
-input {
-  display: block;
+.user-box input {
   width: 100%;
-  padding: 0.6rem;
-  margin-bottom: 1rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.button-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0.6rem;
-}
-
-.button-row button {
-  flex: 1 1 auto;
-  padding: 0.5rem 1rem;
+  padding: 10px;
+  background: transparent;
   border: none;
-  border-radius: 5px;
+  border-bottom: 1px solid #fff;
+  color: #fff;
+}
+.user-box label {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  color: #fff;
+  pointer-events: none;
+  transition: 0.5s;
+}
+.user-box input:focus ~ label,
+.user-box input:valid ~ label {
+  top: -20px;
+  left: 0;
+  color: #03e9f4;
+  font-size: 12px;
+}
+button {
+  background: #03e9f4;
+  border: none;
+  padding: 10px 20px;
+  margin-right: 10px;
+  color: #fff;
   cursor: pointer;
-  background: var(--background-blur);
-  color: var(--text-color);
-}
-
-.button-row button:hover {
-  opacity: 0.85;
-}
-
-.error {
-  color: red;
-  margin-top: 1rem;
 }
 </style>
