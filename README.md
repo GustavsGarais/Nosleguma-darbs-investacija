@@ -29,7 +29,7 @@ Investīciju izglītības website (website, kas imitē, kā investīcijas darboj
 
 ### Frontend:
 
-1. cd Simulation
+1. cd simulation
 2. npm run dev
 
 ### Backend:
