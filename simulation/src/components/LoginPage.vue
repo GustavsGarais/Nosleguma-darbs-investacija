@@ -69,50 +69,91 @@ export default {
 </script>
 
 <style scoped>
-.login-box {
+<style scoped>
+.top-bar {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 400px;
-  padding: 40px;
-  transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.8);
-  box-shadow: 0 15px 25px rgba(0,0,0,0.6);
-  border-radius: 10px;
-  color: #fff;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
 }
-.user-box {
-  position: relative;
-}
-.user-box input {
-  width: 100%;
-  padding: 10px;
-  background: transparent;
+
+.top-bar button {
+  background: var(--background-blur);
+  color: var(--text-color);
+  padding: 6px 12px;
   border: none;
-  border-bottom: 1px solid #fff;
-  color: #fff;
-}
-.user-box label {
-  position: absolute;
-  top: 10px;
-  left: 0;
-  color: #fff;
-  pointer-events: none;
-  transition: 0.5s;
-}
-.user-box input:focus ~ label,
-.user-box input:valid ~ label {
-  top: -20px;
-  left: 0;
-  color: #03e9f4;
-  font-size: 12px;
-}
-button {
-  background: #03e9f4;
-  border: none;
-  padding: 10px 20px;
-  margin-right: 10px;
-  color: #fff;
+  border-radius: 6px;
   cursor: pointer;
+}
+
+.top-bar button:hover {
+  opacity: 0.85;
+}
+
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  padding: 60px 20px;
+  box-sizing: border-box;
+}
+
+.login-box {
+  background-color: var(--background-blur);
+  backdrop-filter: blur(5px);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  width: 300px;
+  max-width: 90vw;
+  text-align: center;
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: auto 0;
+}
+
+h2 {
+  margin-bottom: 1rem;
+}
+
+input {
+  display: block;
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.button-row button {
+  flex: 1 1 auto;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background: var(--background-blur);
+  color: var(--text-color);
+}
+
+.button-row button:hover {
+  opacity: 0.85;
+}
+
+.error {
+  color: red;
+  margin-top: 1rem;
 }
 </style>
