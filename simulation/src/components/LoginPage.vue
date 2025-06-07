@@ -1,35 +1,19 @@
 <template>
-  <div class="login-wrapper">
-    <!-- Top Bar -->
-    <div class="top-bar">
-      <button @click="$emit('close')">Close</button>
-      <button @click="$emit('navigate', 'HomePage')">Back</button>
-    </div>
-
-    <!-- Login/Register Box -->
-    <div class="login-box">
-      <h2>{{ mode === 'login' ? 'Login' : 'Register' }}</h2>
-
-      <input type="text" placeholder="Username" v-model="username" />
-      <input type="password" placeholder="Password" v-model="password" />
-
-      <input
-        v-if="mode === 'register'"
-        type="password"
-        placeholder="Confirm Password"
-        v-model="confirmPassword"
-      />
-
-      <div class="button-row">
-        <button v-if="mode === 'login'" @click="login">Login</button>
-        <button v-if="mode === 'register'" @click="register">Register</button>
-        <button @click="toggleMode">
-          {{ mode === 'login' ? 'Register' : 'Back to Login' }}
-        </button>
+  <div class="login-box">
+    <h2>Login / Register</h2>
+    <form @submit.prevent="login">
+      <div class="user-box">
+        <input v-model="username" type="text" required />
+        <label>Username</label>
       </div>
-
-      <div class="error" v-if="error">{{ error }}</div>
-    </div>
+      <div class="user-box">
+        <input v-model="password" type="password" required />
+        <label>Password</label>
+      </div>
+      <p style="color: white;">{{ message }}</p>
+      <button type="button" @click="login">Login</button>
+      <button type="button" @click="register">Register</button>
+    </form>
   </div>
 </template>
 
@@ -37,45 +21,51 @@
 export default {
   data() {
     return {
-      username: '',
-      password: '',
-      confirmPassword: '',
-      error: '',
-      mode: 'login' // can be 'login' or 'register'
-    }
+      username: "",
+      password: "",
+      message: "",
+    };
   },
   methods: {
-    login() {
-      if (!this.username || !this.password) {
-        this.error = 'Please enter both username and password.'
-      } else if (this.username === 'admin' && this.password === '1234') {
-        this.error = ''
-        alert('Logged in successfully!')
-        this.$emit('navigate', 'SimulationPage')
-      } else {
-        this.error = 'Invalid username or password.'
+    async login() {
+      try {
+        const response = await fetch("http://localhost:3000/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: this.username,
+            password: this.password,
+          }),
+        });
+        const data = await response.json();
+        this.message = data.message;
+        if (data.success) {
+          this.$router.push("/simulation");
+        }
+      } catch (error) {
+        console.error("Login failed:", error);
+        this.message = "Login failed.";
       }
     },
-    register() {
-      if (!this.username || !this.password || !this.confirmPassword) {
-        this.error = 'Please fill out all fields.'
-      } else if (this.password !== this.confirmPassword) {
-        this.error = 'Passwords do not match.'
-      } else {
-        this.error = ''
-        alert(`Registered as ${this.username}`)
-        this.mode = 'login'
+    async register() {
+      try {
+        const response = await fetch("http://localhost:3000/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: this.username,
+            password: this.password,
+          }),
+        });
+        const data = await response.json();
+        this.message = data.message;
+      } catch (error) {
+        console.error("Registration failed:", error);
+        this.message = "Registration failed.";
       }
     },
-    toggleMode() {
-      this.error = ''
-      this.username = ''
-      this.password = ''
-      this.confirmPassword = ''
-      this.mode = this.mode === 'login' ? 'register' : 'login'
-    }
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
