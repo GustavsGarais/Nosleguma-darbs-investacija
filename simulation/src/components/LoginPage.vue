@@ -69,7 +69,6 @@ export default {
 </script>
 
 <style scoped>
-<style scoped>
 .top-bar {
   position: absolute;
   top: 20px;
