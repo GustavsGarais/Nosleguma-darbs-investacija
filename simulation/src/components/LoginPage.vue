@@ -39,8 +39,10 @@ export default {
         });
         const data = await response.json();
         this.message = data.message;
+
+        // ✅ Use event-based navigation instead of Vue Router
         if (data.success) {
-          this.$router.push("/simulation");
+          this.$emit("navigate", "SimulationPage");
         }
       } catch (error) {
         console.error("Login failed:", error);
