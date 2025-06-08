@@ -1,19 +1,36 @@
 <template>
-  <div class="login-box">
-    <h2>Login / Register</h2>
-    <form @submit.prevent="login">
-      <div class="user-box">
-        <input v-model="username" type="text" required />
-        <label>Username</label>
-      </div>
-      <div class="user-box">
-        <input v-model="password" type="password" required />
-        <label>Password</label>
-      </div>
-      <p style="color: white;">{{ message }}</p>
-      <button type="button" @click="login">Login</button>
-      <button type="button" @click="register">Register</button>
-    </form>
+  <div class="login-page">
+    <div class="login-box">
+      <h2>{{ isRegistering ? 'Register' : 'Login' }}</h2>
+
+      <form @submit.prevent="isRegistering ? register() : login()">
+        <div class="user-box">
+          <input v-model="username" type="text" required />
+          <label>Username</label>
+        </div>
+
+        <div class="user-box">
+          <input v-model="password" type="password" required />
+          <label>Password</label>
+        </div>
+
+        <div v-if="isRegistering" class="user-box">
+          <input v-model="repeatPassword" type="password" required />
+          <label>Repeat Password</label>
+        </div>
+
+        <p class="message">{{ message }}</p>
+
+        <div class="button-group">
+          <button type="submit">
+            {{ isRegistering ? 'Register' : 'Login' }}
+          </button>
+          <button type="button" @click="toggleMode">
+            Switch to {{ isRegistering ? 'Login' : 'Register' }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -23,10 +40,19 @@ export default {
     return {
       username: "",
       password: "",
+      repeatPassword: "",
+      isRegistering: false,
       message: "",
     };
   },
   methods: {
+    toggleMode() {
+      this.isRegistering = !this.isRegistering;
+      this.message = "";
+      this.username = "";
+      this.password = "";
+      this.repeatPassword = "";
+    },
     async login() {
       try {
         const response = await fetch("http://localhost:3000/login", {
@@ -37,10 +63,12 @@ export default {
             password: this.password,
           }),
         });
+
         const data = await response.json();
         this.message = data.message;
+
         if (data.success) {
-          this.$router.push("/simulation");
+          this.$emit("navigate", "SimulationPage");
         }
       } catch (error) {
         console.error("Login failed:", error);
@@ -48,6 +76,11 @@ export default {
       }
     },
     async register() {
+      if (this.password !== this.repeatPassword) {
+        this.message = "Passwords do not match.";
+        return;
+      }
+
       try {
         const response = await fetch("http://localhost:3000/register", {
           method: "POST",
@@ -57,8 +90,13 @@ export default {
             password: this.password,
           }),
         });
+
         const data = await response.json();
         this.message = data.message;
+
+        if (data.success) {
+          this.toggleMode(); // Go to login after successful register
+        }
       } catch (error) {
         console.error("Registration failed:", error);
         this.message = "Registration failed.";
@@ -69,90 +107,91 @@ export default {
 </script>
 
 <style scoped>
-.top-bar {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-.top-bar button {
-  background: var(--background-blur);
-  color: var(--text-color);
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.top-bar button:hover {
-  opacity: 0.85;
-}
-
-.login-wrapper {
+.login-page {
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  width: 100%;
-  position: relative;
-  padding: 60px 20px;
+  background: var(--background-color);
+  padding: 1rem;
   box-sizing: border-box;
 }
 
 .login-box {
-  background-color: var(--background-blur);
-  backdrop-filter: blur(5px);
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  width: 300px;
-  max-width: 90vw;
-  text-align: center;
+  width: 350px;
+  height: 450px;
+  background: var(--background-blur);
+  padding: 30px;
+  border-radius: 16px;
   color: var(--text-color);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin: auto 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
 }
 
 h2 {
-  margin-bottom: 1rem;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.75rem;
 }
 
-input {
-  display: block;
+.user-box {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.user-box input {
   width: 100%;
-  padding: 0.6rem;
-  margin-bottom: 1rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.button-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0.6rem;
-}
-
-.button-row button {
-  flex: 1 1 auto;
-  padding: 0.5rem 1rem;
+  padding: 10px;
+  background: transparent;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background: var(--background-blur);
+  border-bottom: 2px solid var(--text-color);
+  color: var(--text-color);
+  font-size: 1rem;
+  outline: none;
+}
+
+.user-box label {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  pointer-events: none;
+  transition: 0.2s ease;
+  color: var(--text-muted-color);
+}
+
+.user-box input:focus ~ label,
+.user-box input:not(:placeholder-shown) ~ label {
+  top: -14px;
+  font-size: 0.75rem;
   color: var(--text-color);
 }
 
-.button-row button:hover {
-  opacity: 0.85;
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.error {
-  color: red;
-  margin-top: 1rem;
+button {
+  padding: 0.85rem;
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+.message {
+  color: #ff8080;
+  font-size: 0.85rem;
+  text-align: center;
+  min-height: 20px;
 }
 </style>

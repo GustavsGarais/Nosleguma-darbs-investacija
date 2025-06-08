@@ -29,14 +29,14 @@ Investīciju izglītības website (website, kas imitē, kā investīcijas darboj
 
 ### Frontend:
 
-1. cd Simulation
-2. npm run dev
+1. cd simulation
+2. npm install
+3. npm run dev
 
 ### Backend:
 
-1. cd Simulation
-2. cd src
-3. node server.cjs
+1. cd simulation
+3. node api/server.cjs
 
 ## Tehnoloģijas:
 
