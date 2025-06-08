@@ -112,24 +112,27 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(20, 20, 20, 0.85);
+  background: var(--background-color);
   padding: 1rem;
   box-sizing: border-box;
 }
 
 .login-box {
   width: 350px;
-  background: rgba(0, 0, 0, 0.85);
+  height: 450px;
+  background: var(--background-blur);
   padding: 30px;
-  border-radius: 15px;
-  color: white;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  border-radius: 16px;
+  color: var(--text-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
 }
 
 h2 {
   text-align: center;
   margin-bottom: 20px;
+  font-size: 1.75rem;
 }
 
 .user-box {
@@ -142,9 +145,9 @@ h2 {
   padding: 10px;
   background: transparent;
   border: none;
-  border-bottom: 2px solid #fff;
-  color: white;
-  font-size: 16px;
+  border-bottom: 2px solid var(--text-color);
+  color: var(--text-color);
+  font-size: 1rem;
   outline: none;
 }
 
@@ -154,39 +157,40 @@ h2 {
   left: 0;
   pointer-events: none;
   transition: 0.2s ease;
-  color: #aaa;
+  color: var(--text-muted-color);
 }
 
 .user-box input:focus ~ label,
 .user-box input:not(:placeholder-shown) ~ label {
-  top: -15px;
-  font-size: 12px;
-  color: #fff;
+  top: -14px;
+  font-size: 0.75rem;
+  color: var(--text-color);
 }
 
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 button {
-  padding: 10px;
-  background: #5b8c5a;
-  color: white;
+  padding: 0.85rem;
+  background: #4CAF50;
+  color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background: #497146;
+  background: #45a049;
 }
 
 .message {
   color: #ff8080;
-  font-size: 14px;
+  font-size: 0.85rem;
   text-align: center;
   min-height: 20px;
 }
