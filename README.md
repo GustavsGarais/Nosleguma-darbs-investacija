@@ -34,9 +34,8 @@ Investīciju izglītības website (website, kas imitē, kā investīcijas darboj
 
 ### Backend:
 
-1. cd Simulation
-2. cd src
-3. node server.js
+1. cd simulation
+3. node api/server.cjs
 
 ## Tehnoloģijas:
 
