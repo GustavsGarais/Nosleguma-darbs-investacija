@@ -1,29 +1,29 @@
-
-
 /* Reset layout and ensure full height */
-html, body, #app {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* Theme Styles */
-  .dark-theme {
-    background: linear-gradient(to bottom right, rgb(95, 5, 95), black);
-    color: white;
-  }
-  
-  .light-theme {
-    background: linear-gradient(to bottom right, #edc988, #5b8c5a);
-    color: black;
-  }
-  
-  /* Make sure all page content fills full height */
-  .page-fill {
-    min-height: 100vh;
-  }
-  
-  /* Center everything inside the main app */
+body, html, #app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  overflow-y: hidden; /* Disable vertical scrolling */
+}
+
+/* Theme Styles */
+.dark-theme {
+  background: linear-gradient(to bottom right, rgb(95, 5, 95), black);
+  color: white;
+}
+
+.light-theme {
+  background: linear-gradient(to bottom right, #edc988, #5b8c5a);
+  color: black;
+}
+
+/* Make sure all page content fills full height */
+.page-fill {
+  min-height: 100vh;
+}
+
+/* Center everything inside the main app */
 body, html, #app, .app-wrapper {
   display: flex;
   justify-content: center;
@@ -47,5 +47,5 @@ body,
   height: 100%;
   font-family: 'Inter', sans-serif;
   background: transparent !important;
+  overflow-y: hidden; /* Disable vertical scrolling */
 }
-

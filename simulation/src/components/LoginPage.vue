@@ -68,6 +68,10 @@ export default {
         this.message = data.message;
 
         if (data.success) {
+          // Save user info to localStorage
+          localStorage.setItem("loggedInUser", this.username);
+          localStorage.setItem("loggedInUserId", data.user_id);
+
           this.$emit("navigate", "SimulationPage");
         }
       } catch (error) {

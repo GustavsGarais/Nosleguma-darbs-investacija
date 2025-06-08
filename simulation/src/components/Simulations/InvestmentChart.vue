@@ -5,15 +5,6 @@
     </h3>
 
     <Line :data="chartData" :options="chartOptions" />
-
-    <div class="flex justify-end mt-4">
-      <button
-        class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
-        @click="onSave"
-      >
-        Save
-      </button>
-    </div>
   </div>
 </template>
 
