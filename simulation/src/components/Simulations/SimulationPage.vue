@@ -3,7 +3,6 @@
     <h2></h2>
     <h2></h2>
     <h1 class="sim-title">Investment Simulations</h1>
-
     <div class="text-center mb-4">
       <button @click="addSimulation" class="btn-primary">
         + Add New Simulation
@@ -63,6 +62,16 @@
           />
 
           <InvestmentChart :simulation="focusedSimulation" />
+
+          <!-- Save Simulation Button -->
+          <h1></h1>
+          <div class="mt-4">
+            <button @click="saveSimulation" class="btn-primary w-full">
+              
+              💾 Save Focused Simulation
+            </button>
+            <p v-if="saveMessage" class="text-green-400 mt-2">{{ saveMessage }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -70,6 +79,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import SimulationSetup from '@/components/Simulations/SimulationSetup.vue'
 import SimulationControl from '@/components/Simulations/SimulationControl.vue'
 import InvestmentChart from '@/components/Simulations/InvestmentChart.vue'
@@ -86,7 +96,8 @@ export default {
     return {
       nextId: 1,
       focusedId: null,
-      simulations: []
+      simulations: [],
+      saveMessage: ''
     }
   },
   computed: {
@@ -124,7 +135,6 @@ export default {
         sim.settings = { ...sim.settings, ...newSettings }
       }
     },
-    // ✅ Toggle simulation state
     toggleSimulation(id) {
       const sim = this.simulations.find(s => s.id === id)
       if (!sim) return
@@ -145,13 +155,11 @@ export default {
         sim.interval = setInterval(() => {
           sim.currentValue += monthlyContribution
 
-          // ✅ Generate new randomness each tick
-          const randomness = (Math.random() * 2 - 1) // range -1 to 1
+          const randomness = (Math.random() * 2 - 1)
           const riskImpact = randomness * sim.settings.riskAppetite * sim.settings.marketInfluence
           const adjustedReturn = monthlyReturnRate + riskImpact
           const interestEarned = sim.currentValue * adjustedReturn
 
-          // ✅ Apply interest (gain or loss), cap at 0
           sim.currentValue = Math.max(0, sim.currentValue + interestEarned)
 
           const monthsElapsed = sim.data.length
@@ -206,6 +214,84 @@ export default {
 
       if (this.focusedId === id) {
         this.focusedId = this.simulations.length > 0 ? this.simulations[0].id : null
+      }
+    },
+      async loadSavedSimulations() {
+        const user_id = localStorage.getItem('user_id')
+        if (!user_id) {
+          console.log('No user logged in.')
+          return
+        }
+
+        try {
+          const res = await axios.get(`http://localhost:3000/simulations/${user_id}`)
+
+          if (res.data.success) {
+            const savedSims = res.data.simulations
+            this.simulations = savedSims.map((sim, index) => ({
+              id: this.nextId++,   // Local Vue-only ID
+              name: sim.sim_name,
+              currentValue: sim.initial_investment,
+              trend: 'neutral',
+              isRunning: false,
+              interval: null,
+              speed: 1000,
+              settings: {
+                initialInvestment: sim.initial_investment,
+                investors: sim.num_investors,
+                growthRate: sim.growth_rate,
+                riskAppetite: sim.risk_appetite,
+                marketInfluence: sim.market_influence,
+                monthlyContribution: 100,
+                inflationRate: 0.02
+              },
+              data: []
+            }))
+
+            if (this.simulations.length > 0) {
+              this.focusedId = this.simulations[0].id
+            }
+
+            console.log('Simulations loaded:', this.simulations)
+          } else {
+            console.log(res.data.message)
+          }
+        } catch (err) {
+          console.error('Error fetching simulations:', err)
+        }
+      },
+
+    async saveSimulation() {
+      if (!this.focusedSimulation) {
+        this.saveMessage = 'No simulation is focused.'
+        return
+      }
+
+      const user_id = localStorage.getItem('user_id')
+      if (!user_id) {
+        this.saveMessage = 'You must be logged in to save simulations.'
+        return
+      }
+
+      try {
+        const res = await axios.post('http://localhost:3000/save-simulation', {
+          user_id,
+          sim_name: this.focusedSimulation.name,
+          initial_investment: this.focusedSimulation.settings.initialInvestment,
+          num_investors: this.focusedSimulation.settings.investors,
+          growth_rate: this.focusedSimulation.settings.growthRate,
+          risk_appetite: this.focusedSimulation.settings.riskAppetite,
+          market_influence: this.focusedSimulation.settings.marketInfluence
+        })
+
+        if (res.data.success) {
+          this.saveMessage = 'Simulation saved successfully!'
+        } else {
+          this.saveMessage = res.data.message
+        }
+      } catch (err) {
+        console.error(err)
+        this.saveMessage = 'Error saving simulation.'
       }
     }
   },
