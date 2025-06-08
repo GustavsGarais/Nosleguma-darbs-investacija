@@ -1,14 +1,14 @@
 <template>
+  
   <div class="sim-page">
-    <h2></h2>
-    <h2></h2>
+    <h1>___________________________________</h1>
     <h1 class="sim-title">Investment Simulations</h1>
     <div class="text-center mb-4">
       <button @click="addSimulation" class="btn-primary">
         + Add New Simulation
       </button>
     </div>
-
+    
     <div class="sim-content">
       <!-- Side Simulations -->
       <div class="side-sim-list">
@@ -48,7 +48,6 @@
               Delete
             </button>
           </div>
-
           <SimulationSetup
             :simulation="focusedSimulation"
             @update-settings="updateSettings(focusedSimulation.id, $event)"
@@ -64,7 +63,7 @@
           <InvestmentChart :simulation="focusedSimulation" />
 
           <!-- Save Simulation Button -->
-          <h1></h1>
+           <h1>___________________________________</h1>
           <div class="mt-4">
             <button @click="saveSimulation" class="btn-primary w-full">
               
