@@ -55,7 +55,7 @@ export default {
     },
     async login() {
       try {
-        const response = await fetch("http://localhost:3000/login", {
+        const response = await fetch("http://localhost:8000/login.php", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -68,7 +68,6 @@ export default {
         this.message = data.message;
 
         if (data.success) {
-          // Save user info to localStorage
           localStorage.setItem("loggedInUser", this.username);
           localStorage.setItem("loggedInUserId", data.user_id);
 
@@ -86,7 +85,7 @@ export default {
       }
 
       try {
-        const response = await fetch("http://localhost:3000/register", {
+        const response = await fetch("http://localhost:8000/register.php", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -99,7 +98,7 @@ export default {
         this.message = data.message;
 
         if (data.success) {
-          this.toggleMode(); // Go to login after successful register
+          this.toggleMode();
         }
       } catch (error) {
         console.error("Registration failed:", error);

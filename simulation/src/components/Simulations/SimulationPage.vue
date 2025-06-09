@@ -215,65 +215,64 @@ export default {
         this.focusedId = this.simulations.length > 0 ? this.simulations[0].id : null
       }
     },
-      async loadSavedSimulations() {
-        const user_id = localStorage.getItem('user_id')
-        if (!user_id) {
-          console.log('No user logged in.')
-          return
-        }
+    async loadSavedSimulations() {
+      const user_id = localStorage.getItem('loggedInUserId')
+      if (!user_id) {
+        console.log('No user logged in.')
+        return
+      }
 
-        try {
-          const res = await axios.get(`http://localhost:3000/simulations/${user_id}`)
+      try {
+        const res = await axios.get(`http://localhost:8000/get_simulations.php?user_id=${user_id}`)
 
-          if (res.data.success) {
-            const savedSims = res.data.simulations
-            this.simulations = savedSims.map((sim, index) => ({
-              id: this.nextId++,   // Local Vue-only ID
-              name: sim.sim_name,
-              currentValue: sim.initial_investment,
-              trend: 'neutral',
-              isRunning: false,
-              interval: null,
-              speed: 1000,
-              settings: {
-                initialInvestment: sim.initial_investment,
-                investors: sim.num_investors,
-                growthRate: sim.growth_rate,
-                riskAppetite: sim.risk_appetite,
-                marketInfluence: sim.market_influence,
-                monthlyContribution: 100,
-                inflationRate: 0.02
-              },
-              data: []
-            }))
+        if (res.data.success) {
+          const savedSims = res.data.simulations
+          this.simulations = savedSims.map((sim, index) => ({
+            id: this.nextId++,
+            name: sim.sim_name,
+            currentValue: sim.initial_investment,
+            trend: 'neutral',
+            isRunning: false,
+            interval: null,
+            speed: 1000,
+            settings: {
+              initialInvestment: sim.initial_investment,
+              investors: sim.num_investors,
+              growthRate: sim.growth_rate,
+              riskAppetite: sim.risk_appetite,
+              marketInfluence: sim.market_influence,
+              monthlyContribution: 100,
+              inflationRate: 0.02
+            },
+            data: []
+          }))
 
-            if (this.simulations.length > 0) {
-              this.focusedId = this.simulations[0].id
-            }
-
-            console.log('Simulations loaded:', this.simulations)
-          } else {
-            console.log(res.data.message)
+          if (this.simulations.length > 0) {
+            this.focusedId = this.simulations[0].id
           }
-        } catch (err) {
-          console.error('Error fetching simulations:', err)
-        }
-      },
 
+          console.log('Simulations loaded:', this.simulations)
+        } else {
+          console.log(res.data.message)
+        }
+      } catch (err) {
+        console.error('Error fetching simulations:', err)
+      }
+    },
     async saveSimulation() {
       if (!this.focusedSimulation) {
         this.saveMessage = 'No simulation is focused.'
         return
       }
 
-      const user_id = localStorage.getItem('user_id')
+      const user_id = localStorage.getItem('loggedInUserId')
       if (!user_id) {
         this.saveMessage = 'You must be logged in to save simulations.'
         return
       }
 
       try {
-        const res = await axios.post('http://localhost:3000/save-simulation', {
+        const res = await axios.post('http://localhost:8000/save_simulation.php', {
           user_id,
           sim_name: this.focusedSimulation.name,
           initial_investment: this.focusedSimulation.settings.initialInvestment,
