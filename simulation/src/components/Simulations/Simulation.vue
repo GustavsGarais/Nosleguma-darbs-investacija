@@ -6,49 +6,42 @@
 </template>
 
 <script>
-import InvestmentChart from './InvestmentChart.vue'
+import { getSimulations, saveSimulation } from '@/api/simulationService.js';
 
 export default {
-  name: 'Simulation',
-  components: {
-    InvestmentChart
-  },
   data() {
     return {
-      simulations: [
-        {
-          id: 1,
-          data: [
-            { value: 100 },
-            { value: 105 },
-            { value: 110 }
-          ],
-          settings: {
-            initialInvestment: 100
-          }
-        },
-        {
-          id: 2,
-          data: [
-            { value: 100 },
-            { value: 98 },
-            { value: 102 }
-          ],
-          settings: {
-            initialInvestment: 100
-          }
-        }
-      ],
-      focusedId: 1 // ← this changes which simulation is "focused"
-    }
+      user: null,         // set upon login
+      simulations: [],
+      currentSettings: {}
+    };
   },
-  computed: {
-    focusedSimulation() {
-      return this.simulations.find(sim => sim.id === this.focusedId)
+  methods: {
+    async onLogin(userData) {
+      this.user = userData;
+      await this.fetchSimulations();
+    },
+    async fetchSimulations() {
+      const resp = await getSimulations(this.user.id);
+      if (resp.data.success) this.simulations = resp.data.simulations;
+      else alert('Error loading simulations');
+    },
+    async onSaveSimulation(name) {
+      const resp = await saveSimulation(this.user.id, name, this.currentSettings);
+      if (resp.data.success) {
+        this.simulations.push({
+          name,
+          settings: this.currentSettings,
+          created_at: new Date().toISOString()
+        });
+      } else {
+        alert('Save failed');
+      }
     }
   }
-}
+};
 </script>
+
   
   <style scoped>
   .focused {
