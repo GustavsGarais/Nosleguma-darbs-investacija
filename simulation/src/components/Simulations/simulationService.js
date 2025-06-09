@@ -1,14 +1,16 @@
+// src/api/simulationService.js
 import axios from 'axios';
 
-const API = axios.create({
-  baseURL: 'http://localhost:8000', // adjust if needed
-  headers: { 'Content-Type': 'application/json' }
-});
+const BASE_URL = 'http://localhost:8000'; // or your backend host
 
 export function getSimulations(userId) {
-  return API.post('/get_simulations.php', { user_id: userId });
+  return axios.post(`${BASE_URL}/get_simulations.php`, { userId });
 }
 
 export function saveSimulation(userId, name, settings) {
-  return API.post('/save_simulation.php', { user_id: userId, name, settings });
+  return axios.post(`${BASE_URL}/save_simulation.php`, {
+    userId,
+    name,
+    settings: JSON.stringify(settings)
+  });
 }
