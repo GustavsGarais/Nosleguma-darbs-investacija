@@ -104,6 +104,17 @@ body.light .side-sim {
   margin-top: 1rem;
 }
 
+.username-box {
+  position: absolute;
+  top: 120px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: bold;
+  z-index: 10;
+}
 
 /* Primary Button */
 .btn-primary {

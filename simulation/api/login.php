@@ -28,4 +28,13 @@ if ($user) {
 } else {
     echo json_encode(["success" => false, "message" => "Invalid username or password."]);
 }
+if ($user) {
+    $updateStmt = $db->prepare("UPDATE users SET last_active = datetime('now') WHERE id = ?");
+    $updateStmt->execute([$user['id']]);
+
+    echo json_encode(["success" => true, "message" => "Login successful.", "user" => $user]);
+} else {
+    echo json_encode(["success" => false, "message" => "Invalid username or password."]);
+}
+
 ?>

@@ -3,6 +3,9 @@
   <div class="sim-page">
     <h1>___________________________________</h1>
     <h1 class="sim-title">Investment Simulations</h1>
+    <div class="username-box">
+      👤 {{ username }}
+    </div>
     <div class="text-center mb-4">
       <button @click="addSimulation" class="btn-primary">
         + Add New Simulation
@@ -93,6 +96,7 @@ export default {
   },
   data() {
     return {
+      username: '',               // 👈 Username to display
       nextId: 1,
       focusedId: null,
       simulations: [],
@@ -292,6 +296,10 @@ export default {
         this.saveMessage = 'Error saving simulation.'
       }
     }
+  },
+  mounted() {
+    this.username = localStorage.getItem("username") || "Guest"
+    this.loadSavedSimulations()
   },
   beforeDestroy() {
     this.simulations.forEach(sim => {

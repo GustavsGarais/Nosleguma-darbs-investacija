@@ -22,6 +22,7 @@ import SimulationPage from './components/Simulations/SimulationPage.vue'
 import TopBar from './components/TopBar.vue'
 import BeginnerGuidePage from './components/BeginnerGuidePage.vue'
 import SimulationInfoPage from './components/SimulationInfoPage.vue'
+import UserSettingsPage from "./components/user_settings/UserSettingsPage.vue";
 
 export default {
   components: { 
@@ -30,7 +31,8 @@ export default {
     SimulationPage,
     SimulationInfoPage,
     BeginnerGuidePage,
-    TopBar
+    TopBar,
+    UserSettingsPage
   },
   data() {
     return {
