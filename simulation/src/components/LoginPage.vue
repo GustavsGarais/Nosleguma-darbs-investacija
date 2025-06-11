@@ -68,11 +68,13 @@ export default {
         this.message = data.message;
 
         if (data.success) {
-          // Save both username and user_id
-          localStorage.setItem("username", this.username);
-          localStorage.setItem("loggedInUserId", data.user_id);
+          if (data.user_id) {
+            localStorage.setItem("username", this.username);
+            localStorage.setItem("loggedInUserId", data.user_id);  // <- This is critical!
+          } else {
+            console.warn("Login succeeded but no user_id returned.");
+          }
 
-          // Navigate to simulation page
           this.$emit("navigate", "SimulationPage");
         }
       } catch (error) {
@@ -80,6 +82,7 @@ export default {
         this.message = "Login failed.";
       }
     },
+
     async register() {
       if (this.password !== this.repeatPassword) {
         this.message = "Passwords do not match.";

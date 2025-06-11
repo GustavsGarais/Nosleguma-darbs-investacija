@@ -13,7 +13,7 @@ require 'db_connect.php';
 
 $data = json_decode(file_get_contents("php://input"));
 
-if (!$data->user_id || !$data->name || !$data->settings) {
+if (!isset($data->user_id, $data->name, $data->settings)) {
     echo json_encode(["success" => false, "message" => "Missing fields."]);
     exit;
 }

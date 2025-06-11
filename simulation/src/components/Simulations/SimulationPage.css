@@ -105,16 +105,31 @@ body.light .side-sim {
 }
 
 .username-box {
-  position: absolute;
-  top: 120px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 10px 14px;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: bold;
-  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: var(--text-color);
+  gap: 10px;
 }
+
+.icon-button {
+  background: var(--btn-bg);
+  color: var(--text-color);
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.icon-button:hover {
+  background: var(--btn-hover);
+  transform: scale(1.1);
+}
+
 
 /* Primary Button */
 .btn-primary {

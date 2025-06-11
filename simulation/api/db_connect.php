@@ -1,4 +1,6 @@
 <?php
+$pdo = new PDO('sqlite:../database.db');
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 try {
     $db = new PDO('sqlite:' . __DIR__ . '/database.db');  // ← This is important
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

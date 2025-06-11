@@ -18,11 +18,11 @@
 <script>
 import HomePage from './components/HomePage.vue'
 import LoginPage from './components/LoginPage.vue'
-import SimulationPage from './components/Simulations/SimulationPage.vue'
+import SimulationPage from "@/components/Simulations/SimulationPage.vue";
 import TopBar from './components/TopBar.vue'
 import BeginnerGuidePage from './components/BeginnerGuidePage.vue'
 import SimulationInfoPage from './components/SimulationInfoPage.vue'
-import UserSettingsPage from "./components/user_settings/UserSettingsPage.vue";
+import UserSettingsPage from "./components/user_settings/goToUserSettings.vue";
 
 export default {
   components: { 
