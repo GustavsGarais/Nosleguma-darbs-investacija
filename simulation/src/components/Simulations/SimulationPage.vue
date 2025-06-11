@@ -1,6 +1,7 @@
 <template>
   <div class="sim-page">
-    <h1 class="sim-title">Investment Simulations</h1>
+    
+    <h1>___</h1>
 
     <div class="username-box">
       <button @click="showSettings = !showSettings" class="btn-primary">
@@ -19,9 +20,9 @@
         </button>
       </div>
 
-      <div class="sim-content">
+      <div class="sim-content flex justify-center gap-8">
         <!-- Side Simulations -->
-        <div class="side-sim-list">
+        <div class="side-sim-list w-64">
           <div
             v-for="sim in simulations.filter(s => s.id !== focusedId)"
             :key="sim.id"
@@ -44,7 +45,7 @@
         </div>
 
         <!-- Focused Simulation -->
-        <div class="focused-sim-container">
+        <div class="sim-content flex justify-center gap-8">
           <div v-if="focusedSimulation" class="focused-sim">
             <div class="flex items-center justify-between mb-2">
               <input
@@ -68,17 +69,13 @@
               @toggle="toggleSimulation(focusedSimulation.id)"
               @reset="resetSimulation(focusedSimulation.id)"
               @change-speed="changeSpeed(focusedSimulation.id, $event)"
+              @save="saveSimulation"
             />
-            <InvestmentChart :simulation="focusedSimulation" />
 
-            <div class="mt-4">
-              <button @click="saveSimulation" class="btn-primary w-full">
-                💾 Save Focused Simulation
-              </button>
-              <p v-if="saveMessage" class="text-green-400 mt-2">{{ saveMessage }}</p>
-            </div>
+            <InvestmentChart :simulation="focusedSimulation" />
           </div>
         </div>
+        
       </div>
     </div>
   </div>

@@ -1,44 +1,63 @@
 <template>
   <div class="homepage">
+
     <section class="hero">
-      <h1>📈 Welcome to Investify</h1>
-      <p class="tagline">Test strategies. Track trends. Learn risk-free.</p>
-      <button @click="$emit('navigate', 'LoginPage')" class="cta-button">Start Simulating</button>
+      <h2>Your Simulation Hub</h2>
+      <p>Experiment with strategies, test market trends, and track performance risk-free.</p>
+      <button class="primary-btn" @click="$emit('navigate', 'LoginPage')">Start Simulating</button>
     </section>
 
-    <section class="grid-section">
-      <div class="feature-tile" @click="$emit('navigate', 'SimulationInfoPage')">
-        <div class="tile-content">
-          <h2>📊 What is a Simulation?</h2>
-          <p>Discover how investment simulations help sharpen your market sense without real money on the line.</p>
-        </div>
-      </div>
-
-      <div class="feature-tile" @click="$emit('navigate', 'BeginnerGuidePage')">
-        <div class="tile-content">
-          <h2>📚 Getting Started</h2>
-          <p>New to investing? Follow our beginner-friendly guide to confidently start experimenting.</p>
-        </div>
+    <section class="feature-grid">
+      <div class="feature-card" @click="$emit('navigate', 'BeginnerGuidePage')">
+        <div class="icon">📚</div>
+        <h3>Beginner’s Guide</h3>
+        <p>New to investing? Learn the basics and start your first simulation today.</p>
       </div>
     </section>
 
     <footer class="footer">
-      &copy; 2025 Investify. This platform is for educational simulations only.
+      <p>&copy; 2025 Investify — Simulations for educational purposes only.</p>
     </footer>
   </div>
 </template>
 
 <script setup>
-// no JS needed for now
+// No JS logic for now
 </script>
 
 <style scoped>
 .homepage {
-  padding: 100px 20px 40px;
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
+  padding: 2rem;
   font-family: 'Inter', sans-serif;
   color: var(--text-color);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.login-btn {
+  padding: 0.5rem 1.2rem;
+  background-color: #0F62FE;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background-color: #0043CE;
 }
 
 .hero {
@@ -46,72 +65,71 @@
   margin-bottom: 4rem;
 }
 
-.hero h1 {
-  font-size: 4rem;
+.hero h2 {
+  font-size: 2.5rem;
   margin-bottom: 0.5rem;
 }
 
-.tagline {
-  font-size: 1.35rem;
+.hero p {
+  font-size: 1.15rem;
   color: var(--text-muted-color);
   margin-bottom: 1.5rem;
 }
 
-.cta-button {
-  padding: 0.85rem 2.2rem;
-  background-color: #4CAF50;
+.primary-btn {
+  padding: 0.8rem 2rem;
+  background-color: #0F62FE;
   color: #fff;
-  font-size: 1.15rem;
   border: none;
   border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.cta-button:hover {
-  background-color: #45a049;
+.primary-btn:hover {
+  background-color: #0043CE;
 }
 
-.grid-section {
+.feature-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
   margin-bottom: 4rem;
 }
 
-.feature-tile {
-  border-radius: 16px;
-  overflow: hidden;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.feature-tile:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
-}
-
-.tile-content {
-  background-color: var(--background-blur);
+.feature-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
   padding: 1.5rem;
-  color: var(--text-color);
-  backdrop-filter: blur(5px);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.tile-content h2 {
-  font-size: 1.35rem;
-  margin-bottom: 0.6rem;
+.feature-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-4px);
 }
 
-.tile-content p {
-  font-size: 1rem;
+.icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+  font-size: 0.95rem;
   color: var(--text-muted-color);
 }
 
 .footer {
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-muted-color);
 }
 </style>

@@ -1,46 +1,22 @@
 <template>
-  <div class="flex flex-col items-center">
-    <!-- Only show chart for focused simulation -->
-    <InvestmentChart v-if="focusedSimulation" :simulation="focusedSimulation" />
+  <div>
+    <InvestmentChart :simulation="simulation" />
   </div>
 </template>
 
 <script>
-import { getSimulations, saveSimulation } from '@/api/simulationService.js';
+import InvestmentChart from './InvestmentChart.vue';
 
 export default {
-  data() {
-    return {
-      user: null,         // set upon login
-      simulations: [],
-      currentSettings: {}
-    };
+  props: {
+    simulation: Object
   },
-  methods: {
-    async onLogin(userData) {
-      this.user = userData;
-      await this.fetchSimulations();
-    },
-    async fetchSimulations() {
-      const resp = await getSimulations(this.user.id);
-      if (resp.data.success) this.simulations = resp.data.simulations;
-      else alert('Error loading simulations');
-    },
-    async onSaveSimulation(name) {
-      const resp = await saveSimulation(this.user.id, name, this.currentSettings);
-      if (resp.data.success) {
-        this.simulations.push({
-          name,
-          settings: this.currentSettings,
-          created_at: new Date().toISOString()
-        });
-      } else {
-        alert('Save failed');
-      }
-    }
+  components: {
+    InvestmentChart
   }
 };
 </script>
+
 
   
   <style scoped>
@@ -56,5 +32,8 @@ export default {
     justify-content: flex-start;
     /* Additional styling for left alignment */
   }
-  </style>
+  .simulation-sidebar {
+  width: 300px;
+  }
+</style>
   

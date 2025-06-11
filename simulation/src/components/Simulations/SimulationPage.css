@@ -130,7 +130,6 @@ body.light .side-sim {
   transform: scale(1.1);
 }
 
-
 /* Primary Button */
 .btn-primary {
   padding: 0.5rem 1.25rem;
@@ -263,4 +262,32 @@ body.light .side-sim {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* ------------------------- */
+/* Scroll + layout fix added  */
+/* ------------------------- */
+
+/* Prevent horizontal scrollbar globally */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Limit sim-content height to viewport and avoid vertical overflow stacking */
+.sim-content {
+  max-height: calc(100vh - 150px);
+  overflow: hidden;
+}
+
+/* Independent vertical scroll for side-sim-list */
+.side-sim-list {
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Independent vertical scroll for focused-sim-container */
+.focused-sim-container {
+  overflow-y: auto;
+  padding-left: 0.5rem;
 }
