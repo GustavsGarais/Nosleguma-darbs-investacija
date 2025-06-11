@@ -264,10 +264,6 @@ body.light .side-sim {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
-/* ------------------------- */
-/* Scroll + layout fix added  */
-/* ------------------------- */
-
 /* Prevent horizontal scrollbar globally */
 html, body {
   overflow-x: hidden;

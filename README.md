@@ -41,5 +41,4 @@ Investīciju izglītības website (website, kas imitē, kā investīcijas darboj
 ## Tehnoloģijas:
 
 Frontend — Vue.js
-Backend — Node.js
-Plānots — Docker, Laravel
+Backend — SQLite
