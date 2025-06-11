@@ -1,78 +1,82 @@
 <template>
-  
   <div class="sim-page">
-    <h1>___________________________________</h1>
     <h1 class="sim-title">Investment Simulations</h1>
+
     <div class="username-box">
-      👤 {{ username }}
-    </div>
-    <div class="text-center mb-4">
-      <button @click="addSimulation" class="btn-primary">
-        + Add New Simulation
+      <button @click="showSettings = !showSettings" class="btn-primary">
+        ⚙️ {{ showSettings ? 'Back to Simulations' : 'User Settings' }}
       </button>
     </div>
-    
-    <div class="sim-content">
-      <!-- Side Simulations -->
-      <div class="side-sim-list">
-        <div
-          v-for="sim in simulations.filter(s => s.id !== focusedId)"
-          :key="sim.id"
-          class="side-sim"
-        >
-          <input
-            v-model="sim.name"
-            class="text-sm font-semibold w-full bg-transparent border-b border-gray-500 mb-1"
-          />
-          <p class="text-xs text-gray-300">💰 €{{ sim.currentValue.toFixed(2) }}</p>
-          <div class="flex gap-2">
-            <button @click="focusedId = sim.id" class="btn-primary">
-              Focus
-            </button>
-            <button @click="deleteSimulation(sim.id)" class="btn-danger">
-              Delete
-            </button>
-          </div>
-        </div>
+
+    <!-- Conditional View -->
+    <div v-if="showSettings">
+      <GoToUserSettings />
+    </div>
+    <div v-else>
+      <div class="text-center mb-4">
+        <button @click="addSimulation" class="btn-primary">
+          + Add New Simulation
+        </button>
       </div>
 
-      <!-- Focused Simulation -->
-      <div class="focused-sim-container">
-        <div v-if="focusedSimulation" class="focused-sim">
-          <div class="flex items-center justify-between mb-2">
+      <div class="sim-content">
+        <!-- Side Simulations -->
+        <div class="side-sim-list">
+          <div
+            v-for="sim in simulations.filter(s => s.id !== focusedId)"
+            :key="sim.id"
+            class="side-sim"
+          >
             <input
-              v-model="focusedSimulation.name"
-              class="text-lg font-bold bg-transparent border-b border-gray-400 flex-1"
+              v-model="sim.name"
+              class="text-sm font-semibold w-full bg-transparent border-b border-gray-500 mb-1"
             />
-            <button
-              @click="deleteSimulation(focusedSimulation.id)"
-              class="btn-danger ml-2"
-            >
-              Delete
-            </button>
+            <p class="text-xs text-gray-300">💰 €{{ sim.currentValue.toFixed(2) }}</p>
+            <div class="flex gap-2">
+              <button @click="focusedId = sim.id" class="btn-primary">
+                Focus
+              </button>
+              <button @click="deleteSimulation(sim.id)" class="btn-danger">
+                Delete
+              </button>
+            </div>
           </div>
-          <SimulationSetup
-            :simulation="focusedSimulation"
-            @update-settings="updateSettings(focusedSimulation.id, $event)"
-          />
+        </div>
 
-          <SimulationControl
-            :simulation="focusedSimulation"
-            @toggle="toggleSimulation(focusedSimulation.id)"
-            @reset="resetSimulation(focusedSimulation.id)"
-            @change-speed="changeSpeed(focusedSimulation.id, $event)"
-          />
+        <!-- Focused Simulation -->
+        <div class="focused-sim-container">
+          <div v-if="focusedSimulation" class="focused-sim">
+            <div class="flex items-center justify-between mb-2">
+              <input
+                v-model="focusedSimulation.name"
+                class="text-lg font-bold bg-transparent border-b border-gray-400 flex-1"
+              />
+              <button
+                @click="deleteSimulation(focusedSimulation.id)"
+                class="btn-danger ml-2"
+              >
+                Delete
+              </button>
+            </div>
 
-          <InvestmentChart :simulation="focusedSimulation" />
+            <SimulationSetup
+              :simulation="focusedSimulation"
+              @update-settings="updateSettings(focusedSimulation.id, $event)"
+            />
+            <SimulationControl
+              :simulation="focusedSimulation"
+              @toggle="toggleSimulation(focusedSimulation.id)"
+              @reset="resetSimulation(focusedSimulation.id)"
+              @change-speed="changeSpeed(focusedSimulation.id, $event)"
+            />
+            <InvestmentChart :simulation="focusedSimulation" />
 
-          <!-- Save Simulation Button -->
-           <h1>___________________________________</h1>
-          <div class="mt-4">
-            <button @click="saveSimulation" class="btn-primary w-full">
-              
-              💾 Save Focused Simulation
-            </button>
-            <p v-if="saveMessage" class="text-green-400 mt-2">{{ saveMessage }}</p>
+            <div class="mt-4">
+              <button @click="saveSimulation" class="btn-primary w-full">
+                💾 Save Focused Simulation
+              </button>
+              <p v-if="saveMessage" class="text-green-400 mt-2">{{ saveMessage }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -85,6 +89,7 @@ import axios from 'axios'
 import SimulationSetup from '@/components/Simulations/SimulationSetup.vue'
 import SimulationControl from '@/components/Simulations/SimulationControl.vue'
 import InvestmentChart from '@/components/Simulations/InvestmentChart.vue'
+import GoToUserSettings from '@/components/user_settings/goToUserSettings.vue'
 import './SimulationPage.css'
 
 export default {
@@ -92,11 +97,13 @@ export default {
   components: {
     SimulationSetup,
     SimulationControl,
-    InvestmentChart
+    InvestmentChart,
+    GoToUserSettings
   },
   data() {
     return {
-      username: '',               // 👈 Username to display
+      showSettings: false,
+      username: '',
       nextId: 1,
       focusedId: null,
       simulations: [],
@@ -228,10 +235,9 @@ export default {
 
       try {
         const res = await axios.get(`http://localhost:8000/get_simulations.php?user_id=${user_id}`)
-
         if (res.data.success) {
           const savedSims = res.data.simulations
-          this.simulations = savedSims.map((sim, index) => ({
+          this.simulations = savedSims.map((sim) => ({
             id: this.nextId++,
             name: sim.sim_name,
             currentValue: sim.initial_investment,
@@ -250,12 +256,9 @@ export default {
             },
             data: []
           }))
-
           if (this.simulations.length > 0) {
             this.focusedId = this.simulations[0].id
           }
-
-          console.log('Simulations loaded:', this.simulations)
         } else {
           console.log(res.data.message)
         }
@@ -285,12 +288,9 @@ export default {
           risk_appetite: this.focusedSimulation.settings.riskAppetite,
           market_influence: this.focusedSimulation.settings.marketInfluence
         })
-
-        if (res.data.success) {
-          this.saveMessage = 'Simulation saved successfully!'
-        } else {
-          this.saveMessage = res.data.message
-        }
+        this.saveMessage = res.data.success
+          ? 'Simulation saved successfully!'
+          : res.data.message
       } catch (err) {
         console.error(err)
         this.saveMessage = 'Error saving simulation.'
@@ -298,7 +298,7 @@ export default {
     }
   },
   mounted() {
-    this.username = localStorage.getItem("username") || "Guest"
+    this.username = localStorage.getItem('username') || 'Guest'
     this.loadSavedSimulations()
   },
   beforeDestroy() {
