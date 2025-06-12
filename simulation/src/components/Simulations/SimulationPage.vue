@@ -1,7 +1,6 @@
 <template>
   <div class="sim-page">
-    
-    <h1>___</h1>
+    <h1 class="sim-title">__</h1>
 
     <div class="username-box">
       <button @click="showSettings = !showSettings" class="btn-primary">
@@ -9,20 +8,21 @@
       </button>
     </div>
 
-    <!-- Conditional View -->
     <div v-if="showSettings">
       <GoToUserSettings />
     </div>
+
     <div v-else>
-      <div class="text-center mb-4">
+      <div class="text-center mb-2">
         <button @click="addSimulation" class="btn-primary">
           + Add New Simulation
         </button>
       </div>
 
-      <div class="sim-content flex justify-center gap-8">
-        <!-- Side Simulations -->
-        <div class="side-sim-list w-64">
+      <!-- The key wrapper with horizontal flex layout -->
+      <div class="simulation-page-container sim-content">
+        <!-- Side simulations -->
+        <div class="simulation-list side-sim-list">
           <div
             v-for="sim in simulations.filter(s => s.id !== focusedId)"
             :key="sim.id"
@@ -33,7 +33,7 @@
               class="text-sm font-semibold w-full bg-transparent border-b border-gray-500 mb-1"
             />
             <p class="text-xs text-gray-300">💰 €{{ sim.currentValue.toFixed(2) }}</p>
-            <div class="flex gap-2">
+            <div class="flex gap-2 mt-1">
               <button @click="focusedId = sim.id" class="btn-primary">
                 Focus
               </button>
@@ -44,10 +44,10 @@
           </div>
         </div>
 
-        <!-- Focused Simulation -->
-        <div class="sim-content flex justify-center gap-8">
-          <div v-if="focusedSimulation" class="focused-sim">
-            <div class="flex items-center justify-between mb-2">
+        <!-- Focused simulation -->
+        <div class="focused-sim-container">
+          <div v-if="focusedSimulation" class="active-simulation">
+            <div class="flex items-center justify-between mb-3">
               <input
                 v-model="focusedSimulation.name"
                 class="text-lg font-bold bg-transparent border-b border-gray-400 flex-1"
@@ -71,15 +71,15 @@
               @change-speed="changeSpeed(focusedSimulation.id, $event)"
               @save="saveSimulation"
             />
-
             <InvestmentChart :simulation="focusedSimulation" />
           </div>
         </div>
-        
       </div>
     </div>
   </div>
 </template>
+
+
 
 <script>
 import axios from 'axios'

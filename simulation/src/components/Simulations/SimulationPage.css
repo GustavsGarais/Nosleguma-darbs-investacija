@@ -28,12 +28,13 @@
 }
 
 .sim-content {
-  display: flex;
   flex: 1;
+  display: flex;
   gap: 1.5rem;
-  overflow: hidden;
+  overflow: visible; 
   padding-bottom: 1.5rem;
 }
+
 
 /* Side simulation cards */
 .side-sim-list {
@@ -62,25 +63,21 @@
   text-decoration: underline;
 }
 
-/* Focused simulation container */
-.focused-sim-container {
-  flex: 1;
-  overflow-y: auto;
-}
-
 /* Shared login-box style that adapts to theme */
 .login-box {
-  padding: 2rem;
-  border-radius: 15px;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  height: 100%;
-  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
 }
+
 
 /* Dark Mode */
 body.dark .login-box,
@@ -272,7 +269,7 @@ html, body {
 /* Limit sim-content height to viewport and avoid vertical overflow stacking */
 .sim-content {
   max-height: calc(100vh - 150px);
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* Independent vertical scroll for side-sim-list */
@@ -284,6 +281,28 @@ html, body {
 
 /* Independent vertical scroll for focused-sim-container */
 .focused-sim-container {
-  overflow-y: auto;
-  padding-left: 0.5rem;
+  flex: 1;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1rem;
+}
+
+.simulation-page-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.simulation-list {
+  flex: 0 0 250px; /* or auto if you want it to grow with content */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.active-simulation {
+  flex: 1;
 }

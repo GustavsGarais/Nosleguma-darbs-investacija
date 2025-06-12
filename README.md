@@ -36,7 +36,7 @@ Investīciju izglītības website (website, kas imitē, kā investīcijas darboj
 ### Backend:
 
 1. cd simulation/api
-3. php -S localhost:8000
+2. php -S localhost:8000
 
 ## Tehnoloģijas:
 

@@ -12,6 +12,7 @@
         :min="field.min"
         :max="field.max"
         class="custom-input"
+        :class="{ 'dark-input': isDarkTheme }"
       />
     </div>
   </div>
@@ -66,6 +67,11 @@ export default {
         }
       }
     };
+  },
+  computed: {
+    isDarkTheme() {
+      return document.body.classList.contains('dark');
+    }
   },
   watch: {
     localSettings: {
