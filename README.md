@@ -1,44 +1,51 @@
-# Noslēguma darba tēmas apstiprināšana
+#  Noslēguma darba tēmas apstiprināšana
 
-Investīciju izglītības website (website, kas imitē, kā investīcijas darbojas izglītojošiem nolūkiem)
+**Investīciju izglītības vietne** — simulē, kā darbojas investīcijas izglītojošiem nolūkiem.
 
-## Lietas, kurām tai vajadzētu būt:
+---
 
-1. Piesakieties sistēmā (lietotājvārds un parole).
-2. Paskaidrojumi ar uznirstošiem logiem, kas vairākas reizes norāda, ka šī ir izglītojoša vietne.
-3. Iestatījumi ar dzīves kvalitātes opcijām (tumšs/gaišs režīms un fonta izvēle).
-4. Vairākas saglabātas investīcijas, kas tiek rādītas pielāgotās vietnes cilnēs sānos.
-5. Pauzes iespēja noteiktiem ieguldījumiem un atjaunināšanas ātruma maiņa.
-6. Sākuma vērtību un parametru iestatīšana (sākumvērtība, investoru skaits, vērtības, izmaiņu iespējamība).
+##  Vietnei nepieciešamās funkcijas:
 
-## Pielāgotas izmaiņas jūsu simulācijai:
+1. Sistēmas pieteikšanās (lietotājvārds un parole, ar reģistrācijas iespēju).
+2. Brīdinājuma paziņojumi vairākās vietās, ka šī ir izglītojoša platforma.
+3. Lietotāja saskarnes iestatījumi: tumšs/gaišs režīms un fonta izvēle.
+4. Vairāku saglabātu simulāciju pārvaldība, kas piesaistītas konkrētam lietotājam.
+5. Iespēja apturēt atsevišķas simulācijas un mainīt to atjaunināšanas ātrumu.
+6. Parametru iestatīšana pirms simulācijas sākuma: sākuma summa, investoru skaits, pieauguma ātrums, riska apetīte un tirgus ietekme.
 
-1. Pielāgota izveides sistēma, kur imitēt investīciju izmaiņas (random pieaugums/samazinājums).
-2. Iespēja apturēt un turpināt simulāciju.
-3. Papildu informācijas parādīšana, uzbraucot ar kursoru.
-4. Iespēja ietekmēt izmaiņas, ieguldījumu apjomu un aprēķināt iespējamos efektus.
-5. Izlases (favorite) sistēma, lai ātrāk piekļūtu simulācijām.
+---
 
-## Pabeigtais darbs:
+##  Izveidotās pielāgotās simulācijas funkcijas:
 
-1. Izveidota sākumlapa (vēl nav pabeigta).
-2. Pieslēgšanās lapa ar vienu admin kontu (bez reģistrācijas vai lietotāju datu saglabāšanas).
-3. Investīciju simulācijas lapa ar strādājošu grafiku, vērtību skaitīšanu un izvietojumu (dažas funkcijas vēl jāpielabo).
+1. Imitēta investīciju izmaiņu sistēma (random pieaugums/samazinājums pēc iestatītiem parametriem).
+2. Papildinformācija uzbraucot ar kursoru uz grafika vai vērtībām.
+3. Lietotājs var ietekmēt investīciju apjomu, risku un izmaiņu koeficientus.
+4. Lietotāju pieslēgšanās statusa parādīšana (kurš pašlaik tiešsaistē) — ja funkcija aktīva.
 
-## Programma lai ietu commandas:
+---
+
+##  Paveiktais darbs:
+
+1. Pieslēgšanās un reģistrācijas lapas ar SQLite datubāzi un PHP backend.
+2. Investīciju simulācijas lapa ar strādājošu grafiku, vērtību skaitīšanu un apturēšanas funkciju.
+3. Tumšā/gaišā režīma pārslēgšanas funkcija visai vietnei.
+4. Sistēma vairāku lietotāju kontiem.
+5. Backend pilnībā pārbūvēts no localhost uz laravel, no docker, uz Node.js no beigām PHP ar SQLite.
+7. Precīzi atdalīti frontend (`src/`) un backend (`api/`) ceļi vienā projektā.
+
+---
+
+##  Programmas palaišana:
 
 ### Frontend:
-
 1. cd simulation
 2. npm install
 3. npm run dev
 
-### Backend:
-
+### Backend
 1. cd simulation/api
 2. php -S localhost:8000
 
 ## Tehnoloģijas:
-
-Frontend — Vue.js
-Backend — SQLite
+- Frontend: Vue.js
+- Backend: PHP + SQLite
