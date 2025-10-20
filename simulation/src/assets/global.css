@@ -1,53 +1,56 @@
-/* Reset layout and ensure full height */
-body, html, #app {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  /* Allow natural page scrolling for tall content */
-  overflow-y: auto;
+/* ---- Global variables and base reset ---- */
+:root{
+  /* Brand colors (preserve user's chosen palette) */
+  --brand-primary: #4f46e5; /* indigo */
+  --brand-primary-2: #3b82f6; /* blue */
+  --accent: #edc988; /* sandy accent used previously */
+  --accent-2: #5b8c5a; /* greenish accent */
+  --bg-dark-a: rgba(20,20,20,0.6);
+  --glass: rgba(255,255,255,0.06);
+  --text: #111827;
+  --muted: #6b7280;
+  --radius: 12px;
 }
 
-/* Theme Styles */
-.dark-theme {
-  background: linear-gradient(to bottom right, rgb(95, 5, 95), black);
-  color: white;
-}
+/* Reset and sensible defaults */
+*{box-sizing:border-box}
+html,body,#app{height:100%;margin:0;padding:0;font-family:Inter, 'Segoe UI', Roboto, system-ui, -apple-system, 'Helvetica Neue', Arial}
+body{line-height:1.45;-webkit-font-smoothing:antialiased}
 
-.light-theme {
-  background: linear-gradient(to bottom right, #edc988, #5b8c5a);
-  color: black;
-}
+/* Page containers */
+.app-wrapper{min-height:100vh;display:flex;flex-direction:column}
+.container{width:100%;max-width:1200px;margin:0 auto;padding:1rem}
 
-/* Make sure all page content fills full height */
-.page-fill {
-  min-height: 100vh;
-}
+/* Theme backgrounds — keep original color choices but make them subtler */
+.dark-theme{background:linear-gradient(135deg,#5f045f 0%,#000 100%);color:#fff}
+.light-theme{background:linear-gradient(135deg,#edc988 0%,#5b8c5a 100%);color:var(--text)}
 
-/* Center everything inside the main app */
-body, html, #app, .app-wrapper {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  text-align: center;
-}
+/* Utility helpers */
+.center{display:flex;align-items:center;justify-content:center}
+.stack{display:flex;flex-direction:column;gap:1rem}
 
-/* Optional: make sure the app fills the full screen */
-html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
+/* Card / glass surface */
+.card{background:var(--glass);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:var(--radius);padding:1rem;border:1px solid rgba(255,255,255,0.06)}
+.card.light{background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.85));border:1px solid rgba(0,0,0,0.06);color:var(--text)}
 
-html,
-body,
-#app {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: 'Inter', sans-serif;
-  background: transparent !important;
-  /* Permit vertical scrolling site-wide */
-  overflow-y: auto;
-}
+/* Typography */
+h1,h2,h3{margin:0}
+h1{font-size:1.6rem}
+h2{font-size:1.25rem}
+p{margin:0}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:.6rem;border:0;padding:.6rem .9rem;border-radius:.6rem;cursor:pointer;font-weight:600}
+.btn-primary{background:linear-gradient(90deg,var(--brand-primary),var(--brand-primary-2));color:#fff}
+.btn-primary:active{transform:translateY(1px)}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.08);color:inherit}
+.btn-light{background:#fff;border:1px solid rgba(0,0,0,0.06);color:var(--text)}
+
+/* Responsive top spacing to account for fixed header */
+.content-container{padding-top:84px;padding-bottom:2rem}
+
+/* Small helpers for muted text */
+.muted{color:var(--muted)}
+
+/* Prevent horizontal scroll */
+html,body{overflow-x:hidden}

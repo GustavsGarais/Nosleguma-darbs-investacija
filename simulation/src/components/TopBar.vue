@@ -1,73 +1,47 @@
 <!-- src/components/TopBar.vue -->
 <template>
   <header class="top-bar">
-    <div class="top-bar-content">
-      <h1 class="logo">📈 Investify</h1>
-      <div class="button-group">
-        <button @click="$emit('navigate', 'HomePage')" class="nav-button">🏠 Home</button>
-        <button v-if="showLogin" @click="$emit('navigate', 'LoginPage')" class="nav-button">🔐 Login</button>
-        <button @click="toggleTheme" class="theme-toggle">🌙 Toggle Theme</button>
+    <div class="container top-bar-content">
+      <div class="brand">
+        <button class="logo btn btn-ghost" aria-label="Home" @click="$emit('navigate','HomePage')">📈 Investify</button>
       </div>
+
+      <nav class="nav" role="navigation">
+        <button class="btn btn-ghost" @click="$emit('navigate','HomePage')">Home</button>
+        <button v-if="!user" class="btn btn-ghost" @click="$emit('navigate','LoginPage')">Login</button>
+        <div v-else class="user-actions" style="display:flex;gap:.5rem;align-items:center">
+          <span class="muted">{{ user.username }}</span>
+          <button class="btn btn-ghost" @click="logout">Logout</button>
+        </div>
+        <button class="btn btn-light" @click="toggleTheme">🌗</button>
+      </nav>
     </div>
   </header>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import authService from '../services/authService'
+
+const emits = defineEmits(['navigate','user-changed'])
 const props = defineProps({
   toggleTheme: Function,
-  showLogin: {
-    type: Boolean,
-    default: true
-  }
+  currentUser: { type: Object, default: null },
+  showLogin: { type: Boolean, default: true }
 })
+
+function logout() {
+  authService.logout()
+  emits('user-changed', null)
+  emits('navigate','HomePage')
+}
 </script>
 
 <style scoped>
-.top-bar {
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background: rgba(20, 20, 20, 0.85);
-  backdrop-filter: blur(10px);
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: center;
-  z-index: 999;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-}
-
-.top-bar-content {
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo {
-  font-size: 1.8rem;
-  color: #fff;
-  font-weight: 700;
-}
-
-.button-group {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.nav-button, .theme-toggle {
-  padding: 0.5rem 1rem;
-  background: #444;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.nav-button:hover, .theme-toggle:hover {
-  background: #666;
-}
+.top-bar{position:fixed;inset:0 0 auto 0;z-index:999;background:var(--bg-dark-a);backdrop-filter:blur(6px);padding:0.6rem 0;box-shadow:0 6px 20px rgba(0,0,0,0.12)}
+.top-bar-content{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.logo{font-size:1.05rem;font-weight:700}
+.nav{display:flex;align-items:center;gap:.6rem}
+.muted{color:var(--muted)}
+.btn{font-weight:600}
 </style>

@@ -3,7 +3,7 @@
     <div class="login-box">
       <h2>{{ isRegistering ? 'Register' : 'Login' }}</h2>
 
-      <form @submit.prevent="isRegistering ? register() : login()">
+  <form @submit.prevent="isRegistering ? register() : login()">
         <div class="user-box">
           <input v-model="username" type="text" required />
           <label>Username</label>
@@ -55,62 +55,40 @@ export default {
     },
     async login() {
       try {
-        const response = await fetch("http://localhost:8000/login.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: this.username,
-            password: this.password,
-          }),
-        });
-
-        const data = await response.json();
-        this.message = data.message;
-
+        const data = await (await import('../services/authService')).login({ username: this.username, password: this.password });
+        this.message = data.message || '';
         if (data.success) {
+          // Store user if returned
           if (data.user_id) {
-            localStorage.setItem("username", data.username || this.username);
-            localStorage.setItem("loggedInUserId", data.user_id);
+            localStorage.setItem('loggedInUserId', data.user_id)
+            localStorage.setItem('username', data.username || this.username)
           } else if (data.user && data.user.id) {
-            localStorage.setItem("username", data.user.username || this.username);
-            localStorage.setItem("loggedInUserId", data.user.id);
-          } else {
-            console.warn("Login succeeded but no user_id returned.");
+            localStorage.setItem('loggedInUserId', data.user.id)
+            localStorage.setItem('username', data.user.username || this.username)
           }
-
-          this.$emit("navigate", "SimulationPage");
+          // Emit the user object to the parent so header updates
+          const user = { id: data.user_id || (data.user && data.user.id), username: data.username || (data.user && data.user.username) || this.username }
+          this.$emit('user-changed', user)
+          this.$emit('navigate','SimulationPage')
         }
-      } catch (error) {
-        console.error("Login failed:", error);
-        this.message = "Login failed.";
+      } catch (err) {
+        console.error(err)
+        this.message = 'Login failed.'
       }
     },
 
     async register() {
       if (this.password !== this.repeatPassword) {
-        this.message = "Passwords do not match.";
-        return;
+        this.message = 'Passwords do not match.'
+        return
       }
-
       try {
-        const response = await fetch("http://localhost:8000/register.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: this.username,
-            password: this.password,
-          }),
-        });
-
-        const data = await response.json();
-        this.message = data.message;
-
-        if (data.success) {
-          this.toggleMode();
-        }
-      } catch (error) {
-        console.error("Registration failed:", error);
-        this.message = "Registration failed.";
+        const data = await (await import('../services/authService')).register({ username: this.username, password: this.password })
+        this.message = data.message || ''
+        if (data.success) this.toggleMode()
+      } catch (err) {
+        console.error(err)
+        this.message = 'Registration failed.'
       }
     },
   },
