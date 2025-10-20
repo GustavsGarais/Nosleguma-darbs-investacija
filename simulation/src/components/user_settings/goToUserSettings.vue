@@ -64,9 +64,13 @@ export default {
   methods: {
     async fetchSimulations() {
       try {
-        const response = await fetch("http://localhost:8000/get_simulations.php?user_id=" + this.userId);
+        const response = await fetch("http://localhost:8000/saving_simulations/get_simulation.php", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: this.userId })
+        })
         const data = await response.json();
-        this.simulationCount = data.simulations.length;
+        this.simulationCount = Array.isArray(data.simulations) ? data.simulations.length : 0;
       } catch (error) {
         console.error("Failed to load simulations:", error);
       }

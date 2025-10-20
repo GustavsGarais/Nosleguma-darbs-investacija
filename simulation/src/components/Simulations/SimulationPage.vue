@@ -71,6 +71,16 @@
               @change-speed="changeSpeed(focusedSimulation.id, $event)"
               @save="saveSimulation"
             />
+            <div class="login-box" style="margin-top: 12px; text-align: left;">
+              <h3 class="text-md font-semibold mb-2">Summary</h3>
+              <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
+                <li><strong>Current</strong>: €{{ focusedSimulation.currentValue.toFixed(2) }}</li>
+                <li><strong>Invested</strong>: €{{ totalContributions.toFixed(2) }}</li>
+                <li><strong>Gain</strong>: €{{ (focusedSimulation.currentValue - totalContributions).toFixed(2) }}</li>
+                <li><strong>Real (est.)</strong>: €{{ latestRealValue.toFixed(2) }}</li>
+                <li><strong>CAGR (est.)</strong>: {{ displayCagr }}</li>
+              </ul>
+            </div>
             <InvestmentChart :simulation="focusedSimulation" />
           </div>
         </div>
@@ -110,6 +120,31 @@ export default {
   computed: {
     focusedSimulation() {
       return this.simulations.find(sim => sim.id === this.focusedId)
+    },
+    totalContributions() {
+      if (!this.focusedSimulation) return 0
+      const months = this.focusedSimulation.data.length
+      const monthly = this.focusedSimulation.settings.monthlyContribution || 0
+      return months * monthly
+    },
+    latestRealValue() {
+      if (!this.focusedSimulation) return 0
+      if (this.focusedSimulation.data.length === 0) {
+        return this.focusedSimulation.settings.initialInvestment || 0
+      }
+      const last = this.focusedSimulation.data[this.focusedSimulation.data.length - 1]
+      return last.inflationAdjusted ?? (typeof last.value === 'number' ? last.value : (last.value?.amount || 0))
+    },
+    displayCagr() {
+      if (!this.focusedSimulation) return '—'
+      const dataLen = this.focusedSimulation.data.length
+      if (dataLen < 12) return '—'
+      const years = dataLen / 12
+      const start = this.focusedSimulation.settings.initialInvestment || 0
+      const end = this.focusedSimulation.currentValue || 0
+      if (start <= 0 || end <= 0) return '—'
+      const cagr = Math.pow(end / start, 1 / years) - 1
+      return (cagr * 100).toFixed(2) + '%'
     }
   },
   methods: {
@@ -224,41 +259,35 @@ export default {
       }
     },
     async loadSavedSimulations() {
-      const user_id = localStorage.getItem('loggedInUserId')
-      if (!user_id) {
-        console.log('No user logged in.')
-        return
-      }
-
+      const userId = localStorage.getItem('loggedInUserId')
+      if (!userId) return
       try {
-        const res = await axios.get(`http://localhost:8000/get_simulations.php?user_id=${user_id}`)
-        if (res.data.success) {
-          const savedSims = res.data.simulations
-          this.simulations = savedSims.map((sim) => ({
+        const res = await axios.post('http://localhost:8000/saving_simulations/get_simulation.php', { user_id: userId })
+        if (!res.data?.success) return
+        const savedSims = Array.isArray(res.data.simulations) ? res.data.simulations : []
+        this.simulations = savedSims.map((sim) => {
+          const settings = sim.settings || {}
+          return {
             id: this.nextId++,
-            name: sim.sim_name,
-            currentValue: sim.initial_investment,
+            name: sim.name || sim.sim_name || `Simulation ${this.nextId - 1}`,
+            currentValue: settings.initialInvestment ?? sim.initial_investment ?? 1000,
             trend: 'neutral',
             isRunning: false,
             interval: null,
             speed: 1000,
             settings: {
-              initialInvestment: sim.initial_investment,
-              investors: sim.num_investors,
-              growthRate: sim.growth_rate,
-              riskAppetite: sim.risk_appetite,
-              marketInfluence: sim.market_influence,
-              monthlyContribution: 100,
-              inflationRate: 0.02
+              initialInvestment: settings.initialInvestment ?? sim.initial_investment ?? 1000,
+              investors: settings.investors ?? sim.num_investors ?? 10,
+              growthRate: settings.growthRate ?? sim.growth_rate ?? 0.05,
+              riskAppetite: settings.riskAppetite ?? sim.risk_appetite ?? 0.5,
+              marketInfluence: settings.marketInfluence ?? sim.market_influence ?? 0.7,
+              monthlyContribution: settings.monthlyContribution ?? 100,
+              inflationRate: settings.inflationRate ?? 0.02
             },
             data: []
-          }))
-          if (this.simulations.length > 0) {
-            this.focusedId = this.simulations[0].id
           }
-        } else {
-          console.log(res.data.message)
-        }
+        })
+        if (this.simulations.length > 0) this.focusedId = this.simulations[0].id
       } catch (err) {
         console.error('Error fetching simulations:', err)
       }
@@ -268,26 +297,19 @@ export default {
         this.saveMessage = 'No simulation is focused.'
         return
       }
-
-      const user_id = localStorage.getItem('loggedInUserId')
-      if (!user_id) {
+      const userId = localStorage.getItem('loggedInUserId')
+      if (!userId) {
         this.saveMessage = 'You must be logged in to save simulations.'
         return
       }
-
       try {
-        const res = await axios.post('http://localhost:8000/save_simulation.php', {
-          user_id,
-          sim_name: this.focusedSimulation.name,
-          initial_investment: this.focusedSimulation.settings.initialInvestment,
-          num_investors: this.focusedSimulation.settings.investors,
-          growth_rate: this.focusedSimulation.settings.growthRate,
-          risk_appetite: this.focusedSimulation.settings.riskAppetite,
-          market_influence: this.focusedSimulation.settings.marketInfluence
-        })
-        this.saveMessage = res.data.success
-          ? 'Simulation saved successfully!'
-          : res.data.message
+        const payload = {
+          user_id: userId,
+          name: this.focusedSimulation.name,
+          settings: this.focusedSimulation.settings
+        }
+        const res = await axios.post('http://localhost:8000/saving_simulations/save_simulation.php', payload)
+        this.saveMessage = res.data?.success ? 'Simulation saved successfully!' : (res.data?.message || 'Save failed')
       } catch (err) {
         console.error(err)
         this.saveMessage = 'Error saving simulation.'

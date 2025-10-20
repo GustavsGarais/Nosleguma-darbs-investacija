@@ -52,6 +52,8 @@ export default {
     toggleTheme() {
       this.darkMode = !this.darkMode
       localStorage.setItem('darkMode', this.darkMode)
+      document.body.classList.toggle('dark', this.darkMode)
+      document.body.classList.toggle('light', !this.darkMode)
     }
   }
 }
@@ -93,5 +95,6 @@ body, html, #app {
   align-items: center;
   padding: 2rem;
   margin-top: 80px;
+  width: 100%;
 }
 </style>
