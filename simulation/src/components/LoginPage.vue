@@ -69,8 +69,11 @@ export default {
 
         if (data.success) {
           if (data.user_id) {
-            localStorage.setItem("username", this.username);
-            localStorage.setItem("loggedInUserId", data.user_id);  // <- This is critical!
+            localStorage.setItem("username", data.username || this.username);
+            localStorage.setItem("loggedInUserId", data.user_id);
+          } else if (data.user && data.user.id) {
+            localStorage.setItem("username", data.user.username || this.username);
+            localStorage.setItem("loggedInUserId", data.user.id);
           } else {
             console.warn("Login succeeded but no user_id returned.");
           }

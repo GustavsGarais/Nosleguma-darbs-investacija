@@ -9,8 +9,16 @@ try {
     $db->exec("CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
+        last_active DATETIME
     )");
+
+    // Ensure last_active column exists for older DBs
+    try {
+        $db->exec("ALTER TABLE users ADD COLUMN last_active DATETIME");
+    } catch (PDOException $ignored) {
+        // Column may already exist; ignore error
+    }
 } catch (PDOException $e) {
     echo json_encode(["success" => false, "message" => "DB Connection failed: " . $e->getMessage()]);
     exit();

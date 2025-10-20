@@ -4,7 +4,8 @@ body, html, #app {
   padding: 0;
   height: 100%;
   font-family: 'Segoe UI', sans-serif;
-  overflow-y: hidden; /* Disable vertical scrolling */
+  /* Allow natural page scrolling for tall content */
+  overflow-y: auto;
 }
 
 /* Theme Styles */
@@ -47,5 +48,6 @@ body,
   height: 100%;
   font-family: 'Inter', sans-serif;
   background: transparent !important;
-  overflow-y: hidden; /* Disable vertical scrolling */
+  /* Permit vertical scrolling site-wide */
+  overflow-y: auto;
 }
