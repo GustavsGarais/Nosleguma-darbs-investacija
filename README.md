@@ -32,20 +32,3 @@
 4. Sistēma vairāku lietotāju kontiem.
 5. Backend pilnībā pārbūvēts no localhost uz laravel, no docker, uz Node.js no beigām PHP ar SQLite.
 7. Precīzi atdalīti frontend (`src/`) un backend (`api/`) ceļi vienā projektā.
-
----
-
-##  Programmas palaišana:
-
-### Frontend:
-1. cd simulation
-2. npm install
-3. npm run dev
-
-### Backend
-1. cd simulation/api
-2. php -S localhost:8000
-
-## Tehnoloģijas:
-- Frontend: Vue.js
-- Backend: PHP + SQLite
