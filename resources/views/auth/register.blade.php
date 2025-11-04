@@ -1,52 +1,51 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+@extends('layouts.app')
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
+@section('title', 'Register')
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+@section('content')
+<div class="auth-page">
+	<section id="register-section" class="auth-card" aria-label="Register">
+		<h1>Create your account</h1>
+		<p>Join and start simulating smarter strategies</p>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+		@if ($errors->any())
+			<div role="alert" aria-live="polite" style="margin:12px 0; padding:10px 12px; border:1px solid var(--c-border); border-radius:10px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);">
+				<ul style="margin:0; padding-left:18px;">
+					@foreach ($errors->all() as $error)
+						<li style="color: var(--c-on-surface);">{{ $error }}</li>
+					@endforeach
+				</ul>
+			</div>
+		@endif
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+		<form method="POST" action="{{ route('register') }}" style="display:grid; gap:12px;">
+			@csrf
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+			<label style="display:grid; gap:6px;">
+				<span style="font-weight:700; color: var(--c-on-surface);">Name</span>
+				<input type="text" name="name" value="{{ old('name') }}" required autocomplete="name" class="footer-email-input" />
+			</label>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+			<label style="display:grid; gap:6px;">
+				<span style="font-weight:700; color: var(--c-on-surface);">Email</span>
+				<input type="email" name="email" value="{{ old('email') }}" required autocomplete="username" class="footer-email-input" />
+			</label>
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
+			<label style="display:grid; gap:6px;">
+				<span style="font-weight:700; color: var(--c-on-surface);">Password</span>
+				<input type="password" name="password" required autocomplete="new-password" class="footer-email-input" />
+			</label>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+			<label style="display:grid; gap:6px;">
+				<span style="font-weight:700; color: var(--c-on-surface);">Confirm Password</span>
+				<input type="password" name="password_confirmation" required autocomplete="new-password" class="footer-email-input" />
+			</label>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+			<div class="auth-actions">
+				<button type="submit" class="btn btn-primary">Create Account</button>
+				<a href="{{ route('login') }}" class="btn btn-outline">Already have an account?</a>
+			</div>
+		</form>
+	</section>
+</div>
+@endsection

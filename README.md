@@ -32,3 +32,7 @@
 4. Sistēma vairāku lietotāju kontiem.
 5. Backend pilnībā pārbūvēts no localhost uz laravel, no docker, uz Node.js no beigām PHP ar SQLite.
 7. Precīzi atdalīti frontend (`src/`) un backend (`api/`) ceļi vienā projektā.
+
+php artisan serve --host=127.0.0.1 --port=8080
+
+npm run dev

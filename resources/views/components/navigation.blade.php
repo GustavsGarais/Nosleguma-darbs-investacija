@@ -1,0 +1,143 @@
+<nav id="main-navigation" class="navigation">
+    <div class="navigation__container">
+        <a href="{{ url('/') }}">
+            <div aria-label="{{ config('app.name') }}" class="navigation__logo">
+                <div class="navigation__logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                            <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
+                            <path d="m19 9l-5 5l-4-4l-3 3"></path>
+                        </g>
+                    </svg>
+                </div>
+                <span class="navigation__logo-text">{{ config('app.name') }}</span>
+                <div class="navigation__logo-glow"></div>
+            </div>
+        </a>
+
+        <button id="navigation-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navigation-menu" class="navigation__toggle">
+            <span class="navigation-navigationtoggle-icon1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5h16M4 12h16M4 19h16"></path>
+                </svg>
+            </span>
+            <span class="navigation-navigationtoggle-icon2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
+                </svg>
+            </span>
+        </button>
+
+        <div id="navigation-menu" class="navigation__menu">
+            <div class="navigation__panel">
+                <ul class="navigation__list">
+                    <li class="navigation__item">
+                        <a href="#simulations">
+                            <div class="navigation__link">
+                                <span class="navigation__link-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path>
+                                    </svg>
+                                </span>
+                                <span class="navigation__link-text">Simulations</span>
+                                <span class="navigation__link-glow"></span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="navigation__item">
+                        <a href="#features">
+                            <div class="navigation__link">
+                                <span class="navigation__link-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                            <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
+                                            <path d="m19 9l-5 5l-4-4l-3 3"></path>
+                                        </g>
+                                    </svg>
+                                </span>
+                                <span class="navigation__link-text">Features</span>
+                                <span class="navigation__link-glow"></span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="navigation__item">
+                        <a href="#about">
+                            <div class="navigation__link">
+                                <span class="navigation__link-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </g>
+                                    </svg>
+                                </span>
+                                <span class="navigation__link-text">About</span>
+                                <span class="navigation__link-glow"></span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="navigation__actions">
+                    @auth
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="navigation__action-link">Log Out</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}">
+                            <div class="navigation__action-link">
+                                <span>Log In</span>
+                            </div>
+                        </a>
+                        <a href="{{ route('register') }}">
+                            <div class="btn btn-primary">
+                                <span>Get Started</span>
+                            </div>
+                        </a>
+                    @endauth
+                </div>
+            </div>
+        </div>
+        <div class="navigation__scanline"></div>
+    </div>
+</nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const navigationToggle = document.getElementById("navigation-toggle")
+    const navigationMenu = document.getElementById("navigation-menu")
+
+    if (navigationToggle && navigationMenu) {
+        navigationToggle.addEventListener("click", () => {
+            const isExpanded = navigationToggle.getAttribute("aria-expanded") === "true"
+
+            navigationToggle.setAttribute("aria-expanded", !isExpanded)
+            navigationMenu.classList.toggle("navigation__menu--active")
+
+            if (!isExpanded) {
+                document.body.style.overflow = "hidden"
+            } else {
+                document.body.style.overflow = ""
+            }
+        })
+
+        const navigationLinks = navigationMenu.querySelectorAll(".navigation__link, .navigation__action-link, .btn")
+        navigationLinks.forEach((link) => {
+            link.addEventListener("click", () => {
+                navigationToggle.setAttribute("aria-expanded", "false")
+                navigationMenu.classList.remove("navigation__menu--active")
+                document.body.style.overflow = ""
+            })
+        })
+
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 991) {
+                navigationToggle.setAttribute("aria-expanded", "false")
+                navigationMenu.classList.remove("navigation__menu--active")
+                document.body.style.overflow = ""
+            }
+        })
+    }
+})
+</script>

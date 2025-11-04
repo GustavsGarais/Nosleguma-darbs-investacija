@@ -1,47 +1,51 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@extends('layouts.app')
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+@section('title', 'Login')
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+@section('content')
+<div class="auth-page">
+	<section id="login-section" class="auth-card" aria-label="Login">
+		<h1>Welcome back</h1>
+		<p>Sign in to continue your simulations</p>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+		@if ($errors->any())
+			<div role="alert" aria-live="polite" style="margin:12px 0; padding:10px 12px; border:1px solid var(--c-border); border-radius:10px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);">
+				<ul style="margin:0; padding-left:18px;">
+					@foreach ($errors->all() as $error)
+						<li style="color: var(--c-on-surface);">{{ $error }}</li>
+					@endforeach
+				</ul>
+			</div>
+		@endif
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+		<form method="POST" action="{{ route('login') }}" style="display:grid; gap:12px;">
+			@csrf
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+			<label style="display:grid; gap:6px;">
+				<span style="font-weight:700; color: var(--c-on-surface);">Email</span>
+				<input type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" class="footer-email-input" />
+			</label>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+			<label style="display:grid; gap:6px;">
+				<span style="font-weight:700; color: var(--c-on-surface);">Password</span>
+				<input type="password" name="password" required autocomplete="current-password" class="footer-email-input" />
+			</label>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
+			<label style="display:flex; align-items:center; gap:8px; color: var(--c-on-surface-2);">
+				<input type="checkbox" name="remember" style="width:16px; height:16px;" />
+				<span>Remember me</span>
+			</label>
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+			<div class="auth-actions">
+				<button type="submit" class="btn btn-primary">Sign In</button>
+				<a href="{{ route('password.request') }}" class="btn btn-outline">Forgot password?</a>
+			</div>
+
+			<div style="margin-top:6px; color: var(--c-on-surface-2);">
+				New here?
+				<a href="{{ route('register') }}" class="btn btn-link" style="padding:0;">Create an account</a>
+			</div>
+		</form>
+	</section>
+</div>
+@endsection
