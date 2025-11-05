@@ -6,9 +6,11 @@ use App\Models\Simulation;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class SimulationController extends Controller
 {
+    use AuthorizesRequests;
     public function index(): View
     {
         $simulations = auth()->user()->simulations()->latest()->paginate(10);

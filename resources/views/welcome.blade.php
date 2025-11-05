@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Home')
+@section('title', 'Welcome')
 
 @section('content')
 <section id="hero-section" role="region" aria-label="Hero" class="hero">
     <div class="hero-content">
         <div class="controls">
-            <button aria-pressed="false" aria-label="Toggle theme preview" class="theme-toggle">
+            <button aria-pressed="false" aria-label="Toggle light theme" class="theme-toggle" data-theme="light">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="4"></circle>
                     <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
                 </svg>
                 <span>Light</span>
             </button>
-            <button aria-pressed="false" aria-label="Toggle dark theme preview" class="theme-toggle">
+            <button aria-pressed="false" aria-label="Toggle dark theme" class="theme-toggle" data-theme="dark">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                     <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
                 </svg>
@@ -67,53 +67,45 @@
         </div>
     </div>
 </section>
-@endsection
 
-@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const themeToggles = document.querySelectorAll(".theme-toggle");
+    const html = document.documentElement;
+    const themeToggles = document.querySelectorAll('.theme-toggle');
 
-    // apply saved theme
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        themeToggles.forEach(t => {
-            const label = (t.querySelector('span')?.textContent || '').toLowerCase();
-            t.setAttribute('aria-pressed', label === 'dark' ? 'true' : 'false');
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            html.setAttribute('data-theme', 'dark');
+            try { localStorage.setItem('theme', 'dark'); } catch (e) {}
+        } else {
+            html.removeAttribute('data-theme');
+            try { localStorage.removeItem('theme'); } catch (e) {}
+        }
+        themeToggles.forEach((btn) => {
+            const btnTheme = btn.getAttribute('data-theme');
+            btn.setAttribute('aria-pressed', btnTheme === (theme || 'light') ? 'true' : 'false');
         });
     }
 
-    if (themeToggles && themeToggles.length) {
-        themeToggles.forEach((toggle) => {
-            toggle.addEventListener("click", function () {
-                const label = (this.querySelector('span')?.textContent || '').toLowerCase();
-                const wantDark = label.includes('dark');
+    // Initialize from saved theme
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem('theme'); } catch (e) { savedTheme = null; }
+    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
 
-                if (wantDark) {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    document.documentElement.removeAttribute('data-theme');
-                    localStorage.setItem('theme', 'light');
-                }
-
-                themeToggles.forEach((t) => {
-                    const l2 = (t.querySelector('span')?.textContent || '').toLowerCase();
-                    t.setAttribute('aria-pressed', (wantDark && l2==='dark') || (!wantDark && l2==='light'));
-                });
-            });
+    // Wire up clicks
+    themeToggles.forEach((btn) => {
+        btn.addEventListener('click', function() {
+            const desired = this.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+            applyTheme(desired);
         });
-    }
+    });
 
-    const visualStack = document.querySelector(".visual-stack");
+    const visualStack = document.querySelector('.visual-stack');
     if (visualStack) {
-        const chartSlice = visualStack.querySelector(".chart-slice");
-
-        window.addEventListener("scroll", function() {
+        const chartSlice = visualStack.querySelector('.chart-slice');
+        window.addEventListener('scroll', function() {
             const scrolled = window.pageYOffset;
             const parallaxSpeed = 0.06;
-
             if (chartSlice) {
                 chartSlice.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
             }
@@ -121,4 +113,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-@endpush
+@endsection
