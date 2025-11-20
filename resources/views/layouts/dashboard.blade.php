@@ -7,9 +7,8 @@
             <ul style="list-style:none; margin:0; padding:0; display:grid; gap:8px;">
                 <li><a href="{{ route('dashboard') }}" class="btn btn-outline" style="width:100%; text-align:left;">Dashboard</a></li>
                 <li><a href="{{ route('simulations.index') }}" class="btn btn-outline" style="width:100%; text-align:left;">Simulations</a></li>
-                <li><a href="{{ url('/settings') }}" class="btn btn-outline" style="width:100%; text-align:left;">Settings</a></li>
                 <li><a href="{{ url('/reports') }}" class="btn btn-outline" style="width:100%; text-align:left;">Reports</a></li>
-                <li><a href="{{ url('/account') }}" class="btn btn-outline" style="width:100%; text-align:left;">Account</a></li>
+                <li><a href="{{ route('settings') }}" class="btn btn-outline" style="width:100%; text-align:left;">Account</a></li>
             </ul>
         </nav>
     </aside>

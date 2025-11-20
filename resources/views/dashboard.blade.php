@@ -12,10 +12,25 @@
     @if(isset($simulations) && $simulations->count())
     <section aria-label="Your simulations" class="auth-card" style="margin-top:24px;">
         <h2 style="margin:0 0 12px;">Your recent simulations</h2>
-        <ul style="margin:0; padding-left:18px;">
+        <ul style="margin:0; padding:0; list-style:none; display:grid; gap:12px;">
             @foreach($simulations as $simulation)
-                <li>
-                    <a href="{{ route('simulations.show', $simulation) }}">{{ $simulation->name ?? 'Simulation #'.$simulation->id }}</a>
+                @php
+                    $snapshot = $simulation->data['snapshot'] ?? null;
+                    $lastValue = $snapshot['value'] ?? ($simulation->settings['initialInvestment'] ?? 0);
+                    $capturedAt = $snapshot['captured_at'] ?? null;
+                    $updatedText = $capturedAt
+                        ? 'Updated '.\Illuminate\Support\Carbon::parse($capturedAt)->diffForHumans()
+                        : 'Not saved yet';
+                @endphp
+                <li style="border:1px solid var(--c-border); border-radius:12px; padding:12px 16px; display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; align-items:center;">
+                    <div>
+                        <a href="{{ route('simulations.show', $simulation) }}" style="font-weight:600;">{{ $simulation->name ?? 'Simulation #'.$simulation->id }}</a>
+                        <p style="margin:4px 0 0; color:var(--c-on-surface-2); font-size:13px;">{{ $updatedText }}</p>
+                    </div>
+                    <div style="text-align:right;">
+                        <span class="currency-value" data-currency-value="{{ $lastValue }}">{{ '€'.number_format($lastValue, 2) }}</span>
+                        <p style="margin:4px 0 0; color:var(--c-on-surface-2); font-size:13px;">Latest value</p>
+                    </div>
                 </li>
             @endforeach
         </ul>
@@ -27,5 +42,7 @@
     @endif
 </div>
 @endsection
+
+@include('components.currency-script')
 
 

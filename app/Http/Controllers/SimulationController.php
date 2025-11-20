@@ -124,6 +124,38 @@ class SimulationController extends Controller
         ]);
     }
 
+    public function snapshot(Request $request, Simulation $simulation)
+    {
+        $this->authorize('update', $simulation);
+
+        $validated = $request->validate([
+            'month' => 'required|integer|min:0',
+            'value' => 'required|numeric|min:0',
+            'real_value' => 'required|numeric|min:0',
+            'contributions' => 'required|numeric|min:0',
+            'total_gain' => 'required|numeric',
+            'currency' => 'nullable|string|in:EUR,USD,GBP,JPY',
+        ]);
+
+        $data = $simulation->data ?? [];
+        $data['snapshot'] = [
+            'month' => $validated['month'],
+            'value' => round($validated['value'], 2),
+            'real_value' => round($validated['real_value'], 2),
+            'contributions' => round($validated['contributions'], 2),
+            'total_gain' => round($validated['total_gain'], 2),
+            'currency' => $validated['currency'] ?? 'EUR',
+            'captured_at' => now()->toIso8601String(),
+        ];
+
+        $simulation->update(['data' => $data]);
+
+        return response()->json([
+            'success' => true,
+            'snapshot' => $data['snapshot'],
+        ]);
+    }
+
     private function calculateSimulation(array $settings, int $months): array
     {
         $currentValue = $settings['initialInvestment'];

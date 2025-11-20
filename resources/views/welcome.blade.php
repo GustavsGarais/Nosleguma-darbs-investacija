@@ -70,36 +70,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const html = document.documentElement;
-    const themeToggles = document.querySelectorAll('.theme-toggle');
-
-    function applyTheme(theme) {
-        if (theme === 'dark') {
-            html.setAttribute('data-theme', 'dark');
-            try { localStorage.setItem('theme', 'dark'); } catch (e) {}
-        } else {
-            html.removeAttribute('data-theme');
-            try { localStorage.removeItem('theme'); } catch (e) {}
-        }
-        themeToggles.forEach((btn) => {
-            const btnTheme = btn.getAttribute('data-theme');
-            btn.setAttribute('aria-pressed', btnTheme === (theme || 'light') ? 'true' : 'false');
-        });
-    }
-
-    // Initialize from saved theme
-    let savedTheme = null;
-    try { savedTheme = localStorage.getItem('theme'); } catch (e) { savedTheme = null; }
-    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
-
-    // Wire up clicks
-    themeToggles.forEach((btn) => {
-        btn.addEventListener('click', function() {
-            const desired = this.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-            applyTheme(desired);
-        });
-    });
-
     const visualStack = document.querySelector('.visual-stack');
     if (visualStack) {
         const chartSlice = visualStack.querySelector('.chart-slice');

@@ -79,6 +79,30 @@
                 </ul>
 
                 <div class="navigation__actions">
+                    @php
+                        $showThemeToggle = auth()->check() && !request()->is('/');
+                    @endphp
+                    @if ($showThemeToggle)
+                        <button
+                            type="button"
+                            class="theme-toggle theme-toggle--combined"
+                            aria-pressed="false"
+                            title="Toggle light or dark mode"
+                            style="display:flex; align-items:center; gap:6px; border:1px solid var(--c-border); border-radius:999px; padding:6px 12px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-primary) 5%); cursor:pointer;">
+                            <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true" style="display:flex; align-items:center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="4"></circle>
+                                    <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                                </svg>
+                            </span>
+                            <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true" style="display:flex; align-items:center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                    <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
+                                </svg>
+                            </span>
+                            <span class="theme-toggle__label" style="font-size:13px; font-weight:600;">Theme</span>
+                        </button>
+                    @endif
                     @auth
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -105,39 +129,74 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const navigationToggle = document.getElementById("navigation-toggle")
-    const navigationMenu = document.getElementById("navigation-menu")
+    const navigationToggle = document.getElementById("navigation-toggle");
+    const navigationMenu = document.getElementById("navigation-menu");
 
     if (navigationToggle && navigationMenu) {
         navigationToggle.addEventListener("click", () => {
-            const isExpanded = navigationToggle.getAttribute("aria-expanded") === "true"
+            const isExpanded = navigationToggle.getAttribute("aria-expanded") === "true";
 
-            navigationToggle.setAttribute("aria-expanded", !isExpanded)
-            navigationMenu.classList.toggle("navigation__menu--active")
+            navigationToggle.setAttribute("aria-expanded", (!isExpanded).toString());
+            navigationMenu.classList.toggle("navigation__menu--active");
 
-            if (!isExpanded) {
-                document.body.style.overflow = "hidden"
-            } else {
-                document.body.style.overflow = ""
-            }
-        })
+            document.body.style.overflow = !isExpanded ? "hidden" : "";
+        });
 
-        const navigationLinks = navigationMenu.querySelectorAll(".navigation__link, .navigation__action-link, .btn")
+        const navigationLinks = navigationMenu.querySelectorAll(".navigation__link, .navigation__action-link, .btn");
         navigationLinks.forEach((link) => {
             link.addEventListener("click", () => {
-                navigationToggle.setAttribute("aria-expanded", "false")
-                navigationMenu.classList.remove("navigation__menu--active")
-                document.body.style.overflow = ""
-            })
-        })
+                navigationToggle.setAttribute("aria-expanded", "false");
+                navigationMenu.classList.remove("navigation__menu--active");
+                document.body.style.overflow = "";
+            });
+        });
 
         window.addEventListener("resize", () => {
             if (window.innerWidth > 991) {
-                navigationToggle.setAttribute("aria-expanded", "false")
-                navigationMenu.classList.remove("navigation__menu--active")
-                document.body.style.overflow = ""
+                navigationToggle.setAttribute("aria-expanded", "false");
+                navigationMenu.classList.remove("navigation__menu--active");
+                document.body.style.overflow = "";
             }
-        })
+        });
     }
-})
+
+    const html = document.documentElement;
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            html.setAttribute('data-theme', 'dark');
+            try { localStorage.setItem('theme', 'dark'); } catch (e) {}
+        } else {
+            html.removeAttribute('data-theme');
+            try { localStorage.removeItem('theme'); } catch (e) {}
+        }
+
+        document.querySelectorAll('.theme-toggle').forEach(btn => {
+            if (btn.dataset.theme === 'dark' || btn.dataset.theme === 'light') {
+                btn.setAttribute('aria-pressed', btn.dataset.theme === (theme || 'light') ? 'true' : 'false');
+            } else if (btn.classList.contains('theme-toggle--combined')) {
+                btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+                btn.setAttribute('data-theme-active', theme);
+            }
+        });
+    }
+
+    function currentTheme() {
+        return html.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    }
+
+    let storedTheme = null;
+    try { storedTheme = localStorage.getItem('theme'); } catch (e) { storedTheme = null; }
+    applyTheme(storedTheme === 'dark' ? 'dark' : 'light');
+
+    document.querySelectorAll('.theme-toggle').forEach(btn => {
+        if (btn.dataset.theme === 'dark' || btn.dataset.theme === 'light') {
+            btn.addEventListener('click', () => applyTheme(btn.dataset.theme === 'dark' ? 'dark' : 'light'));
+        } else {
+            btn.addEventListener('click', () => {
+                const nextTheme = currentTheme() === 'dark' ? 'light' : 'dark';
+                applyTheme(nextTheme);
+            });
+        }
+    });
+});
 </script>
