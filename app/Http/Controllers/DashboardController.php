@@ -12,4 +12,13 @@ class DashboardController extends Controller
 
         return view('dashboard', compact('simulations'));
     }
+
+    public function completeTutorial(Request $request)
+    {
+        $user = auth()->user();
+        $user->tutorial_completed = true;
+        $user->save();
+
+        return response()->json(['success' => true]);
+    }
 }

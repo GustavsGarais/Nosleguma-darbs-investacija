@@ -31,50 +31,51 @@
         <div id="navigation-menu" class="navigation__menu">
             <div class="navigation__panel">
                 <ul class="navigation__list">
-                    <li class="navigation__item">
-                        <a href="#simulations">
-                            <div class="navigation__link">
-                                <span class="navigation__link-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path>
+                    <li class="navigation__item navigation__item--dropdown" style="position:relative;">
+                        <button type="button" class="navigation__link navigation__link--dropdown" aria-expanded="false" aria-haspopup="true">
+                            <span class="navigation__link-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </span>
+                            <span class="navigation__link-text">Navigation</span>
+                            <span class="navigation__link-glow"></span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px; transition:transform 0.2s;">
+                                <path d="m6 9 6 6 6-6"></path>
+                            </svg>
+                        </button>
+                        <ul class="navigation__dropdown" style="display:none; position:absolute; top:100%; left:0; z-index:1000; list-style:none; margin:8px 0 0 0; padding:0; min-width:200px; background:var(--c-surface); border:1px solid var(--c-border); border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); overflow:hidden;">
+                            <li>
+                                <a href="#simulations" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path>
                                     </svg>
-                                </span>
-                                <span class="navigation__link-text">Simulations</span>
-                                <span class="navigation__link-glow"></span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="navigation__item">
-                        <a href="#features">
-                            <div class="navigation__link">
-                                <span class="navigation__link-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                    <span>Simulations</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#features" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <g>
                                             <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
                                             <path d="m19 9l-5 5l-4-4l-3 3"></path>
                                         </g>
                                     </svg>
-                                </span>
-                                <span class="navigation__link-text">Features</span>
-                                <span class="navigation__link-glow"></span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="navigation__item">
-                        <a href="#about">
-                            <div class="navigation__link">
-                                <span class="navigation__link-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                    <span>Features</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#about" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <g>
                                             <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
                                             <circle cx="12" cy="7" r="4"></circle>
                                         </g>
                                     </svg>
-                                </span>
-                                <span class="navigation__link-text">About</span>
-                                <span class="navigation__link-glow"></span>
-                            </div>
-                        </a>
+                                    <span>About</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
 
@@ -104,9 +105,16 @@
                         </button>
                     @endif
                     @auth
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                             @csrf
-                            <button type="submit" class="navigation__action-link">Log Out</button>
+                            <button type="submit" class="btn btn-outline" style="display:flex; align-items:center; gap:8px; padding:8px 16px; border-color:var(--c-border); color:var(--c-on-surface);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                <span>Log Out</span>
+                            </button>
                         </form>
                     @else
                         <a href="{{ route('login') }}">
@@ -142,7 +150,56 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.style.overflow = !isExpanded ? "hidden" : "";
         });
 
-        const navigationLinks = navigationMenu.querySelectorAll(".navigation__link, .navigation__action-link, .btn");
+        // Handle dropdown menu
+        const dropdownToggle = navigationMenu.querySelector('.navigation__link--dropdown');
+        const dropdownMenu = navigationMenu.querySelector('.navigation__dropdown');
+        
+        if (dropdownToggle && dropdownMenu) {
+            dropdownToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isExpanded = dropdownToggle.getAttribute('aria-expanded') === 'true';
+                dropdownToggle.setAttribute('aria-expanded', (!isExpanded).toString());
+                dropdownMenu.style.display = isExpanded ? 'none' : 'block';
+                
+                // Rotate arrow
+                const arrow = dropdownToggle.querySelector('svg:last-child');
+                if (arrow) {
+                    arrow.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+                }
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownToggle.setAttribute('aria-expanded', 'false');
+                    dropdownMenu.style.display = 'none';
+                    const arrow = dropdownToggle.querySelector('svg:last-child');
+                    if (arrow) arrow.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            // Close dropdown when clicking a link
+            dropdownMenu.querySelectorAll('.navigation__dropdown-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    dropdownToggle.setAttribute('aria-expanded', 'false');
+                    dropdownMenu.style.display = 'none';
+                    const arrow = dropdownToggle.querySelector('svg:last-child');
+                    if (arrow) arrow.style.transform = 'rotate(0deg)';
+                });
+            });
+
+            // Hover effects for dropdown links
+            dropdownMenu.querySelectorAll('.navigation__dropdown-link').forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.style.background = 'color-mix(in srgb, var(--c-primary) 10%, var(--c-surface))';
+                });
+                link.addEventListener('mouseleave', function() {
+                    this.style.background = '';
+                });
+            });
+        }
+
+        const navigationLinks = navigationMenu.querySelectorAll(".navigation__link:not(.navigation__link--dropdown), .navigation__action-link, .btn");
         navigationLinks.forEach((link) => {
             link.addEventListener("click", () => {
                 navigationToggle.setAttribute("aria-expanded", "false");

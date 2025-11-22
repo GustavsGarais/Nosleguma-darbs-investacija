@@ -34,6 +34,9 @@
 			<label style="display:grid; gap:6px;">
 				<span style="font-weight:700; color: var(--c-on-surface);">Password</span>
 				<input type="password" name="password" required autocomplete="new-password" class="footer-email-input" />
+				<small style="color:var(--c-on-surface-2); font-size:12px; margin-top:4px;">
+					Requirements: Minimum 12 characters, at least one uppercase letter, one lowercase letter, and one number or symbol (!@#$%^&*)
+				</small>
 			</label>
 
 			<label style="display:grid; gap:6px;">

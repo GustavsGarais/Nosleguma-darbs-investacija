@@ -120,7 +120,7 @@
                             </svg>
                         </div>
                     </a>
-                    <a href="#" aria-label="GitHub">
+                    <a href="https://github.com/GustavsGarais/Nosleguma-darbs-investacija.git" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
                         <div class="footer-social-link">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                                 <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">

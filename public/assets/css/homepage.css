@@ -113,11 +113,13 @@ body { color: var(--c-on-surface); background: var(--c-surface); }
 .hero-title, .home-hero-title { color: var(--c-on-surface); font-family: Orbitron, ui-sans-serif; font-weight: 800; font-size: clamp(28px, 3vw, 40px); margin:0 0 8px 0; }
 .hero-subtitle, .home-hero-subtitle { color: var(--c-on-surface-2); font-size: clamp(14px, 1.5vw, 18px); margin:0 0 14px 0; }
 .controls { display:flex; gap:10px; margin-bottom:10px; }
-.theme-toggle { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--c-border); border-radius:999px; color: var(--c-on-surface-2); background: color-mix(in srgb, var(--c-surface) 90%, transparent); }
+.theme-toggle { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--c-border); border-radius:999px; color: var(--c-on-surface-2); background: color-mix(in srgb, var(--c-surface) 90%, transparent); transition: all 0.2s ease; }
 /* Icons follow text color in both themes */
 .theme-toggle svg, .theme-toggle svg * { stroke: currentColor; fill: none; }
 /* Pressed/active state */
 .theme-toggle[aria-pressed="true"] { background: var(--c-primary); border-color: var(--c-primary); color: #ffffff; }
+/* Ensure theme toggle buttons adapt properly in light mode */
+[data-theme="dark"] .theme-toggle:not([aria-pressed="true"]) { color: var(--c-on-surface-2); }
 
 .cta-cluster { display:flex; flex-wrap:wrap; gap:10px; }
 .visual-stack { position:relative; min-height:360px; border-radius:12px; overflow:hidden; }
@@ -183,3 +185,13 @@ body { color: var(--c-on-surface); background: var(--c-surface); }
 .auth-card h1 { margin:0 0 8px 0; font-family: Orbitron, ui-sans-serif; font-weight:800; font-size: clamp(24px, 2.6vw, 32px); color: var(--c-on-surface); }
 .auth-card p { margin:0 0 16px 0; color: var(--c-on-surface-2); }
 .auth-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+/* Laravel Pagination Styles - Theme Aware */
+.pagination { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; }
+.pagination li { display: inline-block; }
+.pagination a,
+.pagination span { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 6px 12px; border: 1px solid var(--c-border); border-radius: 8px; text-decoration: none; color: var(--c-on-surface); background: var(--c-surface); transition: all 0.2s ease; }
+.pagination a:hover { background: color-mix(in srgb, var(--c-primary) 10%, var(--c-surface)); border-color: var(--c-primary); color: var(--c-primary); }
+.pagination .active span { background: var(--c-primary); border-color: var(--c-primary); color: #ffffff; }
+.pagination .disabled span { opacity: 0.5; cursor: not-allowed; background: color-mix(in srgb, var(--c-on-surface) 5%, var(--c-surface)); color: var(--c-on-surface-2); }
+.pagination .disabled a { opacity: 0.5; cursor: not-allowed; pointer-events: none; }

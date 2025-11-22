@@ -21,6 +21,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/settings', [ProfileController::class, 'edit'])->name('settings');
     Route::patch('/settings/profile', [ProfileController::class, 'update'])->name('settings.profile');
     Route::delete('/settings', [ProfileController::class, 'destroy'])->name('settings.destroy');
+    
+    // Tutorial route
+    Route::post('/tutorial/complete', [DashboardController::class, 'completeTutorial'])->name('tutorial.complete');
 });
 
 require __DIR__.'/auth.php';

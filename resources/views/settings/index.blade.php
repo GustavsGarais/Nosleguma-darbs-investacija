@@ -22,11 +22,16 @@
         <!-- Profile -->
         <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; background:color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%); display:flex; flex-direction:column; gap:16px;">
             <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
-                <div>
+                <div style="display:flex; align-items:center; gap:6px;">
                     <h2 style="margin:0;">Profile</h2>
-                    <p style="margin:6px 0 0; color:var(--c-on-surface-2); font-size:14px;">Update the details that appear across simulations.</p>
+                    <div class="info-bubble" data-tooltip="Your name and email sync across reports, invites, and alerts.">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <path d="M12 17h.01"></path>
+                        </svg>
+                    </div>
                 </div>
-                <button type="button" title="Your name and email sync across reports, invites, and alerts." style="border:none; background:transparent; color:var(--c-on-surface-2); font-weight:600; width:24px; height:24px; border-radius:50%; border:1px solid var(--c-border); cursor:help;">?</button>
             </div>
             <form method="POST" action="{{ route('settings.profile') }}" style="display:flex; flex-direction:column; gap:16px;">
                 @csrf
@@ -53,31 +58,33 @@
         </article>
 
         <!-- Security -->
-        <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:12px;">
+        <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
             <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
-                <div>
+                <div style="display:flex; align-items:center; gap:6px;">
                     <h2 style="margin:0;">Security</h2>
-                    <p style="margin:6px 0 0; color:var(--c-on-surface-2); font-size:14px;">Quick actions that keep your account safe.</p>
+                    <div class="info-bubble" data-tooltip="Manage your password and two-factor authentication to keep your account secure.">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <path d="M12 17h.01"></path>
+                        </svg>
+                    </div>
                 </div>
-                <button type="button" title="Reset leaked passwords and close suspicious sessions from here." style="border:none; background:transparent; color:var(--c-on-surface-2); font-weight:600; width:24px; height:24px; border-radius:50%; border:1px solid var(--c-border); cursor:help;">?</button>
             </div>
-            <div style="display:flex; flex-wrap:wrap; gap:12px;">
-                <div style="flex:1 1 280px; border-radius:12px; padding:16px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-secondary) 5%); display:flex; justify-content:space-between; align-items:center; gap:12px;">
+            <div style="display:grid; gap:16px;">
+                <div style="border-radius:12px; padding:16px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-secondary) 5%); display:flex; justify-content:space-between; align-items:center; gap:12px;">
                     <div>
                         <h4 style="margin:0 0 4px;">Password</h4>
-                        <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">Use a unique 12+ character password.</p>
+                        <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">Minimum 12 characters with uppercase, lowercase, and numbers or symbols.</p>
                     </div>
                     <a class="btn btn-outline" href="{{ route('password.request') }}">Reset</a>
                 </div>
-                <div style="flex:1 1 280px; border-radius:12px; padding:16px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-secondary) 5%); display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                <div style="border-radius:12px; padding:16px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-secondary) 5%); display:flex; justify-content:space-between; align-items:center; gap:12px;">
                     <div>
-                        <h4 style="margin:0 0 4px;">Sessions</h4>
-                        <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">Sign out if devices look unfamiliar.</p>
+                        <h4 style="margin:0 0 4px;">Two-Factor Authentication (2FA)</h4>
+                        <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">Add an extra layer of security to your account.</p>
                     </div>
-                    <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Sign out current session?');">
-                        @csrf
-                        <button class="btn btn-outline" type="submit">Sign out</button>
-                    </form>
+                    <button class="btn btn-outline" type="button" disabled>Coming Soon</button>
                 </div>
             </div>
         </article>
@@ -85,11 +92,16 @@
         <!-- Notifications -->
         <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
             <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
-                <div>
+                <div style="display:flex; align-items:center; gap:6px;">
                     <h2 style="margin:0;">Notifications</h2>
-                    <p style="margin:6px 0 0; color:var(--c-on-surface-2); font-size:14px;">Decide which alerts reach your inbox.</p>
+                    <div class="info-bubble" data-tooltip="These toggles only affect this browser for now and are stored locally.">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <path d="M12 17h.01"></path>
+                        </svg>
+                    </div>
                 </div>
-                <button type="button" title="These toggles only affect this browser for now and are stored locally." style="border:none; background:transparent; color:var(--c-on-surface-2); font-weight:600; width:24px; height:24px; border-radius:50%; border:1px solid var(--c-border); cursor:help;">?</button>
             </div>
             <div style="display:grid; gap:12px;">
                 @foreach ([
@@ -107,11 +119,16 @@
         <!-- Currency -->
         <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
             <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
-                <div>
+                <div style="display:flex; align-items:center; gap:6px;">
                     <h2 style="margin:0;">Currency & Region</h2>
-                    <p style="margin:6px 0 0; color:var(--c-on-surface-2); font-size:14px;">See what your euros become in USD, GBP, or JPY.</p>
+                    <div class="info-bubble" data-tooltip="Rates are illustrative demo values that refresh on load.">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <path d="M12 17h.01"></path>
+                        </svg>
+                    </div>
                 </div>
-                <button type="button" title="Rates are illustrative demo values that refresh on load." style="border:none; background:transparent; color:var(--c-on-surface-2); font-weight:600; width:24px; height:24px; border-radius:50%; border:1px solid var(--c-border); cursor:help;">?</button>
             </div>
             <div style="display:grid; gap:12px;">
                 <label style="display:flex; flex-direction:column; gap:6px;">
@@ -145,11 +162,16 @@
         <!-- Danger zone -->
         <article style="border:1px solid #e53935; border-radius:16px; padding:24px; background:color-mix(in srgb, #e53935 10%, var(--c-surface)); display:flex; flex-direction:column; gap:16px;">
             <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
-                <div>
+                <div style="display:flex; align-items:center; gap:6px;">
                     <h2 style="margin:0; color:#e53935;">Danger zone</h2>
-                    <p style="margin:6px 0 0; color:var(--c-on-surface-2); font-size:14px;">Permanently remove your account and simulation history.</p>
+                    <div class="info-bubble" data-tooltip="Deleting your account clears every simulation and cannot be undone.">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#e53935; cursor:help;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <path d="M12 17h.01"></path>
+                        </svg>
+                    </div>
                 </div>
-                <button type="button" title="Deleting your account clears every simulation and cannot be undone." style="border:none; background:transparent; color:#e53935; font-weight:600; width:24px; height:24px; border-radius:50%; border:1px solid #e53935; cursor:help;">?</button>
             </div>
             <form method="POST" action="{{ route('settings.destroy') }}" style="display:flex; flex-direction:column; gap:16px;" onsubmit="return confirm('Delete your account and all simulations? This cannot be undone.');">
                 @csrf
@@ -238,5 +260,55 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCurrency();
 });
 </script>
+<style>
+.info-bubble {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    transition: opacity 0.2s;
+}
+
+.info-bubble:hover {
+    opacity: 0.8;
+}
+
+.info-bubble:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 14px 18px;
+    background: var(--c-surface) !important;
+    border: 2px solid var(--c-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    width: max-content;
+    max-width: 300px;
+    min-width: 220px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--c-on-surface) !important;
+    font-weight: 500;
+    z-index: 10000;
+    pointer-events: none;
+    white-space: normal;
+    text-align: left;
+    opacity: 1 !important;
+}
+
+.info-bubble:hover::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 7px solid transparent;
+    border-top-color: var(--c-border);
+    z-index: 10001;
+    pointer-events: none;
+    filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.1));
+}
+</style>
 @endpush
 
