@@ -45,7 +45,7 @@
             @else
                 <a href="{{ route('register') }}" class="btn btn-primary btn-lg">Create Simulation</a>
             @endauth
-            <button class="btn btn-secondary">Quick Tour</button>
+            <a href="{{ route('quick-tour') }}" class="btn btn-secondary">Quick Tour</a>
             <button class="btn btn-outline">Learn More</button>
         </div>
 

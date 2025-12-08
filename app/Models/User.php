@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'tutorial_completed',
+        'is_admin',
     ];
 
     /**
@@ -44,11 +45,21 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
+            'tutorial_completed' => 'boolean',
         ];
     }
 
     public function simulations()
     {
         return $this->hasMany(Simulation::class);
+    }
+
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->is_admin === true;
     }
 }

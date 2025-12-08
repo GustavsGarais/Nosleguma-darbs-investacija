@@ -1,7 +1,8 @@
 <nav id="main-navigation" class="navigation">
     <div class="navigation__container">
         @php
-            $showThemeToggle = auth()->check() && !request()->is('/');
+            // Show theme toggle on all public/user pages; exclude admin panel entirely
+            $showThemeToggle = !request()->is('admin*');
         @endphp
 
         <a href="{{ url('/') }}">
@@ -20,53 +21,7 @@
         </a>
 
         <div class="navigation__layout" style="margin-left:auto; display:flex; align-items:center; gap:16px;">
-            <div class="navigation__item navigation__item--dropdown" style="position:relative;">
-                <button type="button" class="navigation__link navigation__link--dropdown" aria-expanded="false" aria-haspopup="true" style="display:flex; align-items:center; gap:6px; background:none; border:none; cursor:pointer; padding:8px;">
-                    <span class="navigation__link-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </span>
-                    <span class="navigation__link-text"></span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;">
-                        <path d="m6 9 6 6 6-6"></path>
-                    </svg>
-                </button>
-                <ul class="navigation__dropdown" style="display:none; position:absolute; top:100%; right:0; z-index:1000; list-style:none; margin:8px 0 0 0; padding:0; min-width:220px; background:var(--c-surface); border:1px solid var(--c-border); border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); overflow:hidden;">
-                    <li>
-                        <a href="#simulations" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path>
-                            </svg>
-                            <span>Simulations</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#features" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <g>
-                                    <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
-                                    <path d="m19 9l-5 5l-4-4l-3 3"></path>
-                                </g>
-                            </svg>
-                            <span>Features</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#about" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <g>
-                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </g>
-                            </svg>
-                            <span>About</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="navigation__actions">
+            <div class="navigation__actions" style="display:flex; align-items:center; gap:12px;">
                 @if ($showThemeToggle)
                     <button
                         type="button"
@@ -114,9 +69,97 @@
                     </a>
                 @endauth
             </div>
+            </div>
+            <div class="navigation__item navigation__item--dropdown" style="position:relative;">
+                <button type="button" class="navigation__link navigation__link--dropdown" aria-expanded="false" aria-haspopup="true" style="display:flex; align-items:center; gap:6px; background:none; border:none; cursor:pointer; padding:8px;">
+                    <span class="navigation__link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </span>
+                    <span class="navigation__link-text"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;">
+                        <path d="m6 9 6 6 6-6"></path>
+                    </svg>
+                </button>
+                <ul class="navigation__dropdown" style="display:none; position:absolute; top:100%; right:0; z-index:1000; list-style:none; margin:8px 0 0 0; padding:0; min-width:240px; background:var(--c-surface); border:1px solid var(--c-border); border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); overflow:hidden;">
+                    <li>
+                        <a href="#simulations" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path>
+                            </svg>
+                            <span>Simulations</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#features" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <g>
+                                    <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
+                                    <path d="m19 9l-5 5l-4-4l-3 3"></path>
+                                </g>
+                            </svg>
+                            <span>Features</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#about" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <g>
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </g>
+                            </svg>
+                            <span>About</span>
+                        </a>
+                    </li>
+                    @if ($showThemeToggle)
+                    <li style="border-top:1px solid color-mix(in srgb, var(--c-border) 70%, transparent);">
+                        <button type="button" class="navigation__dropdown-link theme-toggle theme-toggle--combined" aria-pressed="false" title="Toggle light or dark mode" style="width:100%; text-align:left; background:none; border:none; display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer;">
+                            <span aria-hidden="true" style="display:flex; align-items:center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="4"></circle>
+                                    <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                                </svg>
+                            </span>
+                            <span style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:14px;">Theme</span>
+                            <span style="margin-left:auto; display:flex; align-items:center; gap:6px; color:var(--c-on-surface-2); font-size:12px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                                    <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
+                                </svg>
+                            </span>
+                        </button>
+                    </li>
+                    @endif
+                    <li style="border-top:1px solid color-mix(in srgb, var(--c-border) 70%, transparent); padding:10px 12px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-primary) 5%);">
+                        @php
+                            $activeLocale = app()->getLocale();
+                            $supportedLocales = [
+                                'en' => __('English'),
+                                'lv' => __('Latviešu'),
+                            ];
+                        @endphp
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                            <span style="font-size:12px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--c-muted);">Language</span>
+                            <div style="display:flex; gap:6px;">
+                                @foreach ($supportedLocales as $localeCode => $label)
+                                    <form method="POST" action="{{ route('language.switch') }}" style="margin:0;">
+                                        @csrf
+                                        <input type="hidden" name="locale" value="{{ $localeCode }}">
+                                        <button type="submit"
+                                            class="navigation__language-btn"
+                                            @if ($activeLocale === $localeCode) aria-current="true" @endif
+                                            style="padding:4px 10px; border-radius:999px; border:1px solid {{ $activeLocale === $localeCode ? 'var(--c-primary)' : 'var(--c-border)' }}; background:{{ $activeLocale === $localeCode ? 'var(--c-primary)' : 'transparent' }}; color:{{ $activeLocale === $localeCode ? 'var(--c-on-primary)' : 'var(--c-on-surface)' }}; font-size:12px; font-weight:600; cursor:pointer; transition:background 0.2s, color 0.2s;">
+                                            {{ $label }}
+                                        </button>
+                                    </form>
+                                @endforeach
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
-
-        
         <div class="navigation__scanline"></div>
     </div>
 </nav>

@@ -36,3 +36,8 @@
 php artisan serve --host=127.0.0.1 --port=8080
 
 npm run dev
+
+admin remote
+Email: admin@example.com
+Password: YourSecurePassword123!
+
