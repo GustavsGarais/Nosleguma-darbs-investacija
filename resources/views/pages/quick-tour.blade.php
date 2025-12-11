@@ -1,100 +1,100 @@
 @extends('layouts.app')
 
-@section('title', 'Quick Tour Simulation')
+@section('title', __('Quick Tour Simulation (read-only template)'))
 
 @section('content')
 <section class="hero" style="padding:48px 0; display:flex; justify-content:center;">
     <div class="hero-content" style="width:min(1100px, 100% - 32px); margin:0 auto; display:grid; gap:24px;">
         <header style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
-                <p style="margin:0; text-transform:uppercase; letter-spacing:0.08em; font-size:12px; color:var(--c-on-surface-2);">Guided demo</p>
-                <h1 style="margin:4px 0 8px;">Quick Tour Simulation (read-only template)</h1>
+                <p style="margin:0; text-transform:uppercase; letter-spacing:0.08em; font-size:12px; color:var(--c-on-surface-2);">{{ __('Guided demo') }}</p>
+                <h1 style="margin:4px 0 8px;">{{ __('Quick Tour Simulation (read-only template)') }}</h1>
                 <p style="margin:0; color:var(--c-on-surface-2); max-width:720px;">
-                    Explore a pre-made investment scenario. You can tweak the numeric parameters and watch how the portfolio behaves. The name and speed are fixed so you focus on the money dynamics.
+                    {{ __('Explore a pre-made investment scenario. You can tweak the numeric parameters and watch how the portfolio behaves. The name and speed are fixed so you focus on the money dynamics.') }}
                 </p>
             </div>
             <div style="display:flex; gap:12px; align-items:center;">
                 <div style="font-size:13px; color:var(--c-on-surface-2);">
-                    Speed fixed at <strong>0.50s / step</strong>
+                    {{ __('Speed fixed at :speed / step', ['speed' => '0.50s']) }}
                 </div>
-                <a class="btn btn-outline" href="{{ route('simulations.create') }}">Create your own</a>
+                <a class="btn btn-outline" href="{{ route('simulations.create') }}">{{ __('Create your own') }}</a>
             </div>
         </header>
 
         <div class="auth-card" style="padding:20px; display:grid; gap:20px;">
             <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
                 <div>
-                    <p style="margin:0; text-transform:uppercase; letter-spacing:0.06em; font-size:12px; color:var(--c-on-surface-2);">Scenario</p>
-                    <h2 style="margin:4px 0 0;">Starter Balanced Portfolio</h2>
-                    <p style="margin:4px 0 0; color:var(--c-on-surface-2); font-size:13px;">Name is locked in this tour. Adjust values to see impact.</p>
+                    <p style="margin:0; text-transform:uppercase; letter-spacing:0.06em; font-size:12px; color:var(--c-on-surface-2);">{{ __('Scenario') }}</p>
+                    <h2 style="margin:4px 0 0;">{{ __('Starter Balanced Portfolio') }}</h2>
+                    <p style="margin:4px 0 0; color:var(--c-on-surface-2); font-size:13px;">{{ __('Name is locked in this tour. Adjust values to see impact.') }}</p>
                 </div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <button id="qt-run" class="btn btn-primary">▶ Run</button>
-                    <button id="qt-step" class="btn btn-secondary">➜ Step</button>
-                    <button id="qt-pause" class="btn btn-secondary" disabled>⏸ Pause</button>
-                    <button id="qt-reset" class="btn btn-outline">🔄 Reset</button>
-                    <div id="qt-status" style="padding:8px 12px; border:1px solid var(--c-border); border-radius:10px; background:color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);">Ready</div>
+                    <button id="qt-run" class="btn btn-primary">▶ {{ __('Run') }}</button>
+                    <button id="qt-step" class="btn btn-secondary">➜ {{ __('Step') }}</button>
+                    <button id="qt-pause" class="btn btn-secondary" disabled>⏸ {{ __('Pause') }}</button>
+                    <button id="qt-reset" class="btn btn-outline">🔄 {{ __('Reset') }}</button>
+                    <div id="qt-status" style="padding:8px 12px; border:1px solid var(--c-border); border-radius:10px; background:color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);">{{ __('Ready') }}</div>
                 </div>
             </div>
 
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
                 <label style="display:grid; gap:6px;">
-                    <span>Duration (months)</span>
+                    <span>{{ __('Duration (months)') }}</span>
                     <input id="qt-months" type="number" min="12" max="600" step="12" value="120" class="footer-email-input" />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>Speed (seconds/step)</span>
+                    <span>{{ __('Speed (seconds/step)') }}</span>
                     <input id="qt-speed" type="number" value="0.50" class="footer-email-input" disabled />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>Initial Investment (€)</span>
+                    <span>{{ __('Initial Investment (€)') }}</span>
                     <input id="qt-initial" type="number" step="0.01" value="5000" class="footer-email-input" />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>Monthly Contribution (€)</span>
+                    <span>{{ __('Monthly Contribution (€)') }}</span>
                     <input id="qt-monthly" type="number" step="0.01" value="250" class="footer-email-input" />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>Growth Rate (annual, 0-1)</span>
+                    <span>{{ __('Growth Rate (annual, 0-1)') }}</span>
                     <input id="qt-growth" type="number" step="0.001" min="0" max="1" value="0.07" class="footer-email-input" />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>Risk Appetite (0-1)</span>
+                    <span>{{ __('Risk Appetite (0-1)') }}</span>
                     <input id="qt-risk" type="number" step="0.01" min="0" max="1" value="0.5" class="footer-email-input" />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>Market Influence (0-1)</span>
+                    <span>{{ __('Market Influence (0-1)') }}</span>
                     <input id="qt-market" type="number" step="0.01" min="0" max="1" value="0.5" class="footer-email-input" />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>Inflation Rate (annual, 0-1)</span>
+                    <span>{{ __('Inflation Rate (annual, 0-1)') }}</span>
                     <input id="qt-inflation" type="number" step="0.001" min="0" max="1" value="0.02" class="footer-email-input" />
                 </label>
             </div>
 
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
                 <div class="auth-card" style="padding:14px;">
-                    <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">Current Value</p>
+                    <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">{{ __('Current Value') }}</p>
                     <p id="qt-current" style="margin:4px 0 0; font-size:22px; font-weight:700; color:var(--c-primary);">€0.00</p>
                 </div>
                 <div class="auth-card" style="padding:14px;">
-                    <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">Contributed</p>
+                    <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">{{ __('Contributed') }}</p>
                     <p id="qt-contrib" style="margin:4px 0 0; font-size:22px; font-weight:700;">€0.00</p>
                 </div>
                 <div class="auth-card" style="padding:14px;">
-                    <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">Gain</p>
+                    <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">{{ __('Gain') }}</p>
                     <p id="qt-gain" style="margin:4px 0 0; font-size:22px; font-weight:700;">€0.00</p>
                 </div>
                 <div class="auth-card" style="padding:14px;">
-                    <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">Real (inflation adj.)</p>
+                    <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">{{ __('Real (inflation adj.)') }}</p>
                     <p id="qt-real" style="margin:4px 0 0; font-size:22px; font-weight:700;">€0.00</p>
                 </div>
             </div>
 
             <div class="auth-card" style="padding:16px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
-                    <h3 style="margin:0;">Simulation preview</h3>
-                    <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">Speed is fixed to 0.50s per step. Names are locked for this demo.</p>
+                    <h3 style="margin:0;">{{ __('Simulation preview') }}</h3>
+                    <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">{{ __('Speed is fixed to 0.50s per step. Names are locked for this demo.') }}</p>
                 </div>
                 <div style="position:relative; height:380px; margin-top:12px;">
                     <canvas id="qt-chart"></canvas>
@@ -113,6 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnPause = document.getElementById('qt-pause');
     const btnReset = document.getElementById('qt-reset');
     const statusDisplay = document.getElementById('qt-status');
+    const t = {
+        ready: @json(__('Ready')),
+        running: @json(__('Running...')),
+        complete: @json(__('Complete')),
+        paused: @json(__('Paused')),
+        month: @json(__('Month :current / :total'))
+    };
 
     const monthsInput = document.getElementById('qt-months');
     const speedInput = document.getElementById('qt-speed'); // disabled
@@ -199,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }];
         rebuildChart();
         updateSummary();
-        statusDisplay.textContent = 'Ready';
+        statusDisplay.textContent = t.ready;
         statusDisplay.style.background = 'color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%)';
     }
 
@@ -258,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isRunning = true;
         btnRun.disabled = true;
         btnPause.disabled = false;
-        statusDisplay.textContent = 'Running...';
+        statusDisplay.textContent = t.running;
         statusDisplay.style.background = 'color-mix(in srgb, var(--c-primary) 20%, var(--c-surface))';
 
         intervalId = setInterval(() => {
@@ -269,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stepOnce();
             rebuildChart();
             updateSummary();
-            statusDisplay.textContent = `Month ${currentMonth} / ${settings.months}`;
+            statusDisplay.textContent = t.month.replace(':current', currentMonth).replace(':total', settings.months);
         }, settings.speedMs);
     }
 
@@ -281,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(intervalId);
             intervalId = null;
         }
-        statusDisplay.textContent = markComplete ? 'Complete' : 'Paused';
+        statusDisplay.textContent = markComplete ? t.complete : t.paused;
         statusDisplay.style.background = markComplete
             ? 'color-mix(in srgb, var(--c-primary) 30%, var(--c-surface))'
             : 'color-mix(in srgb, var(--c-secondary) 20%, var(--c-surface))';
@@ -290,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function singleStep() {
         stopRun();
         if (currentMonth >= settings.months) {
-            statusDisplay.textContent = 'Complete';
+            statusDisplay.textContent = t.complete;
             statusDisplay.style.background = 'color-mix(in srgb, var(--c-primary) 30%, var(--c-surface))';
             return;
         }
@@ -298,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
         stepOnce();
         rebuildChart();
         updateSummary();
-        statusDisplay.textContent = `Month ${currentMonth} / ${settings.months}`;
+        statusDisplay.textContent = t.month.replace(':current', currentMonth).replace(':total', settings.months);
     }
 
     function resetSim() {

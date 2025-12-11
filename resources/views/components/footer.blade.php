@@ -13,14 +13,14 @@
                     <span class="footer-logo-text">{{ config('app.name') }}</span>
                 </div>
                 <p class="footer-brand-description">
-                    Experience the future of investment education through interactive simulations and advanced analytics. Learn, experiment, and master the markets risk-free.
+                    {{ __('Experience the future of investment education through interactive simulations and advanced analytics. Learn, experiment, and master the markets risk-free.') }}
                 </p>
                 <div class="footer-trust-badges">
                     <div class="footer-badge">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
                         </svg>
-                        <span>Bank-Grade Security</span>
+                        <span>{{ __('Bank-Grade Security') }}</span>
                     </div>
                     <div class="footer-badge">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -29,23 +29,23 @@
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                             </g>
                         </svg>
-                        <span>256-bit Encrypted</span>
+                        <span>{{ __('256-bit Encrypted') }}</span>
                     </div>
                 </div>
             </div>
             <div class="footer-newsletter-column">
                 <div class="footer-newsletter-card">
-                    <h3 class="footer-newsletter-title">Stay Updated</h3>
+                    <h3 class="footer-newsletter-title">{{ __('Stay Updated') }}</h3>
                     <p class="footer-newsletter-subtitle">
-                        Get market insights and platform updates delivered to your inbox
+                        {{ __('Get market insights and platform updates delivered to your inbox') }}
                     </p>
                     <form id="newsletter-form" class="footer-newsletter-form">
                         <div class="footer-input-group">
-                            <input type="email" placeholder="Enter your email" required class="footer-email-input" />
-                            <button type="submit" class="footer-subscribe-btn btn btn-primary">Subscribe</button>
+                            <input type="email" placeholder="{{ __('Enter your email') }}" required class="footer-email-input" />
+                            <button type="submit" class="footer-subscribe-btn btn btn-primary">{{ __('Subscribe') }}</button>
                         </div>
                     </form>
-                    <p class="footer-newsletter-note">Join 50,000+ investors already learning smarter</p>
+                    <p class="footer-newsletter-note">{{ __('Join 50,000+ investors already learning smarter') }}</p>
                 </div>
             </div>
         </div>
@@ -53,44 +53,44 @@
         <div class="footer-links-section">
             <div class="footer-links-grid">
                 <div class="footer-links-column">
-                    <h4 class="footer-column-title">Platform</h4>
+                    <h4 class="footer-column-title">{{ __('Platform') }}</h4>
                     <ul class="footer-links-list">
-                        <li><a href="#"><div class="footer-link"><span>Simulations</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Dashboard</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Analytics</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Market Data</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Educational Hub</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Simulations') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Dashboard') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Analytics') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Market Data') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Educational Hub') }}</span></div></a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-links-column">
-                    <h4 class="footer-column-title">Resources</h4>
+                    <h4 class="footer-column-title">{{ __('Resources') }}</h4>
                     <ul class="footer-links-list">
-                        <li><a href="#"><div class="footer-link"><span>Getting Started</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Tutorials</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Documentation</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Community Forum</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Blog</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Getting Started') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Tutorials') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Documentation') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Community Forum') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Blog') }}</span></div></a></li>
                     </ul>
                 </div>
 
                 <div class="footer-links-column">
-                    <h4 class="footer-column-title">Company</h4>
+                    <h4 class="footer-column-title">{{ __('Company') }}</h4>
                     <ul class="footer-links-list">
-                        <li><a href="#"><div class="footer-link"><span>About Us</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Contact</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Press Kit</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Careers</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('About Us') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Contact') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Press Kit') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Careers') }}</span></div></a></li>
                     </ul>
                 </div>
 
                 <div class="footer-links-column">
-                    <h4 class="footer-column-title">Legal</h4>
+                    <h4 class="footer-column-title">{{ __('Legal') }}</h4>
                     <ul class="footer-links-list">
-                        <li><a href="#"><div class="footer-link"><span>Terms of Service</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Privacy Policy</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Cookie Policy</span></div></a></li>
-                        <li><a href="#"><div class="footer-link"><span>Disclaimer</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Terms of Service') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Privacy Policy') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Cookie Policy') }}</span></div></a></li>
+                        <li><a href="#"><div class="footer-link"><span>{{ __('Disclaimer') }}</span></div></a></li>
                     </ul>
                 </div>
             </div>
@@ -99,8 +99,8 @@
         <div class="footer-bottom-section">
             <div class="footer-bottom-content">
                 <div class="footer-copyright">
-                    <p>&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
-                    <p class="footer-disclaimer">Investment simulations are for educational purposes only. Past performance does not guarantee future results.</p>
+                    <p>&copy; {{ date('Y') }} {{ config('app.name') }}. {{ __('All rights reserved.') }}</p>
+                    <p class="footer-disclaimer">{{ __('Investment simulations are for educational purposes only. Past performance does not guarantee future results.') }}</p>
                 </div>
                 <div class="footer-social-links">
                     <a href="#" aria-label="Twitter">
@@ -131,7 +131,7 @@
                         </div>
                     </a>
                 </div>
-                <button id="back-to-top" aria-label="Back to top" class="footer-back-to-top">
+                <button id="back-to-top" aria-label="{{ __('Back to top') }}" class="footer-back-to-top">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 12l7-7l7 7m-7 7V5"></path>
                     </svg>
@@ -163,13 +163,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (emailInput && emailInput.value) {
                 const originalText = emailInput.value;
-                emailInput.value = "Thank you for subscribing!";
+                emailInput.value = "{{ __('Thank you for subscribing!') }}";
                 emailInput.disabled = true;
 
                 setTimeout(function() {
                     emailInput.value = "";
                     emailInput.disabled = false;
-                    emailInput.placeholder = "Enter your email";
+                    emailInput.placeholder = "{{ __('Enter your email') }}";
                 }, 3000);
             }
         });

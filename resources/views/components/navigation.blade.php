@@ -22,28 +22,6 @@
 
         <div class="navigation__layout" style="margin-left:auto; display:flex; align-items:center; gap:16px;">
             <div class="navigation__actions" style="display:flex; align-items:center; gap:12px;">
-                @if ($showThemeToggle)
-                    <button
-                        type="button"
-                        class="theme-toggle theme-toggle--combined"
-                        aria-pressed="false"
-                        title="Toggle light or dark mode"
-                        style="display:flex; align-items:center; gap:6px; border:1px solid var(--c-border); border-radius:999px; padding:6px 12px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-primary) 5%); cursor:pointer;">
-                        <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true" style="display:flex; align-items:center;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="4"></circle>
-                                <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
-                            </svg>
-                        </span>
-                        <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true" style="display:flex; align-items:center;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-                                <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
-                            </svg>
-                        </span>
-                        <span class="theme-toggle__label" style="font-size:13px; font-weight:600;">Theme</span>
-                    </button>
-                @endif
-
                 @auth
                     <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                         @csrf
@@ -53,18 +31,18 @@
                                 <polyline points="16 17 21 12 16 7"></polyline>
                                 <line x1="21" y1="12" x2="9" y2="12"></line>
                             </svg>
-                            <span>Log Out</span>
+                            <span>{{ __('Log Out') }}</span>
                         </button>
                     </form>
                 @else
                     <a href="{{ route('login') }}">
                         <div class="navigation__action-link">
-                            <span>Log In</span>
+                            <span>{{ __('Log In') }}</span>
                         </div>
                     </a>
                     <a href="{{ route('register') }}">
                         <div class="btn btn-primary">
-                            <span>Get Started</span>
+                            <span>{{ __('Get Started') }}</span>
                         </div>
                     </a>
                 @endauth
@@ -77,7 +55,7 @@
                             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
                     </span>
-                    <span class="navigation__link-text"></span>
+                        <span class="navigation__link-text">{{ __('Theme menu') }}</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;">
                         <path d="m6 9 6 6 6-6"></path>
                     </svg>
@@ -88,7 +66,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path>
                             </svg>
-                            <span>Simulations</span>
+                            <span>{{ __('Simulations') }}</span>
                         </a>
                     </li>
                     <li>
@@ -99,7 +77,7 @@
                                     <path d="m19 9l-5 5l-4-4l-3 3"></path>
                                 </g>
                             </svg>
-                            <span>Features</span>
+                            <span>{{ __('Features') }}</span>
                         </a>
                     </li>
                     <li>
@@ -110,7 +88,7 @@
                                     <circle cx="12" cy="7" r="4"></circle>
                                 </g>
                             </svg>
-                            <span>About</span>
+                            <span>{{ __('About') }}</span>
                         </a>
                     </li>
                     @if ($showThemeToggle)
@@ -122,7 +100,7 @@
                                     <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
                                 </svg>
                             </span>
-                            <span style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:14px;">Theme</span>
+                            <span style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:14px;">{{ __('Theme') }}</span>
                             <span style="margin-left:auto; display:flex; align-items:center; gap:6px; color:var(--c-on-surface-2); font-size:12px;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                                     <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
@@ -140,7 +118,7 @@
                             ];
                         @endphp
                         <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
-                            <span style="font-size:12px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--c-muted);">Language</span>
+                            <span style="font-size:12px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--c-muted);">{{ __('Language') }}</span>
                             <div style="display:flex; gap:6px;">
                                 @foreach ($supportedLocales as $localeCode => $label)
                                     <form method="POST" action="{{ route('language.switch') }}" style="margin:0;">
