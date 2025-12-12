@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Welcome')
+@section('title', __('Welcome'))
 
 @section('content')
 <section id="hero-section" role="region" aria-label="Hero" class="hero">
@@ -23,37 +23,37 @@
                         <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
                     </svg>
                 </span>
-                <span class="theme-toggle__label" style="font-size:13px; font-weight:600;">Theme</span>
+                <span class="theme-toggle__label" style="font-size:13px; font-weight:600;">{{ __('Theme') }}</span>
             </button>
             @guest
                 <a href="{{ route('login') }}" aria-label="Quick sign in" class="quick-signin btn btn-primary btn-sm">
-                    Sign In
+                    {{ __('Log In') }}
                 </a>
             @endguest
         </div>
         
         <h1 class="home-hero-title hero-title">
-            {{ config('app.name') }} — Invest Smarter, Simulate Faster
+            {{ config('app.name') }} — {{ __('Invest Smarter, Simulate Faster') }}
         </h1>
         <p class="home-hero-subtitle hero-subtitle">
-            Log in to explore live simulations • Create scenarios • Save strategies
+            {{ __('Hero Subtitle') }}
         </p>
         
         <div class="cta-cluster">
             @auth
-                <a href="{{ route('simulations.create') }}" class="btn btn-primary btn-lg">Create Simulation</a>
+                <a href="{{ route('simulations.create') }}" class="btn btn-primary btn-lg">{{ __('Create Simulation') }}</a>
             @else
-                <a href="{{ route('register') }}" class="btn btn-primary btn-lg">Create Simulation</a>
+                <a href="{{ route('register') }}" class="btn btn-primary btn-lg">{{ __('Create Simulation') }}</a>
             @endauth
-            <button class="btn btn-secondary">Quick Tour</button>
-            <button class="btn btn-outline">Learn More</button>
+            <a href="{{ route('quick-tour') }}" class="btn btn-secondary">{{ __('Quick Tour') }}</a>
+            <button class="btn btn-outline">{{ __('Learn More') }}</button>
         </div>
 
         <div class="regulatory-badge">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
                 <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
             </svg>
-            <span>Secure • Encrypted • Compliant</span>
+            <span>{{ __('Secure • Encrypted • Compliant') }}</span>
         </div>
     </div>
 
