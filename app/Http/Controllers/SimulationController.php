@@ -11,11 +11,16 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class SimulationController extends Controller
 {
     use AuthorizesRequests;
-    public function index(): View
+    public function index(Request $request): View
     {
         $simulations = auth()->user()->simulations()->latest()->paginate(10);
+        $simulation = null;
 
-        return view('simulations.index', compact('simulations'));
+        if ($request->has('simulation')) {
+            $simulation = auth()->user()->simulations()->find($request->simulation);
+        }
+
+        return view('simulations.index', compact('simulations', 'simulation'));
     }
 
     public function create(): View

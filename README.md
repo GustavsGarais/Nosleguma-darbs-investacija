@@ -31,7 +31,40 @@
 3. Tumšā/gaišā režīma pārslēgšanas funkcija visai vietnei.
 4. Sistēma vairāku lietotāju kontiem.
 5. Backend pilnībā pārbūvēts no localhost uz laravel, no docker, uz Node.js no beigām PHP ar SQLite.
-7. Precīzi atdalīti frontend (`src/`) un backend (`api/`) ceļi vienā projektā.
+6. Precīzi atdalīti frontend (`src/`) un backend (`api/`) ceļi vienā projektā.
+7. Integrācija ar valūtas kursu API (exchangerate-api.com) reāllaika valūtas kursu iegūšanai.
+8. Izglītojošie brīdinājumi par simulācijas raksturu un drošību.
+
+---
+
+##  Valūtas kursu sistēma:
+
+Lai parādītu pašreizējo valūtas vērtību, programma izmanto tiešsaistes datu avotu (API), kas nodrošina aktuālus valūtas kursus. 
+Programma pieprasa jaunākos datus, nolasa atbildi un parāda valūtas vērtību lietotājam. 
+Šie dati var tikt automātiski atjaunināti, lai saglabātu aktuālu informāciju.
+
+**API izmantošana:**
+- Izmantots exchangerate-api.com bezmaksas API
+- Automātiska kursu atjaunināšana katru stundu
+- Kešošana localStorage 24 stundu garumā
+- Fallback uz noklusējuma kursiem, ja API nav pieejams
+
+---
+
+##  Izglītojošā simulācijas raksturs:
+
+Tā kā šis projekts ir investīciju simulācija, tas neizmanto īstu naudu un nemēģina prognozēt tirgu. 
+Tā vietā tas imitē, kā investīcijas parasti darbojas reālajā dzīvē. 
+Investīciju vērtība laika gaitā mainās, pamatojoties uz vidējo pieaugumu un nejaušām svārstībām, kas atspoguļo tirgus uzsprāgumus un kritumus. 
+Dažādi riska līmeņi ietekmē to, cik stabila vai nestabila ir investīcija.
+
+Šī pieeja padara simulāciju reālistisku, vienlaikus saglabājot to drošu un izglītojošu.
+
+**Brīdinājumi:**
+- Izglītojošie brīdinājumi tiek rādīti vairākās vietās platformā
+- Simulācija neizmanto īstu naudu
+- Rezultāti nav reālu tirgus prognožu
+- Simulācija ir paredzēta tikai izglītībai un apmācībai
 
 php artisan serve --host=127.0.0.1 --port=8080
 
@@ -41,3 +74,13 @@ admin remote
 Email: admin@example.com
 Password: YourSecurePassword123!
 
+
+
+Combine the simulation page and dashboard together.
+
+while the simulation needs to give the 
+
+
+Combine the Dashboard and simulation pages together. 
+While also when a user clickes on a simulation, i will need you to rework visual look of the page to make it where the graph is in the front side, while everything stays on the sides and nor below the graph itself.
+"Simulation Parameters" staying somewhere below.
