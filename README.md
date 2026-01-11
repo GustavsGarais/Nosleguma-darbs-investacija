@@ -74,13 +74,3 @@ admin remote
 Email: admin@example.com
 Password: YourSecurePassword123!
 
-
-
-Combine the simulation page and dashboard together.
-
-while the simulation needs to give the 
-
-
-Combine the Dashboard and simulation pages together. 
-While also when a user clickes on a simulation, i will need you to rework visual look of the page to make it where the graph is in the front side, while everything stays on the sides and nor below the graph itself.
-"Simulation Parameters" staying somewhere below.
