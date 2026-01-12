@@ -80,6 +80,8 @@ class SupportTicketController extends Controller
         
         if (isset($validated['admin_response'])) {
             $ticket->admin_response = $validated['admin_response'];
+        } else {
+            $ticket->admin_response = null;
         }
 
         if (isset($validated['assigned_to'])) {

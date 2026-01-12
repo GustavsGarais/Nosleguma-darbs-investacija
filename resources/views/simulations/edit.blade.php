@@ -24,35 +24,38 @@
         @method('PUT')
 
         <label style="display:grid; gap:6px;">
-            <span>Name</span>
-            <input type="text" name="name" value="{{ old('name', $simulation->name) }}" required class="footer-email-input" />
+            <div style="display:flex; align-items:center; gap:6px;">
+                <span>Name</span>
+                <span style="font-size:12px; color:var(--c-on-surface-2);">(max 30 characters)</span>
+            </div>
+            <input type="text" name="name" value="{{ old('name', $simulation->name) }}" required maxlength="30" class="footer-email-input" />
         </label>
 
         @php($s = $simulation->settings)
         <div style="display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px;">
             <label style="display:grid; gap:6px;">
                 <span>Initial Investment</span>
-                <input type="number" step="0.01" name="initial_investment" value="{{ old('initial_investment', $s['initialInvestment'] ?? 1000) }}" required class="footer-email-input" />
+                <input type="number" step="1" name="initial_investment" value="{{ old('initial_investment', $s['initialInvestment'] ?? 1000) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
                 <span>Monthly Contribution</span>
-                <input type="number" step="0.01" name="monthly_contribution" value="{{ old('monthly_contribution', $s['monthlyContribution'] ?? 100) }}" required class="footer-email-input" />
+                <input type="number" step="1" name="monthly_contribution" value="{{ old('monthly_contribution', $s['monthlyContribution'] ?? 100) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
                 <span>Growth Rate (0-1 annual)</span>
-                <input type="number" step="0.001" min="0" max="1" name="growth_rate" value="{{ old('growth_rate', $s['growthRate'] ?? 0.07) }}" required class="footer-email-input" />
+                <input type="number" step="0.1" min="0" max="1" name="growth_rate" value="{{ old('growth_rate', $s['growthRate'] ?? 0.07) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
                 <span>Risk Appetite (0-1)</span>
-                <input type="number" step="0.01" min="0" max="1" name="risk_appetite" value="{{ old('risk_appetite', $s['riskAppetite'] ?? 0.5) }}" required class="footer-email-input" />
+                <input type="number" step="0.1" min="0" max="1" name="risk_appetite" value="{{ old('risk_appetite', $s['riskAppetite'] ?? 0.5) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
                 <span>Market Influence (0-1)</span>
-                <input type="number" step="0.01" min="0" max="1" name="market_influence" value="{{ old('market_influence', $s['marketInfluence'] ?? 0.5) }}" required class="footer-email-input" />
+                <input type="number" step="0.1" min="0" max="1" name="market_influence" value="{{ old('market_influence', $s['marketInfluence'] ?? 0.5) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
                 <span>Inflation Rate (0-1 annual)</span>
-                <input type="number" step="0.001" min="0" max="1" name="inflation_rate" value="{{ old('inflation_rate', $s['inflationRate'] ?? 0.02) }}" required class="footer-email-input" />
+                <input type="number" step="0.1" min="0" max="1" name="inflation_rate" value="{{ old('inflation_rate', $s['inflationRate'] ?? 0.02) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
                 <span>Investors (count)</span>

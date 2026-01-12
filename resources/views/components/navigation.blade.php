@@ -62,7 +62,11 @@
                 </button>
                 <ul class="navigation__dropdown" style="display:none; position:absolute; top:100%; right:0; z-index:1000; list-style:none; margin:8px 0 0 0; padding:0; min-width:240px; background:var(--c-surface); border:1px solid var(--c-border); border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); overflow:hidden;">
                     <li>
-                        <a href="#simulations" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                        @auth
+                            <a href="{{ route('simulations.index') }}" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                        @else
+                            <a href="{{ route('login') }}" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                        @endauth
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path>
                             </svg>
@@ -70,7 +74,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#features" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                        <a href="{{ route('quick-tour') }}" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <g>
                                     <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
@@ -81,7 +85,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#about" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                        <a href="{{ url('/') }}" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <g>
                                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>

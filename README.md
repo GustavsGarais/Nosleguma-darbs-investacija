@@ -74,3 +74,4 @@ admin remote
 Email: admin@example.com
 Password: YourSecurePassword123!
 
+C:\laragon\www\Nosleguma-darbs-investacija\database

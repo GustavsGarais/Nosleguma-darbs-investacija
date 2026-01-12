@@ -19,371 +19,387 @@
     </section>
 
     <section class="auth-card" aria-label="Simulations" style="margin-top:24px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
             <h2 style="margin:0;">{{ __('Your Simulations') }}</h2>
-            <a href="{{ route('simulations.create') }}" class="btn btn-primary">New Simulation</a>
+        <a href="{{ route('simulations.create') }}" class="btn btn-primary">New Simulation</a>
+    </div>
+
+    @if(session('success'))
+        <div role="status" style="margin-top:12px; padding:10px 12px; border:1px solid var(--c-border); border-radius:10px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);">
+            {{ session('success') }}
         </div>
+    @endif
 
-        @if(session('success'))
-            <div role="status" style="margin-top:12px; padding:10px 12px; border:1px solid var(--c-border); border-radius:10px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if($simulations->count())
-            <div style="overflow:auto; margin-top:16px;">
-                <table style="width:100%; border-collapse:collapse;">
-                    <thead>
-                        <tr>
-                            <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Name</th>
-                            <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Latest Value</th>
-                            <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Last Updated</th>
-                            <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Created</th>
-                            <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+    @if($simulations->count())
+        <div style="overflow:auto; margin-top:16px;">
+            <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                    <tr>
+                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Name</th>
+                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Latest Value</th>
+                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Last Updated</th>
+                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Created</th>
+                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
                         @foreach($simulations as $sim)
-                            @php
+                        @php
                                 $snapshot = $sim->data['snapshot'] ?? null;
                                 $lastValue = $snapshot['value'] ?? ($sim->settings['initialInvestment'] ?? 0);
-                                $capturedAt = $snapshot['captured_at'] ?? null;
-                                $updatedText = $capturedAt
-                                    ? \Illuminate\Support\Carbon::parse($capturedAt)->diffForHumans()
-                                    : 'Not saved yet';
-                            @endphp
-                            <tr>
-                                <td style="padding:8px; border-bottom:1px solid var(--c-border);">
+                            $capturedAt = $snapshot['captured_at'] ?? null;
+                            $updatedText = $capturedAt
+                                ? \Illuminate\Support\Carbon::parse($capturedAt)->diffForHumans()
+                                : 'Not saved yet';
+                        @endphp
+                        <tr>
+                            <td style="padding:8px; border-bottom:1px solid var(--c-border);">
                                     <a href="{{ route('simulations.index', ['simulation' => $sim->id]) }}">{{ $sim->name }}</a>
-                                </td>
-                                <td style="padding:8px; border-bottom:1px solid var(--c-border);">
-                                    <span class="currency-value" data-currency-value="{{ $lastValue }}">{{ '€'.number_format($lastValue, 2) }}</span>
-                                </td>
-                                <td style="padding:8px; border-bottom:1px solid var(--c-border);">{{ $updatedText }}</td>
+                            </td>
+                            <td style="padding:8px; border-bottom:1px solid var(--c-border);">
+                                <span class="currency-value" data-currency-value="{{ $lastValue }}">{{ '€'.number_format($lastValue, 2) }}</span>
+                            </td>
+                            <td style="padding:8px; border-bottom:1px solid var(--c-border);">{{ $updatedText }}</td>
                                 <td style="padding:8px; border-bottom:1px solid var(--c-border);">{{ $sim->created_at->diffForHumans() }}</td>
-                                <td style="padding:8px; border-bottom:1px solid var(--c-border); display:flex; gap:8px;">
+                            <td style="padding:8px; border-bottom:1px solid var(--c-border); display:flex; gap:8px;">
                                     <a class="btn btn-secondary btn-sm" href="{{ route('simulations.edit', $sim) }}">Edit</a>
                                     <form method="POST" action="{{ route('simulations.destroy', $sim) }}" onsubmit="return confirm('Delete this simulation?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline btn-sm">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-            <div style="margin-top:12px;">
-                {{ $simulations->links() }}
-            </div>
-        @else
+        <div style="margin-top:12px;">
+            {{ $simulations->links() }}
+        </div>
+    @else
             <p style="margin-top:16px;">{{ __('No simulations yet.') }} <a href="{{ route('simulations.create') }}">{{ __('Create your first simulation') }}</a>.</p>
-        @endif
-    </section>
+    @endif
+</section>
     @else
     <!-- Simulation View: Graph as Main Focus -->
     <style>
-        .simulation-container {
+        .simulation-wrapper {
+            padding: 48px 0;
             display: flex;
-            flex-direction: column;
-            gap: 20px;
-            min-height: calc(100vh - 140px);
+            justify-content: center;
+        }
+        .simulation-content {
+            width: min(1100px, 100% - 32px);
+            margin: 0 auto;
+            display: grid;
+            gap: 24px;
+            position: relative;
         }
         .sim-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        .sim-main-content {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 20px;
-            flex: 1;
-            min-height: 0;
-        }
-        .sim-metrics {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding-right: 8px;
-            max-height: calc(100vh - 300px);
-        }
-        .sim-metrics::-webkit-scrollbar {
-            width: 6px;
-        }
-        .sim-metrics::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .sim-metrics::-webkit-scrollbar-thumb {
-            background: var(--c-border);
-            border-radius: 3px;
-        }
-        .sim-chart-area {
-            display: flex;
-            flex-direction: column;
-            min-height: 600px;
-            max-height: calc(100vh - 300px);
-        }
-        .sim-controls-bottom {
-            margin-top: 0;
-        }
-        .metric-card {
-            background: var(--c-surface);
-            border: 1px solid var(--c-border);
-            border-radius: 10px;
-            padding: 14px;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-        .metric-card:hover {
-            border-color: var(--c-primary);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        .metric-label {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--c-on-surface-2);
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-        .metric-value {
-            font-size: 24px;
-            font-weight: 700;
-            line-height: 1.2;
-        }
-        .chart-container {
-            flex: 1;
-            min-height: 600px;
+        .sim-main-card {
             background: var(--c-surface);
             border: 1px solid var(--c-border);
             border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            display: flex;
-            flex-direction: column;
-        }
-        .chart-canvas-wrapper {
-            flex: 1;
-            min-height: 500px;
+            padding: 20px;
+            display: grid;
+            gap: 16px;
             position: relative;
         }
-        .controls-toggle {
+        .sim-controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sim-buttons-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .sim-metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px;
+        }
+        .sim-metric-card {
             background: var(--c-surface);
             border: 1px solid var(--c-border);
-            border-radius: 12px;
-            padding: 12px 16px;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .sim-metric-label {
+            margin: 0;
+            font-size: 11px;
+            color: var(--c-on-surface-2);
+            text-transform: uppercase;
+        }
+        .sim-metric-value {
+            margin: 4px 0 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .sim-chart-section {
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: 16px;
+            padding: 16px;
+            position: relative;
+        }
+        .sim-chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .sim-chart-canvas {
+            position: relative;
+            height: 380px;
+            width: 100%;
+        }
+        .sim-chart-canvas canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100%;
+        }
+        .sim-chart-section {
+            position: relative;
+        }
+        .sim-right-sidebar {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+        }
+        .sim-controls-dropdown {
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 280px;
+            z-index: 100;
+        }
+        .sim-controls-toggle {
+            padding: 8px 12px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: 600;
+            font-size: 13px;
             transition: all 0.2s;
-            margin-bottom: 0;
         }
-        .controls-toggle:hover {
+        .sim-controls-toggle:hover {
             background: color-mix(in srgb, var(--c-surface) 95%, var(--c-primary) 5%);
-            border-color: var(--c-primary);
         }
-        .controls-content {
+        .sim-controls-panel {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
         }
-        .controls-content.expanded {
+        .sim-controls-panel.expanded {
             max-height: 800px;
             transition: max-height 0.5s ease-in;
         }
-        .controls-inner {
-            padding: 20px;
-            background: var(--c-surface);
+        .sim-controls-inner {
+            padding: 16px;
+            border-top: 1px solid var(--c-border);
+        }
+        .sim-controls-grid {
+            display: grid;
+            gap: 10px;
+        }
+        .sim-params-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .sim-param-card {
+            padding: 10px;
+            border-radius: 8px;
+            background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);
             border: 1px solid var(--c-border);
-            border-radius: 12px;
-            border-top: none;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-            margin-top: 0;
         }
-        @media (max-width: 1200px) {
-            .sim-main-content {
-                grid-template-columns: 240px 1fr;
-            }
+        .sim-param-label {
+            color: var(--c-on-surface-2);
+            font-size: 11px;
+            display: block;
+            margin-bottom: 4px;
         }
-        @media (max-width: 968px) {
-            .sim-main-content {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr;
-            }
-            .sim-metrics {
-                flex-direction: row;
-                overflow-x: auto;
-                overflow-y: visible;
-                padding-right: 0;
-                padding-bottom: 8px;
-                max-height: none;
-            }
-            .sim-chart-area {
-                min-height: 500px;
-                max-height: none;
+        .sim-param-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        @media (max-width: 991px) {
+            .sim-controls-dropdown {
+                position: static;
+                width: 100%;
             }
         }
     </style>
     
-    <div class="simulation-container" style="margin-top: 20px;">
-        <!-- Header -->
-        @php
-            $nameWords = preg_split('/\s+/', trim($simulation->name ?? ''), -1, PREG_SPLIT_NO_EMPTY);
-            if ($nameWords && count($nameWords) > 25) {
-                $displayName = implode(' ', array_slice($nameWords, 0, 25)) . '...';
-            } else {
-                $displayName = $simulation->name;
-            }
-        @endphp
-        <div class="sim-header">
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <a href="{{ route('simulations.index') }}" class="btn btn-outline" style="display:inline-flex; align-items:center; gap:6px; padding:8px 12px;">
-                    ← Back
-                </a>
-                <h1 style="margin:0; font-size:24px; font-weight:700; max-width: 520px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    {{ $displayName }}
-                </h1>
-            </div>
-            <div style="display: flex; gap: 8px; align-items:center;">
-                <form method="POST" action="{{ route('simulations.destroy', $simulation) }}" onsubmit="return confirm('Delete this simulation?');" style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-outline">Delete</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Main Content: Metrics + Chart -->
-        <div class="sim-main-content">
-            <!-- Left: Key Metrics -->
-            <div class="sim-metrics">
-                <div class="metric-card">
-                    <div class="metric-label">Current Value</div>
-                    <div id="current-value" class="metric-value" style="color: var(--c-primary);">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Total Contributed</div>
-                    <div id="total-contributed" class="metric-value">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Total Gain</div>
-                    <div id="total-gain" class="metric-value" style="color: var(--c-primary);">€0.00</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Real Value (Inflation Adj.)</div>
-                    <div id="real-value" class="metric-value" style="color: var(--c-secondary);">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Max Drawdown</div>
-                    <div id="drawdown" class="metric-value" style="color:#ef4444;">0%</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Projected CAGR</div>
-                    <div id="cagr" class="metric-value">0%</div>
-                </div>
-            </div>
-
-            <!-- Center: Main Chart Area -->
-            <div class="sim-chart-area">
-                <div class="chart-container">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0; gap:16px; flex-wrap:wrap;">
-                        <h2 style="margin:0; font-size:20px; font-weight:700;">Investment Growth Over Time</h2>
-                        <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-                            <button id="btn-run" class="btn btn-primary">▶ Start</button>
-                            <button id="btn-save" class="btn btn-outline" title="Save the latest simulation results">💾 Save</button>
-                            <a class="btn btn-secondary" href="{{ route('simulations.edit', $simulation) }}">Edit</a>
-                            <div id="status-display" style="padding:6px 12px; border-radius:999px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border); font-size:12px; font-weight:600;">
-                                Ready
-                            </div>
-                        </div>
+    <div class="simulation-wrapper">
+        <div class="simulation-content">
+            <!-- Header -->
+            @php
+                $nameWords = preg_split('/\s+/', trim($simulation->name ?? ''), -1, PREG_SPLIT_NO_EMPTY);
+                if ($nameWords && count($nameWords) > 25) {
+                    $displayName = implode(' ', array_slice($nameWords, 0, 25)) . '...';
+                } else {
+                    $displayName = $simulation->name;
+                }
+            @endphp
+            <header class="sim-header">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                        <a href="{{ route('simulations.index') }}" class="btn btn-outline" style="display:inline-flex; align-items:center; gap:6px; padding:8px 12px;">
+                            ← Back
+                        </a>
                     </div>
-                    <div class="chart-canvas-wrapper">
+                    <h1 style="margin:4px 0 8px; font-size:24px; font-weight:700;">{{ $displayName }}</h1>
+                </div>
+                <div style="display: flex; gap: 8px; align-items:center;">
+                    <form method="POST" action="{{ route('simulations.destroy', $simulation) }}" onsubmit="return confirm('Delete this simulation?');" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-outline">Delete</button>
+                    </form>
+                </div>
+            </header>
+
+            <!-- Main Card: Controls Row, Metrics, Chart -->
+            <div class="sim-main-card">
+                <!-- Controls Row with Buttons and Metrics -->
+                <div class="sim-controls-row">
+                    <div>
+                        <p style="margin:0; text-transform:uppercase; letter-spacing:0.06em; font-size:12px; color:var(--c-on-surface-2);">{{ __('Simulation') }}</p>
+                        <h2 style="margin:4px 0 0; font-size:20px;">{{ $simulation->name }}</h2>
+                    </div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                        <button id="btn-run-pause" class="btn btn-primary">▶ {{ __('Run') }}</button>
+                        <button id="btn-step" class="btn btn-secondary">➜ {{ __('Step') }}</button>
+                        <button id="btn-reset" class="btn btn-outline">🔄 {{ __('Reset') }}</button>
+                        <button id="btn-save" class="btn btn-outline" title="Save the latest simulation results">💾 {{ __('Save') }}</button>
+                        <div id="status-display" style="padding:8px 12px; border:1px solid var(--c-border); border-radius:10px; background:color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); font-size:13px; font-weight:600;">{{ __('Ready') }}</div>
+                    </div>
+                </div>
+
+                <!-- Metrics Row -->
+                <div class="sim-metrics-row">
+                    <div class="sim-metric-card">
+                        <p class="sim-metric-label">{{ __('Current Value') }}</p>
+                        <p id="current-value" class="sim-metric-value" style="color:var(--c-primary);">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                    </div>
+                    <div class="sim-metric-card">
+                        <p class="sim-metric-label">{{ __('Total Contributed') }}</p>
+                        <p id="total-contributed" class="sim-metric-value">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                    </div>
+                    <div class="sim-metric-card">
+                        <p class="sim-metric-label">{{ __('Total Gain') }}</p>
+                        <p id="total-gain" class="sim-metric-value" style="color:var(--c-primary);">€0.00</p>
+                    </div>
+                    <div class="sim-metric-card">
+                        <p class="sim-metric-label">{{ __('Real Value') }}</p>
+                        <p id="real-value" class="sim-metric-value" style="color:var(--c-secondary);">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                    </div>
+                    <div class="sim-metric-card">
+                        <p class="sim-metric-label">{{ __('Max Drawdown') }}</p>
+                        <p id="drawdown" class="sim-metric-value" style="color:#ef4444;">0%</p>
+                    </div>
+                    <div class="sim-metric-card">
+                        <p class="sim-metric-label">{{ __('Projected CAGR') }}</p>
+                        <p id="cagr" class="sim-metric-value">0%</p>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="sim-chart-section">
+                    <div class="sim-chart-header">
+                        <h3 style="margin:0;">{{ __('Investment Growth Over Time') }}</h3>
+                    </div>
+                    <div class="sim-chart-canvas">
                         <canvas id="sim-chart" aria-label="Simulation chart"></canvas>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom: Collapsible Controls & Parameters -->
-        <div class="sim-controls-bottom">
-            <!-- Controls Toggle -->
-            <div class="controls-toggle" onclick="toggleControls()">
-                <span>⚙️ Simulation Controls & Parameters</span>
-                <span id="controls-arrow" style="transition: transform 0.3s;">▲</span>
-            </div>
-            
-            <!-- Collapsible Content -->
-            <div id="controls-content" class="controls-content expanded">
-                <div class="controls-inner">
-                    <div style="display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start;">
-                        <!-- Controls -->
-                        <div style="min-width:320px;">
-                            <h3 style="margin:0 0 16px; font-size:16px; font-weight:700;">Controls</h3>
-                            <div style="display:grid; gap:12px; margin-bottom:16px;">
+                    
+                    <!-- Right Sidebar: Controls & Parameters Dropdown (Overlay) -->
+                    <div class="sim-right-sidebar">
+                        <div class="sim-controls-dropdown">
+                            <div class="sim-controls-toggle" onclick="toggleRightControls()">
+                                <span style="font-size:12px;">⚙️ {{ __('Controls') }}</span>
+                                <span id="right-controls-arrow" style="transition: transform 0.3s; font-size:12px;">▼</span>
+                            </div>
+                    <div id="right-controls-panel" class="sim-controls-panel">
+                        <div class="sim-controls-inner">
+                            <!-- Controls -->
+                            <div class="sim-controls-grid">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                    <h3 style="margin:0; font-size:15px; font-weight:700;">{{ __('Controls') }}</h3>
+                                    <a class="btn btn-secondary btn-sm" href="{{ route('simulations.edit', $simulation) }}" style="padding:6px 12px; font-size:12px;">{{ __('Edit') }}</a>
+                                </div>
                                 <label style="display:grid; gap:6px;">
-                                    <span style="font-weight:600; font-size:13px;">Duration (months)</span>
+                                    <span style="font-size:13px;">{{ __('Duration (months)') }}</span>
                                     <input id="months-input" type="number" min="12" max="600" step="12" value="120" class="footer-email-input" />
                                 </label>
                                 <label style="display:grid; gap:6px;">
-                                    <span style="font-weight:600; font-size:13px;">Speed (seconds per step)</span>
+                                    <span style="font-size:13px;">{{ __('Speed (seconds/step)') }}</span>
                                     <input id="speed-input" type="number" min="0.1" max="10" step="0.1" value="0.25" class="footer-email-input" />
                                 </label>
                                 <label style="display:grid; gap:6px;">
-                                    <span style="font-weight:600; font-size:13px;">Market Regime</span>
+                                    <span style="font-size:13px;">{{ __('Market Regime') }}</span>
                                     <select id="preset-select" class="footer-email-input">
-                                        <option value="balanced">Balanced (default)</option>
-                                        <option value="growth">Growth / Bullish</option>
-                                        <option value="defensive">Defensive / Bearish</option>
-                                        <option value="volatile">Choppy & volatile</option>
-                                        <option value="shock">Stress test (crash + recovery)</option>
+                                        <option value="balanced">{{ __('Balanced (default)') }}</option>
+                                        <option value="growth">{{ __('Growth / Bullish') }}</option>
+                                        <option value="defensive">{{ __('Defensive / Bearish') }}</option>
+                                        <option value="volatile">{{ __('Choppy & volatile') }}</option>
+                                        <option value="shock">{{ __('Stress test (crash + recovery)') }}</option>
                                     </select>
                                 </label>
+                                <div id="save-status" style="margin-top:10px; font-size:11px; color:var(--c-on-surface-2);">{{ __('Not saved yet') }}</div>
                             </div>
-                            <div style="display:flex; flex-wrap:wrap; gap:8px;">
-                                <button id="btn-step" class="btn btn-secondary" title="Advance by one month">➜ Step</button>
-                                <button id="btn-pause" class="btn btn-secondary" disabled>⏸ Pause</button>
-                                <button id="btn-reset" class="btn btn-outline">🔄 Reset</button>
-                            </div>
-                            <div id="save-status" style="margin-top:12px; font-size:12px; color:var(--c-on-surface-2);">Not saved yet</div>
-                        </div>
 
-                        <!-- Parameters -->
-                        <div>
-                            <h3 style="margin:0 0 16px; font-size:16px; font-weight:700;">Simulation Parameters</h3>
-                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
-                                <div style="padding:12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                                    <span style="color: var(--c-on-surface-2); font-size:12px; display:block; margin-bottom:4px;">Initial Investment</span>
-                                    <span style="font-size:18px; font-weight:700;">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</span>
+                            <!-- Parameters -->
+                            <div class="sim-params-grid">
+                                <div class="sim-param-card">
+                                    <span class="sim-param-label">{{ __('Initial Investment') }}</span>
+                                    <span class="sim-param-value">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</span>
                                 </div>
-                                <div style="padding:12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                                    <span style="color: var(--c-on-surface-2); font-size:12px; display:block; margin-bottom:4px;">Monthly Contribution</span>
-                                    <span style="font-size:18px; font-weight:700;">€{{ number_format($simulation->settings['monthlyContribution'], 2) }}</span>
+                                <div class="sim-param-card">
+                                    <span class="sim-param-label">{{ __('Monthly Contribution') }}</span>
+                                    <span class="sim-param-value">€{{ number_format($simulation->settings['monthlyContribution'], 2) }}</span>
                                 </div>
-                                <div style="padding:12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                                    <span style="color: var(--c-on-surface-2); font-size:12px; display:block; margin-bottom:4px;">Annual Growth Rate</span>
-                                    <span style="font-size:18px; font-weight:700;">{{ number_format($simulation->settings['growthRate'] * 100, 2) }}%</span>
+                                <div class="sim-param-card">
+                                    <span class="sim-param-label">{{ __('Annual Growth Rate') }}</span>
+                                    <span class="sim-param-value">{{ number_format($simulation->settings['growthRate'] * 100, 2) }}%</span>
                                 </div>
-                                <div style="padding:12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                                    <span style="color: var(--c-on-surface-2); font-size:12px; display:block; margin-bottom:4px;">Inflation Rate</span>
-                                    <span style="font-size:18px; font-weight:700;">{{ number_format($simulation->settings['inflationRate'] * 100, 2) }}%</span>
+                                <div class="sim-param-card">
+                                    <span class="sim-param-label">{{ __('Inflation Rate') }}</span>
+                                    <span class="sim-param-value">{{ number_format($simulation->settings['inflationRate'] * 100, 2) }}%</span>
                                 </div>
-                                <div style="padding:12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                                    <span style="color: var(--c-on-surface-2); font-size:12px; display:block; margin-bottom:4px;">Risk Appetite</span>
-                                    <span style="font-size:18px; font-weight:700;">{{ number_format($simulation->settings['riskAppetite'] * 100, 0) }}%</span>
+                                <div class="sim-param-card">
+                                    <span class="sim-param-label">{{ __('Risk Appetite') }}</span>
+                                    <span class="sim-param-value">{{ number_format($simulation->settings['riskAppetite'] * 100, 0) }}%</span>
                                 </div>
-                                <div style="padding:12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                                    <span style="color: var(--c-on-surface-2); font-size:12px; display:block; margin-bottom:4px;">Market Influence</span>
-                                    <span style="font-size:18px; font-weight:700;">{{ number_format($simulation->settings['marketInfluence'] * 100, 0) }}%</span>
+                                <div class="sim-param-card">
+                                    <span class="sim-param-label">{{ __('Market Influence') }}</span>
+                                    <span class="sim-param-value">{{ number_format($simulation->settings['marketInfluence'] * 100, 0) }}%</span>
                                 </div>
                             </div>
                         </div>
@@ -393,16 +409,16 @@
         </div>
         
         <script>
-        function toggleControls() {
-            const content = document.getElementById('controls-content');
-            const arrow = document.getElementById('controls-arrow');
-            const isExpanded = content.classList.contains('expanded');
+        function toggleRightControls() {
+            const panel = document.getElementById('right-controls-panel');
+            const arrow = document.getElementById('right-controls-arrow');
+            const isExpanded = panel.classList.contains('expanded');
             if (isExpanded) {
-                content.classList.remove('expanded');
+                panel.classList.remove('expanded');
                 arrow.textContent = '▼';
                 arrow.style.transform = 'rotate(0deg)';
             } else {
-                content.classList.add('expanded');
+                panel.classList.add('expanded');
                 arrow.textContent = '▲';
                 arrow.style.transform = 'rotate(180deg)';
             }
@@ -419,9 +435,8 @@
 <script>
  document.addEventListener('DOMContentLoaded', () => {
     const chartCanvas = document.getElementById('sim-chart');
-    const btnRun = document.getElementById('btn-run');
+    const btnRunPause = document.getElementById('btn-run-pause');
     const btnStep = document.getElementById('btn-step');
-    const btnPause = document.getElementById('btn-pause');
     const btnReset = document.getElementById('btn-reset');
     const btnSave = document.getElementById('btn-save');
     const monthsInput = document.getElementById('months-input');
@@ -441,7 +456,7 @@
     const snapshotUrl = "{{ route('simulations.snapshot', $simulation) }}";
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-    if (!chartCanvas || !btnRun || !btnPause || !btnReset || !monthsInput || !speedInput || !presetSelect) {
+    if (!chartCanvas || !btnRunPause || !btnReset || !monthsInput || !speedInput || !presetSelect) {
         console.warn('Simulation controls are missing from the DOM. Skipping initialization.');
         return;
     }
@@ -473,6 +488,7 @@
     };
 
     // Currency preference - fetch from API
+    // Note: All values are stored in EUR (base currency). Conversion only happens when displaying.
     const defaultRates = {
         EUR: 1,
         USD: 1.08,
@@ -556,6 +572,7 @@
     // Re-fetch rates every hour
     setInterval(fetchExchangeRates, 60 * 60 * 1000);
 
+    // Convert EUR amount to selected currency using current exchange rates
     function convertAmount(euroAmount) {
         const rate = currencyRates[activeCurrency] ?? 1;
         return euroAmount * rate;
@@ -655,6 +672,18 @@
     const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() || '#07a05a';
     const secondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--c-secondary').trim() || '#d98e12';
 
+    // Handle window resize to prevent stretching/blurriness
+    let resizeTimeout;
+    const handleResize = () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            if (chart) {
+                chart.resize();
+            }
+        }, 100);
+    };
+    window.addEventListener('resize', handleResize);
+
     // Initialize Chart
     const chart = new Chart(chartCtx, {
         type: 'line',
@@ -689,6 +718,7 @@
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            resizeDelay: 100,
             interaction: {
                 mode: 'index',
                 intersect: false,
@@ -788,8 +818,13 @@
         rebuildChartData('resize');
         updateSummary();
         if (statusDisplay) {
-            statusDisplay.textContent = 'Ready';
+            statusDisplay.textContent = '{{ __('Ready') }}';
             statusDisplay.style.background = 'color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%)';
+        }
+        if (btnRunPause) {
+            btnRunPause.textContent = '▶ {{ __('Run') }}';
+            btnRunPause.classList.remove('btn-secondary');
+            btnRunPause.classList.add('btn-primary');
         }
     }
 
@@ -858,16 +893,31 @@
         const years = Math.max(data.month, 1) / 12;
         const cagr = Math.pow(data.value / Math.max(settings.initialInvestment, 1e-6), 1 / years) - 1;
 
-        currentValueEl.textContent = formatCurrency(data.value);
+        if (currentValueEl) {
+            currentValueEl.textContent = formatCurrency(data.value);
+            currentValueEl.style.color = primaryColor;
+        }
         
-        totalContributedEl.textContent = formatCurrency(data.contributions);
+        if (totalContributedEl) {
+            totalContributedEl.textContent = formatCurrency(data.contributions);
+        }
         
-        totalGainEl.textContent = formatCurrency(totalGain);
-        totalGainEl.style.color = totalGain >= 0 ? primaryColor : '#ef4444';
+        if (totalGainEl) {
+            totalGainEl.textContent = formatCurrency(totalGain);
+            totalGainEl.style.color = totalGain >= 0 ? primaryColor : '#ef4444';
+        }
         
-        realValueEl.textContent = formatCurrency(data.inflationAdjusted);
-        drawdownEl.textContent = `${(maxDrawdown * 100).toFixed(1)}%`;
-        cagrEl.textContent = `${(cagr * 100).toFixed(2)}%`;
+        if (realValueEl) {
+            realValueEl.textContent = formatCurrency(data.inflationAdjusted);
+            realValueEl.style.color = secondaryColor;
+        }
+        if (drawdownEl) {
+            drawdownEl.textContent = `${(maxDrawdown * 100).toFixed(1)}%`;
+            drawdownEl.style.color = '#ef4444';
+        }
+        if (cagrEl) {
+            cagrEl.textContent = `${(cagr * 100).toFixed(2)}%`;
+        }
     }
 
     function updateLearningNote() {
@@ -905,26 +955,40 @@
         eventLogEl.innerHTML = eventLog.map(ev => `<li>${ev.text}</li>`).join('');
     }
 
+    // Toggle run/pause simulation
+    function toggleRunPause() {
+        if (isRunning) {
+            pauseSimulation();
+        } else {
+            startSimulation();
+        }
+    }
+
     // Start simulation
     function startSimulation() {
         if (isRunning) return;
         
         isRunning = true;
-        btnRun.disabled = true;
-        btnPause.disabled = false;
+        btnRunPause.textContent = '⏸ {{ __('Pause') }}';
+        btnRunPause.classList.remove('btn-primary');
+        btnRunPause.classList.add('btn-secondary');
         
         const maxMonths = parseInt(monthsInput.value);
         const stepSeconds = Math.max(0.1, parseFloat(speedInput.value) || 0.25);
         const speed = stepSeconds * 1000;
         
-        statusDisplay.textContent = 'Running...';
-        statusDisplay.style.background = 'color-mix(in srgb, var(--c-primary) 20%, var(--c-surface))';
+        if (statusDisplay) {
+            statusDisplay.textContent = '{{ __('Running...') }}';
+            statusDisplay.style.background = 'color-mix(in srgb, var(--c-primary) 20%, var(--c-surface))';
+        }
         
         intervalId = setInterval(() => {
             if (currentMonth >= maxMonths) {
                 pauseSimulation();
-                statusDisplay.textContent = 'Complete';
-                statusDisplay.style.background = 'color-mix(in srgb, var(--c-primary) 30%, var(--c-surface))';
+                if (statusDisplay) {
+                    statusDisplay.textContent = '{{ __('Complete') }}';
+                    statusDisplay.style.background = 'color-mix(in srgb, var(--c-primary) 30%, var(--c-surface))';
+                }
                 queueSnapshotSave();
                 return;
             }
@@ -932,7 +996,9 @@
             calculateNextMonth();
             rebuildChartData('none');
             updateSummary();
-            statusDisplay.textContent = `Month ${currentMonth} / ${maxMonths}`;
+            if (statusDisplay) {
+                statusDisplay.textContent = `{{ __('Month') }} ${currentMonth} / ${maxMonths}`;
+            }
         }, speed);
     }
 
@@ -940,30 +1006,37 @@
         pauseSimulation();
         const maxMonths = parseInt(monthsInput.value) || 120;
         if (currentMonth >= maxMonths) {
-            statusDisplay.textContent = 'Complete';
-            statusDisplay.style.background = 'color-mix(in srgb, var(--c-primary) 30%, var(--c-surface))';
+            if (statusDisplay) {
+                statusDisplay.textContent = '{{ __('Complete') }}';
+                statusDisplay.style.background = 'color-mix(in srgb, var(--c-primary) 30%, var(--c-surface))';
+            }
             queueSnapshotSave();
             return;
         }
         calculateNextMonth();
         rebuildChartData('none');
         updateSummary();
-        statusDisplay.textContent = `Month ${currentMonth} / ${maxMonths}`;
+        if (statusDisplay) {
+            statusDisplay.textContent = `{{ __('Month') }} ${currentMonth} / ${maxMonths}`;
+        }
     }
 
     // Pause simulation
     function pauseSimulation() {
         isRunning = false;
-        btnRun.disabled = false;
-        btnPause.disabled = true;
+        btnRunPause.textContent = '▶ {{ __('Run') }}';
+        btnRunPause.classList.remove('btn-secondary');
+        btnRunPause.classList.add('btn-primary');
         
         if (intervalId) {
             clearInterval(intervalId);
             intervalId = null;
         }
         
-        statusDisplay.textContent = 'Paused';
-        statusDisplay.style.background = 'color-mix(in srgb, var(--c-secondary) 20%, var(--c-surface))';
+        if (statusDisplay) {
+            statusDisplay.textContent = '{{ __('Paused') }}';
+            statusDisplay.style.background = 'color-mix(in srgb, var(--c-secondary) 20%, var(--c-surface))';
+        }
         queueSnapshotSave();
     }
 
@@ -977,9 +1050,8 @@
     // Event listeners
     seedInitialState();
 
-    btnRun.addEventListener('click', startSimulation);
+    btnRunPause.addEventListener('click', toggleRunPause);
     btnStep.addEventListener('click', stepOnce);
-    btnPause.addEventListener('click', pauseSimulation);
     btnReset.addEventListener('click', resetSimulation);
     btnSave?.addEventListener('click', () => {
         updateSaveStatus('Saving…', 'var(--c-on-surface)');
@@ -1048,9 +1120,11 @@
         }, 1200);
     }
 
-    function handleCurrencyPreferenceChange() {
+    async function handleCurrencyPreferenceChange() {
         const next = getPreferredCurrency();
         if (next !== activeCurrency) {
+            // Fetch fresh exchange rates when switching currencies
+            await fetchExchangeRates();
             activeCurrency = next;
             rebuildChartData();
             updateSummary();

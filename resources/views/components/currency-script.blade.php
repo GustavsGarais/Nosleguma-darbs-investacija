@@ -92,12 +92,17 @@
         return `${sign}${symbol}${formatted}`;
     }
 
-    function render() {
+    async function render() {
         const currency = getPreferredCurrency();
+        // Fetch fresh rates when currency preference changes
+        if (currency !== 'EUR') {
+            await fetchExchangeRates();
+        }
         const rate = currencyRates[currency] ?? 1;
         document.querySelectorAll('[data-currency-value]').forEach((node) => {
             const raw = parseFloat(node.dataset.currencyValue);
             if (!Number.isFinite(raw)) return;
+            // All values are stored in EUR (base currency), convert when displaying
             node.textContent = formatAmount(raw * rate, currency);
         });
     }
@@ -120,9 +125,9 @@
     // Re-fetch rates every hour to keep them updated
     setInterval(fetchExchangeRates, 60 * 60 * 1000);
 
-    window.addEventListener('storage', (event) => {
+    window.addEventListener('storage', async (event) => {
         if (event.key === 'nosleguma-currency-preference') {
-            render();
+            await render();
         }
     });
 })();
