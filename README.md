@@ -75,3 +75,17 @@ Email: admin@example.com
 Password: YourSecurePassword123!
 
 C:\laragon\www\Nosleguma-darbs-investacija\database
+
+
+BUGS:
+editing than going back makes the simulation have the old UI.
+
+The "Edit simulation" should have % percentile 0%-100% rather than 0-1.
+
+2FA and Forgot password doesn't exist.
+
+Make the admin control a similar font like the others do.
+
+Some places still not having translated to latvian.
+
+Your Simulations list the tab for pages color doesn't change in dark mode.
