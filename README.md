@@ -31,7 +31,40 @@
 3. Tumšā/gaišā režīma pārslēgšanas funkcija visai vietnei.
 4. Sistēma vairāku lietotāju kontiem.
 5. Backend pilnībā pārbūvēts no localhost uz laravel, no docker, uz Node.js no beigām PHP ar SQLite.
-7. Precīzi atdalīti frontend (`src/`) un backend (`api/`) ceļi vienā projektā.
+6. Precīzi atdalīti frontend (`src/`) un backend (`api/`) ceļi vienā projektā.
+7. Integrācija ar valūtas kursu API (exchangerate-api.com) reāllaika valūtas kursu iegūšanai.
+8. Izglītojošie brīdinājumi par simulācijas raksturu un drošību.
+
+---
+
+##  Valūtas kursu sistēma:
+
+Lai parādītu pašreizējo valūtas vērtību, programma izmanto tiešsaistes datu avotu (API), kas nodrošina aktuālus valūtas kursus. 
+Programma pieprasa jaunākos datus, nolasa atbildi un parāda valūtas vērtību lietotājam. 
+Šie dati var tikt automātiski atjaunināti, lai saglabātu aktuālu informāciju.
+
+**API izmantošana:**
+- Izmantots exchangerate-api.com bezmaksas API
+- Automātiska kursu atjaunināšana katru stundu
+- Kešošana localStorage 24 stundu garumā
+- Fallback uz noklusējuma kursiem, ja API nav pieejams
+
+---
+
+##  Izglītojošā simulācijas raksturs:
+
+Tā kā šis projekts ir investīciju simulācija, tas neizmanto īstu naudu un nemēģina prognozēt tirgu. 
+Tā vietā tas imitē, kā investīcijas parasti darbojas reālajā dzīvē. 
+Investīciju vērtība laika gaitā mainās, pamatojoties uz vidējo pieaugumu un nejaušām svārstībām, kas atspoguļo tirgus uzsprāgumus un kritumus. 
+Dažādi riska līmeņi ietekmē to, cik stabila vai nestabila ir investīcija.
+
+Šī pieeja padara simulāciju reālistisku, vienlaikus saglabājot to drošu un izglītojošu.
+
+**Brīdinājumi:**
+- Izglītojošie brīdinājumi tiek rādīti vairākās vietās platformā
+- Simulācija neizmanto īstu naudu
+- Rezultāti nav reālu tirgus prognožu
+- Simulācija ir paredzēta tikai izglītībai un apmācībai
 
 php artisan serve --host=127.0.0.1 --port=8080
 
@@ -41,3 +74,18 @@ admin remote
 Email: admin@example.com
 Password: YourSecurePassword123!
 
+C:\laragon\www\Nosleguma-darbs-investacija\database
+
+
+BUGS:
+editing than going back makes the simulation have the old UI.
+
+The "Edit simulation" should have % percentile 0%-100% rather than 0-1.
+
+2FA and Forgot password doesn't exist.
+
+Make the admin control a similar font like the others do.
+
+Some places still not having translated to latvian.
+
+Your Simulations list the tab for pages color doesn't change in dark mode.

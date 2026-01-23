@@ -20,7 +20,9 @@ Route::get('/quick-tour', function () {
 Route::post('/language', [LanguageController::class, 'switch'])->name('language.switch');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', function () {
+        return redirect()->route('simulations.index');
+    })->name('dashboard');
     
     // Simulation routes
     Route::resource('simulations', SimulationController::class);

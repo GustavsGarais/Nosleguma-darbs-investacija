@@ -22,8 +22,9 @@
         <label style="display:grid; gap:6px;">
             <div style="display:flex; align-items:center; gap:6px;">
                 <span>Name</span>
+                <span style="font-size:12px; color:var(--c-on-surface-2);">(max 30 characters)</span>
             </div>
-            <input type="text" name="name" value="{{ old('name') }}" required class="footer-email-input" />
+            <input type="text" name="name" value="{{ old('name') }}" required maxlength="30" class="footer-email-input" />
         </label>
 
         <div style="display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px;">

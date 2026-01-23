@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Simulation;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $simulations = auth()->user()->simulations()->latest()->get();
+        $simulation = null;
 
-        return view('dashboard', compact('simulations'));
+        if ($request->has('simulation')) {
+            $simulation = auth()->user()->simulations()->find($request->simulation);
+        }
+
+        return view('dashboard', compact('simulations', 'simulation'));
     }
 
     public function completeTutorial(Request $request)

@@ -11,11 +11,16 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class SimulationController extends Controller
 {
     use AuthorizesRequests;
-    public function index(): View
+    public function index(Request $request): View
     {
         $simulations = auth()->user()->simulations()->latest()->paginate(10);
+        $simulation = null;
 
-        return view('simulations.index', compact('simulations'));
+        if ($request->has('simulation')) {
+            $simulation = auth()->user()->simulations()->find($request->simulation);
+        }
+
+        return view('simulations.index', compact('simulations', 'simulation'));
     }
 
     public function create(): View
@@ -26,7 +31,7 @@ class SimulationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:30',
             'initial_investment' => 'required|numeric|min:0',
             'monthly_contribution' => 'required|numeric|min:0',
             'growth_rate' => 'required|numeric|min:0|max:1',
@@ -70,7 +75,7 @@ class SimulationController extends Controller
         $this->authorize('update', $simulation);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:30',
             'initial_investment' => 'required|numeric|min:0',
             'monthly_contribution' => 'required|numeric|min:0',
             'growth_rate' => 'required|numeric|min:0|max:1',
@@ -111,7 +116,11 @@ class SimulationController extends Controller
     {
         $this->authorize('update', $simulation);
 
-        $months = $request->input('months', 120);
+        $validated = $request->validate([
+            'months' => 'nullable|integer|min:12|max:600',
+        ]);
+
+        $months = $validated['months'] ?? 120;
         $settings = $simulation->settings;
         
         $results = $this->calculateSimulation($settings, $months);
@@ -181,7 +190,8 @@ class SimulationController extends Controller
             $currentValue = max(0, $currentValue + $interestEarned);
 
             // Calculate inflation-adjusted value
-            $inflationAdjusted = $currentValue / pow(1 + $monthlyInflationRate, $month);
+            // Use $month + 1 because the loop starts at 0, but after 1 month we need 1 month of inflation adjustment
+            $inflationAdjusted = $currentValue / pow(1 + $monthlyInflationRate, $month + 1);
 
             // Store result
             $results[] = [
