@@ -8,9 +8,11 @@
     
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" />
     
     <!-- Styles -->
     @vite(['resources/css/app.css'])
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
     <style>
         :root {
             --admin-bg: #0f172a;
@@ -31,7 +33,7 @@
             padding: 0;
             background: var(--admin-bg);
             color: var(--admin-text);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
 
         .admin-container {
@@ -60,6 +62,7 @@
             font-size: 20px;
             font-weight: 700;
             color: var(--admin-text);
+            font-family: 'Orbitron', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
         }
 
         .admin-sidebar-header p {
@@ -120,6 +123,7 @@
             margin: 0 0 8px;
             font-size: 28px;
             font-weight: 700;
+            font-family: 'Orbitron', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
         }
 
         .admin-header p {
@@ -250,9 +254,10 @@
 
         .admin-stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             margin-bottom: 32px;
+            align-items: stretch;
         }
 
         .admin-stat-card {

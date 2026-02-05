@@ -271,7 +271,7 @@
                 <div>
                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
                         <a href="{{ route('simulations.index') }}" class="btn btn-outline" style="display:inline-flex; align-items:center; gap:6px; padding:8px 12px;">
-                            ← Back
+                            ← {{ __('Back') }}
                         </a>
                     </div>
                     <h1 style="margin:4px 0 8px; font-size:24px; font-weight:700;">{{ $displayName }}</h1>
@@ -291,7 +291,6 @@
                 <div class="sim-controls-row">
                     <div>
                         <p style="margin:0; text-transform:uppercase; letter-spacing:0.06em; font-size:12px; color:var(--c-on-surface-2);">{{ __('Simulation') }}</p>
-                        <h2 style="margin:4px 0 0; font-size:20px;">{{ $simulation->name }}</h2>
                     </div>
                     <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
                         <button id="btn-run-pause" class="btn btn-primary">▶ {{ __('Run') }}</button>

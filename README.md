@@ -74,18 +74,28 @@ admin remote
 Email: admin@example.com
 Password: YourSecurePassword123!
 
-C:\laragon\www\Nosleguma-darbs-investacija\database
+php artisan tinker
+use App\Models\User;
+
+// See all users (raw)
+User::all();
+
+// See only important columns
+User::select('id', 'name', 'email', 'is_admin')->get();
+
+// Count users
+User::count();
+
+// Find one by email
+User::where('email', 'admin@example.com')->first();
 
 
 BUGS:
-editing than going back makes the simulation have the old UI.
 
-The "Edit simulation" should have % percentile 0%-100% rather than 0-1.
+The "Edit simulation" should have % percentile 0%-100% rather than 0-1 while it can't go past 0% or 100%
 
 2FA and Forgot password doesn't exist.
 
 Make the admin control a similar font like the others do.
 
 Some places still not having translated to latvian.
-
-Your Simulations list the tab for pages color doesn't change in dark mode.
