@@ -21,8 +21,8 @@
 
         <label style="display:grid; gap:6px;">
             <div style="display:flex; align-items:center; gap:6px;">
-                <span>Name</span>
-                <span style="font-size:12px; color:var(--c-on-surface-2);">(max 30 characters)</span>
+                <span>{{ __('Name') }}</span>
+                <span style="font-size:12px; color:var(--c-on-surface-2);">{{ __('(max 30 characters)') }}</span>
             </div>
             <input type="text" name="name" value="{{ old('name') }}" required maxlength="30" class="footer-email-input" />
         </label>
@@ -56,8 +56,8 @@
             </label>
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">
-                    <span>Growth Rate (0-1 annual)</span>
-                    <div class="info-bubble" data-tooltip="Expected annual return as a decimal (0-1). Example: 0.07 = 7% annual growth. Higher rates mean more potential gains but also more risk.">
+                    <span>{{ __('Growth Rate (annual, % )') }}</span>
+                    <div class="info-bubble" data-tooltip="{{ __('Expected annual return in percent (0-100). Example: 7% annual growth. Higher rates mean more potential gains but also more risk.') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -65,12 +65,12 @@
                         </svg>
                     </div>
                 </div>
-                <input type="number" step="0.001" min="0" max="1" name="growth_rate" value="{{ old('growth_rate', 0.07) }}" required class="footer-email-input" />
+                <input type="number" step="0.1" min="0" max="100" name="growth_rate" value="{{ old('growth_rate', 7) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">
-                    <span>Risk Appetite (0-1)</span>
-                    <div class="info-bubble" data-tooltip="How much volatility you're comfortable with (0-1). Higher values mean your investment will have bigger swings up and down, simulating a more aggressive strategy.">
+                    <span>{{ __('Risk Appetite (%)') }}</span>
+                    <div class="info-bubble" data-tooltip="{{ __('How much volatility you are comfortable with (0-100%). Higher values mean your investment will have bigger swings up and down, simulating a more aggressive strategy.') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -78,12 +78,12 @@
                         </svg>
                     </div>
                 </div>
-                <input type="number" step="0.01" min="0" max="1" name="risk_appetite" value="{{ old('risk_appetite', 0.5) }}" required class="footer-email-input" />
+                <input type="number" step="0.1" min="0" max="100" name="risk_appetite" value="{{ old('risk_appetite', 50) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">
-                    <span>Market Influence (0-1)</span>
-                    <div class="info-bubble" data-tooltip="How much external market factors affect your simulation (0-1). Higher values add more realistic market fluctuations, making the simulation more dynamic and unpredictable.">
+                    <span>{{ __('Market Influence (%)') }}</span>
+                    <div class="info-bubble" data-tooltip="{{ __('How much external market factors affect your simulation (0-100%). Higher values add more realistic market fluctuations, making the simulation more dynamic and unpredictable.') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -91,12 +91,12 @@
                         </svg>
                     </div>
                 </div>
-                <input type="number" step="0.01" min="0" max="1" name="market_influence" value="{{ old('market_influence', 0.5) }}" required class="footer-email-input" />
+                <input type="number" step="0.1" min="0" max="100" name="market_influence" value="{{ old('market_influence', 50) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">
-                    <span>Inflation Rate (0-1 annual)</span>
-                    <div class="info-bubble" data-tooltip="The annual inflation percentage as a decimal (0-1). Example: 0.02 = 2% inflation. This helps you see the real purchasing power of your investment over time, accounting for price increases.">
+                    <span>{{ __('Inflation Rate (annual, % )') }}</span>
+                    <div class="info-bubble" data-tooltip="{{ __('The annual inflation percentage (0-100). Example: 2% inflation. This helps you see the real purchasing power of your investment over time, accounting for price increases.') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -104,7 +104,7 @@
                         </svg>
                     </div>
                 </div>
-                <input type="number" step="0.001" min="0" max="1" name="inflation_rate" value="{{ old('inflation_rate', 0.02) }}" required class="footer-email-input" />
+                <input type="number" step="0.01" min="0" max="100" name="inflation_rate" value="{{ old('inflation_rate', 2) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">

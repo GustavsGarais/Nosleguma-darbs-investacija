@@ -5,7 +5,7 @@
 
 <div id="{{ $tutorialId }}" class="tutorial-overlay" style="display:none; position:fixed; inset:0; z-index:9999; pointer-events:none;">
     <!-- Dark background overlay -->
-    <div class="tutorial-backdrop" style="position:absolute; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); pointer-events:auto;"></div>
+    <div class="tutorial-backdrop" style="position:absolute; inset:0; background:rgba(0,0,0,0.85); pointer-events:auto;"></div>
     
     <!-- Tutorial popup - appears next to highlighted element -->
     <div class="tutorial-popup" style="position:absolute; background:var(--c-surface); border:3px solid var(--c-primary); border-radius:16px; padding:24px; max-width:420px; box-shadow:0 12px 48px rgba(0,0,0,0.6); z-index:10000; pointer-events:auto;">
@@ -39,60 +39,65 @@
             {
                 target: 'h1',
                 position: 'bottom',
-                content: 'Welcome to your Dashboard! This is where you\'ll see all your investment simulations and track your progress.',
+                content: 'This short tour will show you where to find your simulations and how to start a new one. Use Next and Previous to move between steps, or Finish to close the tour at any time.',
+            },
+            {
+                target: 'section[aria-label="Simulations"] h2, .auth-card h2',
+                position: 'bottom',
+                content: 'Here you\'ll see “Your Simulations” – a list of all scenarios you have created, with their latest saved values and quick access to open or edit them.',
             },
             {
                 target: 'a[href*="simulations.create"], .auth-card a[href*="simulations.create"]',
                 position: 'bottom',
-                content: 'Click here to create your first simulation. You\'ll be able to set up investment parameters and watch your portfolio grow over time.',
+                content: 'Click “New Simulation” to create a fresh scenario. You\'ll choose an initial amount, monthly contributions, and risk settings to see how your investments could behave over time.',
                 navigate: true
             },
             {
                 target: 'aside a[href*="simulations"]',
                 position: 'right',
-                content: 'The sidebar lets you navigate between Dashboard, Simulations list, and Account settings. Use it to quickly access different parts of the platform.',
+                content: 'Use the sidebar to move between Dashboard, Simulations, and Account settings. If you ever feel lost, come back to the Dashboard and start the tour again.',
             }
         ],
         create: [
             {
                 target: 'input[name="name"]',
                 position: 'bottom',
-                content: 'Give your simulation a descriptive name. This helps you identify it later when you have multiple simulations.',
+                content: 'Start by giving your simulation a clear name, like “Retirement plan 30 years” or “High-risk test”. This makes it easy to recognize later.',
             },
             {
                 target: 'input[name="initial_investment"]',
                 position: 'right',
-                content: 'Initial Investment: The starting amount you invest in euros. This is your initial capital before any growth or contributions.',
+                content: 'Initial Investment is the amount of money you put in at the very beginning, in euros. Think of it as your starting balance.',
             },
             {
                 target: 'input[name="monthly_contribution"]',
                 position: 'right',
-                content: 'Monthly Contribution: How much you\'ll add to your investment each month. Regular contributions help your portfolio grow faster through compound interest.',
+                content: 'Monthly Contribution is how much you add every month. Regular contributions are one of the most powerful drivers of long‑term growth.',
             },
             {
                 target: 'input[name="growth_rate"]',
                 position: 'right',
-                content: 'Growth Rate: Expected annual return as a decimal (0-1). Example: 0.07 = 7% annual growth. Higher rates mean more potential gains but also more risk.',
+                content: 'Growth Rate is the expected yearly return in percent. For example, “7” means 7% per year. Higher values mean more potential growth, but also more risk.',
             },
             {
                 target: 'input[name="risk_appetite"]',
                 position: 'right',
-                content: 'Risk Appetite: How much volatility you\'re comfortable with (0-1). Higher values mean bigger swings up and down, simulating a more aggressive strategy.',
+                content: 'Risk Appetite (0–100%) controls how “bumpy” your simulation is. Lower values are calmer and more stable, higher values swing up and down more aggressively.',
             },
             {
                 target: 'input[name="market_influence"]',
                 position: 'right',
-                content: 'Market Influence: How much external market factors affect your simulation (0-1). Higher values add more realistic market fluctuations.',
+                content: 'Market Influence (0–100%) tells the simulator how strongly external market movements should affect your portfolio. Higher values create more realistic ups and downs.',
             },
             {
                 target: 'input[name="inflation_rate"]',
                 position: 'right',
-                content: 'Inflation Rate: Annual inflation as a decimal (0-1). Example: 0.02 = 2%. This shows the real purchasing power of your investment over time.',
+                content: 'Inflation Rate is the yearly price increase in percent. For example, “2” means prices grow about 2% per year. This helps you see the difference between nominal and real value.',
             },
             {
                 target: 'button[type="submit"]',
                 position: 'top',
-                content: 'Once you\'ve filled in all parameters, click Create to start your simulation! You can always edit these settings later.',
+                content: 'When you are happy with the settings, click “Create” to save this simulation. You can always come back later and edit these values if you change your mind.',
             }
         ]
     };
@@ -118,45 +123,53 @@
         const indicatorEl = overlay.querySelector('.tutorial-step-indicator');
 
         function clearHighlight() {
-            if (highlightedElement) {
-                highlightedElement.style.position = '';
-                highlightedElement.style.zIndex = '';
-                highlightedElement.style.boxShadow = '';
-                highlightedElement.style.outline = '';
-                highlightedElement.style.outlineOffset = '';
-                highlightedElement.style.filter = '';
-                highlightedElement.style.backgroundColor = '';
-                highlightedElement.style.borderRadius = '';
-                highlightedElement = null;
+            if (!highlightedElement) return;
+
+            // Restore original inline styles if we modified them
+            const originalStyle = highlightedElement.dataset.tutorialOriginalStyle;
+            if (originalStyle !== undefined) {
+                if (originalStyle) {
+                    highlightedElement.setAttribute('style', originalStyle);
+                } else {
+                    highlightedElement.removeAttribute('style');
+                }
+                delete highlightedElement.dataset.tutorialOriginalStyle;
             }
+
+            highlightedElement = null;
         }
 
         function highlightElement(el) {
             clearHighlight();
+
+            // Store original inline styles so we can restore them later
+            if (!el.dataset.tutorialOriginalStyle) {
+                el.dataset.tutorialOriginalStyle = el.getAttribute('style') || '';
+            }
+
             highlightedElement = el;
-            
+
             // Make element stand out above the dark overlay
-            const originalZIndex = el.style.zIndex || getComputedStyle(el).zIndex || 'auto';
             el.style.position = 'relative';
             el.style.zIndex = '10001';
             el.style.transition = 'all 0.3s ease';
-            
+
             // Add glowing highlight effect
             el.style.boxShadow = '0 0 0 4px rgba(7, 160, 90, 0.4), 0 0 20px rgba(7, 160, 90, 0.6), 0 4px 12px rgba(0,0,0,0.3)';
             el.style.outline = '3px solid var(--c-primary)';
             el.style.outlineOffset = '6px';
             el.style.borderRadius = '8px';
-            
-            // Brighten buttons/links
+
+            // Brighten buttons/links slightly without blurring text
             if (el.tagName === 'BUTTON' || el.tagName === 'A' || el.classList.contains('btn')) {
-                el.style.filter = 'brightness(1.25) saturate(1.2)';
+                el.style.filter = 'brightness(1.15) saturate(1.1)';
                 if (el.classList.contains('btn-primary')) {
                     const computed = getComputedStyle(el);
                     el.style.backgroundColor = computed.backgroundColor || 'var(--c-primary)';
                 }
             } else {
-                // For text elements, add a subtle background
-                el.style.backgroundColor = 'rgba(7, 160, 90, 0.1)';
+                // For text elements, add a subtle background to improve contrast
+                el.style.backgroundColor = 'rgba(7, 160, 90, 0.08)';
                 el.style.padding = '4px 8px';
             }
         }

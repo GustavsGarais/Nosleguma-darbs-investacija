@@ -8,7 +8,7 @@
     <p>Overview of system statistics and recent activity</p>
 </div>
 
-<div class="admin-stats-grid">
+<div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
     <div class="admin-stat-card">
         <div class="admin-stat-label">Total Users</div>
         <div class="admin-stat-value">{{ $totalUsers }}</div>
