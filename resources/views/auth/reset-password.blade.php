@@ -26,7 +26,7 @@
 
             <label style="display:grid; gap:6px;">
                 <span style="font-weight:700; color: var(--c-on-surface);">{{ __('Email') }}</span>
-                <input type="email" name="email" value="{{ old('email', $email) }}" required class="footer-email-input" autocomplete="email" />
+                <input type="email" name="email" value="{{ old('email', $email ?? '') }}" required class="footer-email-input" autocomplete="email" />
             </label>
 
             <label style="display:grid; gap:6px;">

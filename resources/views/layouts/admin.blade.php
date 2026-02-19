@@ -6,26 +6,33 @@
     <meta charset="utf-8" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <!-- Fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" />
-    
     <!-- Styles -->
     @vite(['resources/css/app.css'])
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/homepage.css') }}" />
+    <!-- Apply saved theme so admin uses same light/dark as rest of site -->
+    <script>
+    (function(){
+        try {
+            var t = localStorage.getItem('theme');
+            if (t === 'dark') document.documentElement.setAttribute('data-theme','dark');
+        } catch (e) {}
+    })();
+    </script>
     <style>
+        /* Use main app theme variables so admin matches the rest of the site */
         :root {
-            --admin-bg: #0f172a;
-            --admin-surface: #1e293b;
-            --admin-surface-light: #334155;
-            --admin-border: #475569;
-            --admin-text: #f1f5f9;
-            --admin-text-muted: #94a3b8;
-            --admin-primary: #3b82f6;
-            --admin-primary-hover: #2563eb;
+            --admin-bg: var(--c-surface);
+            --admin-surface: color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 6%);
+            --admin-surface-light: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);
+            --admin-border: var(--c-border);
+            --admin-text: var(--c-on-surface);
+            --admin-text-muted: var(--c-on-surface-2);
+            --admin-primary: var(--c-primary);
+            --admin-primary-hover: var(--c-primary-700, #068a4f);
             --admin-danger: #ef4444;
             --admin-success: #10b981;
-            --admin-warning: #f59e0b;
+            --admin-warning: #d98e12;
         }
 
         body {
@@ -33,7 +40,7 @@
             padding: 0;
             background: var(--admin-bg);
             color: var(--admin-text);
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: var(--font-family-body, 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif);
         }
 
         .admin-container {
@@ -62,7 +69,7 @@
             font-size: 20px;
             font-weight: 700;
             color: var(--admin-text);
-            font-family: 'Orbitron', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            font-family: var(--font-family-heading, 'Orbitron', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif);
         }
 
         .admin-sidebar-header p {
@@ -113,6 +120,36 @@
             flex: 1;
             margin-left: 260px;
             padding: 32px;
+            width: calc(100% - 260px);
+            min-width: 0;
+            max-width: min(1400px, calc(100vw - 260px));
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 220px;
+            }
+            .admin-content {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+                max-width: calc(100vw - 220px);
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+            .admin-content {
+                margin-left: 0;
+                width: 100%;
+                max-width: 100%;
+                padding: 16px;
+            }
         }
 
         .admin-header {
@@ -123,7 +160,7 @@
             margin: 0 0 8px;
             font-size: 28px;
             font-weight: 700;
-            font-family: 'Orbitron', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            font-family: var(--font-family-heading, 'Orbitron', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif);
         }
 
         .admin-header p {
@@ -254,10 +291,11 @@
 
         .admin-stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 32px;
             align-items: stretch;
+            width: 100%;
         }
 
         .admin-stat-card {
@@ -307,15 +345,24 @@
             <div class="admin-sidebar-header">
                 <h1>{{ __('Admin Panel') }}</h1>
                 <p>{{ auth()->user()->name }}</p>
-                <form method="POST" action="{{ route('language.switch') }}" style="margin-top:12px; display:flex; gap:8px; align-items:center;">
-                    @csrf
-                    <label for="admin-locale" style="font-size:12px; color:var(--admin-text-muted); text-transform:uppercase; letter-spacing:0.06em;">{{ __('Language') }}</label>
-                    <select id="admin-locale" name="locale" class="admin-select" style="max-width:140px;">
-                        <option value="en" @selected(app()->getLocale() === 'en')>{{ __('English') }}</option>
-                        <option value="lv" @selected(app()->getLocale() === 'lv')>{{ __('Latviešu') }}</option>
-                    </select>
-                    <button type="submit" class="admin-btn admin-btn-secondary" style="padding:8px 12px;">OK</button>
-                </form>
+                <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:16px; align-items:flex-start;">
+                    <form id="admin-locale-form" method="POST" action="{{ route('language.switch') }}" style="flex:1; min-width:0;">
+                        @csrf
+                        <label for="admin-locale" style="font-size:12px; color:var(--admin-text-muted); text-transform:uppercase; letter-spacing:0.06em;">{{ __('Language') }}</label>
+                        <select id="admin-locale" name="locale" class="admin-select" style="max-width:140px; margin-top:6px;">
+                            <option value="en" @selected(app()->getLocale() === 'en')>{{ __('English') }}</option>
+                            <option value="lv" @selected(app()->getLocale() === 'lv')>{{ __('Latviešu') }}</option>
+                        </select>
+                    </form>
+                    <div style="flex-shrink:0;">
+                        <span style="font-size:12px; color:var(--admin-text-muted); text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:6px;">{{ __('Theme') }}</span>
+                        <button type="button" id="admin-theme-toggle" class="admin-btn admin-btn-secondary" style="padding:8px 12px; display:inline-flex; align-items:center; gap:6px;" title="{{ __('Toggle light or dark mode') }}" aria-pressed="false">
+                            <svg id="admin-theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                            <svg id="admin-theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+                            <span id="admin-theme-label">{{ __('Light') }}</span>
+                        </button>
+                    </div>
+                </div>
             </div>
             <nav>
                 <ul class="admin-nav">
@@ -382,6 +429,48 @@
             @yield('content')
         </main>
     </div>
+    <script>
+    document.getElementById('admin-locale')?.addEventListener('change', function() {
+        this.form.submit();
+    });
+
+    (function() {
+        var html = document.documentElement;
+        var btn = document.getElementById('admin-theme-toggle');
+        var label = document.getElementById('admin-theme-label');
+        var iconSun = document.getElementById('admin-theme-icon-sun');
+        var iconMoon = document.getElementById('admin-theme-icon-moon');
+
+        function applyAdminTheme(theme) {
+            if (theme === 'dark') {
+                html.setAttribute('data-theme', 'dark');
+                try { localStorage.setItem('theme', 'dark'); } catch (e) {}
+                if (label) label.textContent = '{{ __("Dark") }}';
+                if (btn) btn.setAttribute('aria-pressed', 'true');
+                if (iconSun) iconSun.style.display = 'none';
+                if (iconMoon) iconMoon.style.display = 'block';
+            } else {
+                html.removeAttribute('data-theme');
+                try { localStorage.removeItem('theme'); } catch (e) {}
+                if (label) label.textContent = '{{ __("Light") }}';
+                if (btn) btn.setAttribute('aria-pressed', 'false');
+                if (iconSun) iconSun.style.display = 'block';
+                if (iconMoon) iconMoon.style.display = 'none';
+            }
+        }
+
+        var stored = '';
+        try { stored = localStorage.getItem('theme'); } catch (e) {}
+        applyAdminTheme(stored === 'dark' ? 'dark' : 'light');
+
+        if (btn) {
+            btn.addEventListener('click', function() {
+                var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                applyAdminTheme(next);
+            });
+        }
+    })();
+    </script>
 </body>
 </html>
 

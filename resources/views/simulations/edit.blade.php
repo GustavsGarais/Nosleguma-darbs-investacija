@@ -42,20 +42,20 @@
                 <input type="number" step="1" name="monthly_contribution" value="{{ old('monthly_contribution', $s['monthlyContribution'] ?? 100) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
-                <span>{{ __('Growth Rate (annual, % )') }}</span>
-                <input type="number" step="0.1" min="0" max="100" name="growth_rate" value="{{ old('growth_rate', ($s['growthRate'] ?? 0.07) * 100) }}" required class="footer-email-input" />
+                <span>{{ __('Growth Rate (annual)') }} <span style="font-size:12px; color:var(--c-on-surface-2);">0–100%</span></span>
+                <input type="number" step="0.1" min="0" max="100" name="growth_rate" value="{{ old('growth_rate', round(($s['growthRate'] ?? 0.07) * 100, 2)) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
-                <span>{{ __('Risk Appetite (%)') }}</span>
-                <input type="number" step="0.1" min="0" max="100" name="risk_appetite" value="{{ old('risk_appetite', ($s['riskAppetite'] ?? 0.5) * 100) }}" required class="footer-email-input" />
+                <span>{{ __('Risk Appetite') }} <span style="font-size:12px; color:var(--c-on-surface-2);">0–100%</span></span>
+                <input type="number" step="0.1" min="0" max="100" name="risk_appetite" value="{{ old('risk_appetite', round(($s['riskAppetite'] ?? 0.5) * 100, 2)) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
-                <span>{{ __('Market Influence (%)') }}</span>
-                <input type="number" step="0.1" min="0" max="100" name="market_influence" value="{{ old('market_influence', ($s['marketInfluence'] ?? 0.5) * 100) }}" required class="footer-email-input" />
+                <span>{{ __('Market Influence') }} <span style="font-size:12px; color:var(--c-on-surface-2);">0–100%</span></span>
+                <input type="number" step="0.1" min="0" max="100" name="market_influence" value="{{ old('market_influence', round(($s['marketInfluence'] ?? 0.5) * 100, 2)) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
-                <span>{{ __('Inflation Rate (annual, % )') }}</span>
-                <input type="number" step="0.01" min="0" max="100" name="inflation_rate" value="{{ old('inflation_rate', ($s['inflationRate'] ?? 0.02) * 100) }}" required class="footer-email-input" />
+                <span>{{ __('Inflation Rate (annual)') }} <span style="font-size:12px; color:var(--c-on-surface-2);">0–100%</span></span>
+                <input type="number" step="0.01" min="0" max="100" name="inflation_rate" value="{{ old('inflation_rate', round(($s['inflationRate'] ?? 0.02) * 100, 2)) }}" required class="footer-email-input" />
             </label>
             <label style="display:grid; gap:6px;">
                 <span>{{ __('Investors (count)') }}</span>
@@ -64,8 +64,8 @@
         </div>
 
         <div style="display:flex; gap:12px;">
-            <a href="{{ route('simulations.show', $simulation) }}" class="btn btn-outline">Cancel</a>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{{ route('simulations.index', ['simulation' => $simulation->id]) }}" class="btn btn-outline">{{ __('Cancel') }}</a>
+            <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
         </div>
     </form>
 </section>

@@ -4,40 +4,40 @@
 
 @section('content')
 <div class="admin-header">
-    <h1>Dashboard</h1>
-    <p>Overview of system statistics and recent activity</p>
+    <h1>{{ __('Dashboard') }}</h1>
+    <p>{{ __('Overview of system statistics and recent activity') }}</p>
 </div>
 
-<div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+<div class="admin-stats-grid">
     <div class="admin-stat-card">
-        <div class="admin-stat-label">Total Users</div>
+        <div class="admin-stat-label">{{ __('Total Users') }}</div>
         <div class="admin-stat-value">{{ $totalUsers }}</div>
     </div>
     <div class="admin-stat-card">
-        <div class="admin-stat-label">Total Tickets</div>
+        <div class="admin-stat-label">{{ __('Total Tickets') }}</div>
         <div class="admin-stat-value">{{ $totalTickets }}</div>
     </div>
     <div class="admin-stat-card">
-        <div class="admin-stat-label">Open Tickets</div>
+        <div class="admin-stat-label">{{ __('Open Tickets') }}</div>
         <div class="admin-stat-value" style="color: var(--admin-primary);">{{ $openTickets }}</div>
     </div>
     <div class="admin-stat-card">
-        <div class="admin-stat-label">In Progress</div>
+        <div class="admin-stat-label">{{ __('In Progress') }}</div>
         <div class="admin-stat-value" style="color: var(--admin-warning);">{{ $inProgressTickets }}</div>
     </div>
     <div class="admin-stat-card">
-        <div class="admin-stat-label">Urgent Tickets</div>
+        <div class="admin-stat-label">{{ __('Urgent Tickets') }}</div>
         <div class="admin-stat-value" style="color: var(--admin-danger);">{{ $urgentTickets }}</div>
     </div>
     <div class="admin-stat-card">
-        <div class="admin-stat-label">Unassigned</div>
+        <div class="admin-stat-label">{{ __('Unassigned') }}</div>
         <div class="admin-stat-value" style="color: var(--admin-warning);">{{ $unassignedTickets }}</div>
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px;">
     <div class="admin-card">
-        <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: 600;">Recent Users</h2>
+        <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: 600;">{{ __('Recent Users') }}</h2>
         @if($latestUsers->count())
             <div style="display: grid; gap: 12px;">
                 @foreach($latestUsers as $user)
@@ -51,15 +51,15 @@
                 @endforeach
             </div>
             <div style="margin-top: 16px;">
-                <a href="{{ route('admin.users.index') }}" class="admin-btn admin-btn-secondary">View All Users</a>
+                <a href="{{ route('admin.users.index') }}" class="admin-btn admin-btn-secondary">{{ __('View All Users') }}</a>
             </div>
         @else
-            <p style="color: var(--admin-text-muted);">No users yet.</p>
+            <p style="color: var(--admin-text-muted);">{{ __('No users yet.') }}</p>
         @endif
     </div>
 
     <div class="admin-card">
-        <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: 600;">Recent Tickets</h2>
+        <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: 600;">{{ __('Recent Tickets') }}</h2>
         @if($latestTickets->count())
             <div style="display: grid; gap: 12px;">
                 @foreach($latestTickets as $ticket)
@@ -77,10 +77,10 @@
                 @endforeach
             </div>
             <div style="margin-top: 16px;">
-                <a href="{{ route('admin.tickets.index') }}" class="admin-btn admin-btn-secondary">View All Tickets</a>
+                <a href="{{ route('admin.tickets.index') }}" class="admin-btn admin-btn-secondary">{{ __('View All Tickets') }}</a>
             </div>
         @else
-            <p style="color: var(--admin-text-muted);">No tickets yet.</p>
+            <p style="color: var(--admin-text-muted);">{{ __('No tickets yet.') }}</p>
         @endif
     </div>
 </div>
