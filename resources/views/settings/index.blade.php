@@ -18,6 +18,18 @@
         </div>
     @endif
 
+    @if (session('status') === 'two-factor-enabled')
+        <div role="status" style="padding:12px 16px; border-radius:10px; background:color-mix(in srgb, var(--c-primary) 18%, var(--c-surface)); border:1px solid color-mix(in srgb, var(--c-primary) 35%, var(--c-border));">
+            <strong>{{ __('Two-factor authentication enabled.') }}</strong> {{ __('Your account is now more secure.') }}
+        </div>
+    @endif
+
+    @if (session('status') === 'two-factor-disabled')
+        <div role="status" style="padding:12px 16px; border-radius:10px; background:color-mix(in srgb, var(--c-primary) 18%, var(--c-surface)); border:1px solid color-mix(in srgb, var(--c-primary) 35%, var(--c-border));">
+            <strong>{{ __('Two-factor authentication disabled.') }}</strong>
+        </div>
+    @endif
+
     @if ($errors->any())
         <div role="alert" aria-live="polite" style="margin:12px 0; padding:10px 12px; border:1px solid #e53935; border-radius:10px; background: color-mix(in srgb, #e53935 10%, var(--c-surface));">
             <ul style="margin:0; padding-left:18px;">
@@ -85,16 +97,28 @@
                 <div style="border-radius:12px; padding:16px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-secondary) 5%); display:flex; justify-content:space-between; align-items:center; gap:12px;">
                     <div>
                         <h4 style="margin:0 0 4px;">{{ __('Password') }}</h4>
-                        <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">{{ __('Minimum 12 characters with uppercase, lowercase, and numbers or symbols.') }}</p>
+                        <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">{{ __('Minimum 12 characters with uppercase, lowercase, and numbers or symbols. Forgot your password? Request a reset link from the login page.') }}</p>
                     </div>
-                    <a class="btn btn-outline" href="{{ route('password.request') }}">{{ __('Reset') }}</a>
+                    <a class="btn btn-outline" href="{{ route('password.request') }}">{{ __('Forgot password?') }}</a>
                 </div>
                 <div style="border-radius:12px; padding:16px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-secondary) 5%); display:flex; justify-content:space-between; align-items:center; gap:12px;">
                     <div>
                         <h4 style="margin:0 0 4px;">{{ __('Two-Factor Authentication (2FA)') }}</h4>
-                        <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">{{ __('Add an extra layer of security to your account.') }}</p>
+                        <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">
+                            @if($user->hasTwoFactorEnabled())
+                                {{ __('Two-factor authentication is enabled.') }}
+                            @else
+                                {{ __('Add an extra layer of security to your account.') }}
+                            @endif
+                        </p>
                     </div>
-                    <button class="btn btn-outline" type="button" disabled>{{ __('Coming Soon') }}</button>
+                    <a href="{{ route('settings.two-factor') }}" class="btn btn-outline">
+                        @if($user->hasTwoFactorEnabled())
+                            {{ __('Manage 2FA') }}
+                        @else
+                            {{ __('Enable 2FA') }}
+                        @endif
+                    </a>
                 </div>
             </div>
         </article>

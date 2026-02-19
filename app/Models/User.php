@@ -23,6 +23,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'tutorial_completed',
         'is_admin',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
     ];
 
     /**
@@ -33,6 +36,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -47,6 +52,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'tutorial_completed' => 'boolean',
+            'two_factor_confirmed_at' => 'datetime',
+            'two_factor_recovery_codes' => 'encrypted:array',
         ];
     }
 
@@ -61,5 +68,39 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(): bool
     {
         return $this->is_admin === true;
+    }
+
+    /**
+     * Check if 2FA is enabled for this user
+     */
+    public function hasTwoFactorEnabled(): bool
+    {
+        return !is_null($this->two_factor_secret) && !is_null($this->two_factor_confirmed_at);
+    }
+
+    /**
+     * Get recovery codes array
+     */
+    public function getRecoveryCodes(): array
+    {
+        return $this->two_factor_recovery_codes ?? [];
+    }
+
+    /**
+     * Check if a recovery code is valid and remove it if found
+     */
+    public function useRecoveryCode(string $code): bool
+    {
+        $codes = $this->getRecoveryCodes();
+        $index = array_search($code, $codes);
+        
+        if ($index !== false) {
+            unset($codes[$index]);
+            $this->two_factor_recovery_codes = array_values($codes);
+            $this->save();
+            return true;
+        }
+        
+        return false;
     }
 }

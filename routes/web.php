@@ -34,6 +34,12 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/settings/profile', [ProfileController::class, 'update'])->name('settings.profile');
     Route::delete('/settings', [ProfileController::class, 'destroy'])->name('settings.destroy');
     
+    // Two-Factor Authentication
+    Route::get('/settings/two-factor', [\App\Http\Controllers\TwoFactorController::class, 'show'])->name('settings.two-factor');
+    Route::post('/settings/two-factor/enable', [\App\Http\Controllers\TwoFactorController::class, 'enable'])->name('two-factor.enable');
+    Route::post('/settings/two-factor/disable', [\App\Http\Controllers\TwoFactorController::class, 'disable'])->name('two-factor.disable');
+    Route::post('/settings/two-factor/recovery-codes', [\App\Http\Controllers\TwoFactorController::class, 'regenerateRecoveryCodes'])->name('two-factor.recovery-codes');
+    
     // Support tickets (user-facing)
     Route::get('/reports', [SupportTicketController::class, 'create'])->name('tickets.create');
     Route::post('/reports', [SupportTicketController::class, 'store'])->name('tickets.store');
