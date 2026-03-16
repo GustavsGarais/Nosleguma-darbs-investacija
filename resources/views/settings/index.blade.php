@@ -265,7 +265,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch real-time exchange rates from API
     async function fetchExchangeRates() {
         try {
-            const response = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
+            // Use a stable CORS-friendly endpoint (no API key required).
+            const response = await fetch('https://api.frankfurter.app/latest?from=EUR');
             if (!response.ok) throw new Error('API request failed');
             
             const data = await response.json();

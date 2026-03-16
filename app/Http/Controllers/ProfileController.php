@@ -34,7 +34,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('settings')->with('status', 'profile-updated');
+        return Redirect::to('/profile')->with('status', 'profile-updated');
     }
 
     /**

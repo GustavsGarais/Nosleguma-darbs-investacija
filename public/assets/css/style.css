@@ -89,6 +89,15 @@
   text-decoration: none;
 }
 
+/* Compact buttons used in tables/actions */
+.btn-sm {
+  padding: calc(var(--spacing-sm) - 2px) var(--spacing-md);
+  font-size: 0.875rem;
+  border-radius: var(--border-radius-md);
+  line-height: 1.1;
+  box-shadow: none;
+}
+
 .btn-primary {
   color: var(--color-on-primary);
   box-shadow: 0 0 12px color-mix(in oklab, var(--color-accent) 30%, transparent);

@@ -7,8 +7,10 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
-use PragmaRX\Google2FA\Google2FA;
+use PragmaRX\Google2FALaravel\Google2FA;
 use Illuminate\Support\Facades\Crypt;
 
 class TwoFactorVerificationController extends Controller
@@ -38,26 +40,45 @@ class TwoFactorVerificationController extends Controller
             return redirect()->route('login');
         }
 
-        $user = User::findOrFail($request->session()->get('login.id'));
+        $userId = (int) $request->session()->get('login.id');
+        $throttleKey = '2fa:challenge:' . $userId . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            throw ValidationException::withMessages([
+                'code' => __('Too many attempts. Please try again in :seconds seconds.', [
+                    'seconds' => $seconds,
+                ]),
+            ]);
+        }
+
+        $user = User::findOrFail($userId);
 
         if (!$user->hasTwoFactorEnabled()) {
             return redirect()->route('login');
         }
 
-        $google2fa = new Google2FA();
+        /** @var \PragmaRX\Google2FALaravel\Google2FA $google2fa */
+        $google2fa = app(Google2FA::class);
         $secret = Crypt::decryptString($user->two_factor_secret);
+        $code = preg_replace('/\s+/', '', trim((string) $request->code));
         
         // Try to verify as TOTP code first
-        $valid = $google2fa->verifyKey($secret, $request->code, 2);
+        $valid = ctype_digit($code) && strlen($code) === 6
+            ? $google2fa->verifyKey($secret, $code, 2)
+            : false;
         
         // If not valid, try recovery code
         if (!$valid) {
-            $valid = $user->useRecoveryCode($request->code);
+            $valid = $user->useRecoveryCode($code);
         }
 
         if (!$valid) {
+            RateLimiter::hit($throttleKey, 60);
             return back()->withErrors(['code' => __('The provided two factor authentication code was invalid.')]);
         }
+
+        RateLimiter::clear($throttleKey);
 
         // Get remember flag from session
         $remember = $request->session()->get('login.remember', false);

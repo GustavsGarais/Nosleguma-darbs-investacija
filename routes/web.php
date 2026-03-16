@@ -29,8 +29,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/simulations/{simulation}/run', [SimulationController::class, 'run'])->name('simulations.run');
     Route::post('/simulations/{simulation}/snapshot', [SimulationController::class, 'snapshot'])->name('simulations.snapshot');
 
-    // Settings
-    Route::get('/settings', [ProfileController::class, 'edit'])->name('settings');
+    // Profile (Laravel defaults used by tests) + Settings alias
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/settings', fn () => redirect('/profile'))->name('settings');
     Route::patch('/settings/profile', [ProfileController::class, 'update'])->name('settings.profile');
     Route::delete('/settings', [ProfileController::class, 'destroy'])->name('settings.destroy');
     

@@ -62,7 +62,7 @@
                             <td style="padding:8px; border-bottom:1px solid var(--c-border);">{{ $updatedText }}</td>
                                 <td style="padding:8px; border-bottom:1px solid var(--c-border);">{{ $sim->created_at->diffForHumans() }}</td>
                             <td style="padding:8px; border-bottom:1px solid var(--c-border); display:flex; gap:8px;">
-                                    <a class="btn btn-secondary btn-sm" href="{{ route('simulations.edit', $sim) }}">Edit</a>
+                                    <a class="btn btn-outline btn-sm" href="{{ route('simulations.edit', $sim) }}">Edit</a>
                                     <form method="POST" action="{{ route('simulations.destroy', $sim) }}" onsubmit="return confirm('Delete this simulation?');">
                                     @csrf
                                     @method('DELETE')

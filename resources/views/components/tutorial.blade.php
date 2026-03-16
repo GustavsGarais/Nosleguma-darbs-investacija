@@ -1,6 +1,147 @@
 @php
     $isFirstTime = !auth()->user()->tutorial_completed;
     $tutorialId = 'simulation-tutorial';
+
+    // All tutorial text is generated in PHP so it can be translated via JSON lang files.
+    $tutorialSteps = [
+        'dashboard' => [
+            [
+                'target' => 'h1',
+                'position' => 'bottom',
+                'content' => __('tutorial.dashboard.1'),
+            ],
+            [
+                'target' => 'section[aria-label="Simulations"] h2, .auth-card[aria-label="Simulations"] h2',
+                'position' => 'bottom',
+                'content' => __('tutorial.dashboard.2'),
+            ],
+            [
+                'target' => 'a[href*="simulations.create"], .auth-card a[href*="simulations.create"]',
+                'position' => 'bottom',
+                'content' => __('tutorial.dashboard.3'),
+                'navigate' => true,
+            ],
+            [
+                'target' => 'table a[href*="simulations.index"], table a[href*="simulation"]',
+                'position' => 'bottom',
+                'content' => __('tutorial.dashboard.4'),
+            ],
+        ],
+        'create' => [
+            [
+                'target' => 'input[name="name"]',
+                'position' => 'bottom',
+                'content' => __('tutorial.create.1'),
+            ],
+            [
+                'target' => 'input[name="initial_investment"]',
+                'position' => 'right',
+                'content' => __('tutorial.create.2'),
+            ],
+            [
+                'target' => 'input[name="monthly_contribution"]',
+                'position' => 'right',
+                'content' => __('tutorial.create.3'),
+            ],
+            [
+                'target' => 'input[name="growth_rate"]',
+                'position' => 'right',
+                'content' => __('tutorial.create.4'),
+            ],
+            [
+                'target' => 'input[name="inflation_rate"]',
+                'position' => 'right',
+                'content' => __('tutorial.create.5'),
+            ],
+            [
+                'target' => 'input[name="risk_appetite"]',
+                'position' => 'right',
+                'content' => __('tutorial.create.6'),
+            ],
+            [
+                'target' => 'input[name="market_influence"]',
+                'position' => 'right',
+                'content' => __('tutorial.create.7'),
+            ],
+            [
+                'target' => 'button[type="submit"]',
+                'position' => 'top',
+                'content' => __('tutorial.create.8'),
+            ],
+        ],
+        'show' => [
+            [
+                'target' => 'section[aria-label="Simulation details"] h1',
+                'position' => 'bottom',
+                'content' => __('tutorial.show.1'),
+            ],
+            [
+                'target' => 'section[aria-label="Run controls"]',
+                'position' => 'bottom',
+                'content' => __('tutorial.show.2'),
+            ],
+            [
+                'target' => '#months-input',
+                'position' => 'right',
+                'content' => __('tutorial.show.3'),
+            ],
+            [
+                'target' => '#speed-input',
+                'position' => 'right',
+                'content' => __('tutorial.show.4'),
+            ],
+            [
+                'target' => '#preset-select',
+                'position' => 'right',
+                'content' => __('tutorial.show.5'),
+            ],
+            [
+                'target' => '#btn-run',
+                'position' => 'top',
+                'content' => __('tutorial.show.6'),
+            ],
+            [
+                'target' => '#btn-step',
+                'position' => 'top',
+                'content' => __('tutorial.show.7'),
+            ],
+            [
+                'target' => '#btn-save',
+                'position' => 'top',
+                'content' => __('tutorial.show.8'),
+            ],
+            [
+                'target' => '#sim-chart',
+                'position' => 'top',
+                'content' => __('tutorial.show.9'),
+            ],
+            [
+                'target' => '#current-value',
+                'position' => 'top',
+                'content' => __('tutorial.show.10'),
+            ],
+            [
+                'target' => '#total-contributed',
+                'position' => 'top',
+                'content' => __('tutorial.show.11'),
+            ],
+            [
+                'target' => '#real-value',
+                'position' => 'top',
+                'content' => __('tutorial.show.12'),
+            ],
+            [
+                'target' => '#drawdown',
+                'position' => 'top',
+                'content' => __('tutorial.show.13'),
+            ],
+            [
+                'target' => '#event-log',
+                'position' => 'top',
+                'content' => __('tutorial.show.14'),
+            ],
+        ],
+    ];
 @endphp
 
 <div id="{{ $tutorialId }}" class="tutorial-overlay" style="display:none; position:fixed; inset:0; z-index:9999; pointer-events:none;">
@@ -10,20 +151,20 @@
     <!-- Tutorial popup - appears next to highlighted element -->
     <div class="tutorial-popup" style="position:absolute; background:var(--c-surface); border:3px solid var(--c-primary); border-radius:16px; padding:24px; max-width:420px; box-shadow:0 12px 48px rgba(0,0,0,0.6); z-index:10000; pointer-events:auto;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
-            <h3 style="margin:0; font-size:22px; font-weight:700; color:var(--c-primary);">Tutorial</h3>
-            <button type="button" class="tutorial-close" aria-label="Close tutorial" style="background:none; border:none; cursor:pointer; padding:4px 8px; color:var(--c-on-surface-2); font-size:24px; line-height:1; border-radius:4px; transition:background 0.2s;">&times;</button>
+            <h3 style="margin:0; font-size:22px; font-weight:700; color:var(--c-primary);">{{ __('tutorial.title') }}</h3>
+            <button type="button" class="tutorial-close" aria-label="{{ __('tutorial.close') }}" style="background:none; border:none; cursor:pointer; padding:4px 8px; color:var(--c-on-surface-2); font-size:24px; line-height:1; border-radius:4px; transition:background 0.2s;">&times;</button>
         </div>
         <div class="tutorial-content" style="margin-bottom:20px; min-height:60px;">
             <p style="margin:0; color:var(--c-on-surface); line-height:1.7; font-size:15px;"></p>
         </div>
         <div style="display:flex; justify-content:space-between; gap:12px; align-items:center;">
-            <button type="button" class="tutorial-prev btn btn-outline" style="display:none;">Previous</button>
+            <button type="button" class="tutorial-prev btn btn-outline" style="display:none;">{{ __('tutorial.prev') }}</button>
             <div style="flex:1;"></div>
-            <button type="button" class="tutorial-next btn btn-primary">Next</button>
-            <button type="button" class="tutorial-finish btn btn-primary" style="display:none;">Finish</button>
+            <button type="button" class="tutorial-next btn btn-primary">{{ __('tutorial.next') }}</button>
+            <button type="button" class="tutorial-finish btn btn-primary" style="display:none;">{{ __('tutorial.finish') }}</button>
         </div>
         <div style="margin-top:16px; text-align:center;">
-            <span class="tutorial-step-indicator" style="color:var(--c-on-surface-2); font-size:13px; font-weight:500;">Step 1 of 3</span>
+            <span class="tutorial-step-indicator" style="color:var(--c-on-surface-2); font-size:13px; font-weight:500;">{{ __('tutorial.step_x_of_y', ['x' => 1, 'y' => 1]) }}</span>
         </div>
     </div>
 </div>
@@ -34,79 +175,14 @@
     const isFirstTime = {{ $isFirstTime ? 'true' : 'false' }};
     const currentPage = '{{ $currentPage ?? 'dashboard' }}';
     
-    const tutorialSteps = {
-        dashboard: [
-            {
-                target: 'h1',
-                position: 'bottom',
-                content: 'This short tour will show you where to find your simulations and how to start a new one. Use Next and Previous to move between steps, or Finish to close the tour at any time.',
-            },
-            {
-                target: 'section[aria-label="Simulations"] h2, .auth-card h2',
-                position: 'bottom',
-                content: 'Here you\'ll see “Your Simulations” – a list of all scenarios you have created, with their latest saved values and quick access to open or edit them.',
-            },
-            {
-                target: 'a[href*="simulations.create"], .auth-card a[href*="simulations.create"]',
-                position: 'bottom',
-                content: 'Click “New Simulation” to create a fresh scenario. You\'ll choose an initial amount, monthly contributions, and risk settings to see how your investments could behave over time.',
-                navigate: true
-            },
-            {
-                target: 'aside a[href*="simulations"]',
-                position: 'right',
-                content: 'Use the sidebar to move between Dashboard, Simulations, and Account settings. If you ever feel lost, come back to the Dashboard and start the tour again.',
-            }
-        ],
-        create: [
-            {
-                target: 'input[name="name"]',
-                position: 'bottom',
-                content: 'Start by giving your simulation a clear name, like “Retirement plan 30 years” or “High-risk test”. This makes it easy to recognize later.',
-            },
-            {
-                target: 'input[name="initial_investment"]',
-                position: 'right',
-                content: 'Initial Investment is the amount of money you put in at the very beginning, in euros. Think of it as your starting balance.',
-            },
-            {
-                target: 'input[name="monthly_contribution"]',
-                position: 'right',
-                content: 'Monthly Contribution is how much you add every month. Regular contributions are one of the most powerful drivers of long‑term growth.',
-            },
-            {
-                target: 'input[name="growth_rate"]',
-                position: 'right',
-                content: 'Growth Rate is the expected yearly return in percent. For example, “7” means 7% per year. Higher values mean more potential growth, but also more risk.',
-            },
-            {
-                target: 'input[name="risk_appetite"]',
-                position: 'right',
-                content: 'Risk Appetite (0–100%) controls how “bumpy” your simulation is. Lower values are calmer and more stable, higher values swing up and down more aggressively.',
-            },
-            {
-                target: 'input[name="market_influence"]',
-                position: 'right',
-                content: 'Market Influence (0–100%) tells the simulator how strongly external market movements should affect your portfolio. Higher values create more realistic ups and downs.',
-            },
-            {
-                target: 'input[name="inflation_rate"]',
-                position: 'right',
-                content: 'Inflation Rate is the yearly price increase in percent. For example, “2” means prices grow about 2% per year. This helps you see the difference between nominal and real value.',
-            },
-            {
-                target: 'button[type="submit"]',
-                position: 'top',
-                content: 'When you are happy with the settings, click “Create” to save this simulation. You can always come back later and edit these values if you change your mind.',
-            }
-        ]
-    };
+    const tutorialSteps = @json($tutorialSteps);
 
     const steps = tutorialSteps[currentPage] || [];
     let currentStep = 0;
     let overlay = null;
     let popup = null;
     let highlightedElement = null;
+    const stepIndicatorTemplate = @json(__('tutorial.step_x_of_y', ['x' => ':x', 'y' => ':y']));
 
     function initTutorial() {
         overlay = document.getElementById(tutorialId);
@@ -207,7 +283,9 @@
 
             // Update indicator
             if (indicatorEl) {
-                indicatorEl.textContent = `Step ${stepIndex + 1} of ${steps.length}`;
+                indicatorEl.textContent = stepIndicatorTemplate
+                    .replace(':x', String(stepIndex + 1))
+                    .replace(':y', String(steps.length));
             }
 
             // Show/hide buttons

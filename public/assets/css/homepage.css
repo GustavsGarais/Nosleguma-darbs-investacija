@@ -44,10 +44,49 @@
 body { color: var(--c-on-surface); background: var(--c-surface); }
 * { box-sizing: border-box; }
 
-.btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:8px; border:1px solid transparent; text-decoration:none; cursor:pointer; font-weight:600; }
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius:8px; border:1px solid transparent; text-decoration:none; cursor:pointer; font-weight:600; min-height:40px; line-height:1; }
 .btn-primary { background: var(--c-primary); color: #fff; box-shadow: var(--shadow-1); }
 .btn-secondary { background: #d98e12; color: #fff; }
 .btn-outline { background: transparent; color: var(--c-primary); border-color: var(--c-primary); }
+
+/* Normalize <a> vs <button> rendering */
+.btn { appearance: none; -webkit-appearance: none; }
+
+/* Small/compact buttons (tables, actions) */
+.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; line-height: 1.1; }
+
+/* Force equal height for small buttons on simulations list (Edit/Delete) */
+.simulations-page .btn-sm {
+  height: 36px;
+  min-height: 36px;
+  line-height: 1;
+}
+
+/* Accelerated +/- percent inputs */
+.accel-input .footer-email-input {
+  flex: 0 0 120px;
+  max-width: 120px;
+  text-align: center;
+  padding: 10px 10px;
+}
+
+/* Make accel buttons feel consistent and subtle */
+.accel-input .accel-minus,
+.accel-input .accel-plus {
+  min-width: 40px;
+  padding: 0;
+}
+
+/* Hide number spinners for percent inputs */
+.accel-input input[type="number"]::-webkit-outer-spin-button,
+.accel-input input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.accel-input input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
 
 /* Link-styled button */
 .btn-link { background: transparent; color: var(--c-primary); border: 0; padding: 0; text-decoration: none; font-weight: 600; }
@@ -150,7 +189,17 @@ body { color: var(--c-on-surface); background: var(--c-surface); }
 
 .footer-newsletter-card { border:1px solid var(--c-border); border-radius:12px; box-shadow: var(--shadow-1); background: var(--c-surface); padding: var(--space-xl); }
 .footer-input-group { display:flex; gap:10px; }
-.footer-email-input { flex:1; border:1px solid var(--c-border); border-radius:10px; padding:10px 12px; background: color-mix(in srgb, var(--c-surface) 96%, transparent); color: var(--c-on-surface); }
+.footer-email-input { flex:1; border:1px solid var(--c-border); border-radius:10px; padding:10px 12px; background: color-mix(in srgb, var(--c-surface) 96%, transparent); color: var(--c-on-surface); min-height:40px; }
+
+/* Align admin language select and theme toggle visually */
+.admin-sidebar-header .admin-select {
+  max-width: 140px;
+}
+
+.admin-sidebar-header #admin-theme-toggle {
+  width: 140px;
+  justify-content: center;
+}
 
 .footer-links-section { padding: var(--space-2xl) 0; border-bottom:1px solid var(--c-border); }
 .footer-links-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-xl); }

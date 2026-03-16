@@ -68,7 +68,6 @@ Dažādi riska līmeņi ietekmē to, cik stabila vai nestabila ir investīcija.
 
 php artisan serve --host=127.0.0.1 --port=8080
 
-npm run dev
 
 admin remote
 Email: admin@example.com
@@ -92,10 +91,12 @@ User::where('email', 'admin@example.com')->first();
 
 BUGS:
 
-The "Edit simulation" should have % percentile 0%-100% rather than 0-1 while it can't go past 0% or 100%
+The "Edit simulation" should have % percentile 0%-100% rather than 0-1 while it can't go past 0% or 100% and and arrows to increase the number goes +0.01 rather then slowly it increasing the longer you hold, so after 2 sec it goes to +0.1 and again too +1
 
-2FA and Forgot password doesn't exist.
+When pressing the 2FA button it crashes and says this: 
 
-Make the admin control a similar font like the others do.
+the currency doesn't show the real converting rate, it says $1160,00, rounds the currency. rather then saying the actual currect currency rate.
 
-Some places still not having translated to latvian.
+Some buttons are shaped diffrently from what are next to one another like in simnulation actions: "edit" and "delete" are diffrently shaped, same with same with admin panel language and theme
+
+The tutorial blackends everything, but the "Simulation tutorial" even tho its trying to highlight the parts where it wants to show you. And the tutorial ends after the 4 steps of "Simulation tutorial" which should continue on by telling how to create the simulation and what each one does.

@@ -4,7 +4,10 @@
 
 @section('dashboard_content')
 <section class="auth-card" aria-label="Create Simulation">
-    <h1 style="margin:0 0 12px;">Create Simulation</h1>
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+        <h1 style="margin:0;">{{ __('Create Simulation') }}</h1>
+        <a href="{{ route('simulations.index') }}" class="btn btn-outline">← {{ __('Back') }}</a>
+    </div>
 
     @if ($errors->any())
         <div role="alert" aria-live="polite" style="margin:12px 0; padding:10px 12px; border:1px solid var(--c-border); border-radius:10px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);">
@@ -16,7 +19,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('simulations.store') }}" style="display:grid; gap:12px;">
+    <form method="POST" action="{{ route('simulations.store') }}" style="display:grid; gap:16px;">
         @csrf
 
         <label style="display:grid; gap:6px;">
@@ -27,7 +30,7 @@
             <input type="text" name="name" value="{{ old('name') }}" required maxlength="30" class="footer-email-input" />
         </label>
 
-        <div style="display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px;">
+        <div style="display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:16px;">
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">
                     <span>Initial Investment</span>
@@ -65,7 +68,11 @@
                         </svg>
                     </div>
                 </div>
-                <input type="number" step="0.1" min="0" max="100" name="growth_rate" value="{{ old('growth_rate', 7) }}" required class="footer-email-input" />
+                <div class="accel-input" style="display:flex; gap:8px; align-items:center;">
+                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="Decrease">−</button>
+                    <input type="number" step="0.01" min="0" max="100" name="growth_rate" value="{{ old('growth_rate', 7) }}" required class="footer-email-input" data-accel="percent" />
+                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="Increase">+</button>
+                </div>
             </label>
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">
@@ -78,7 +85,11 @@
                         </svg>
                     </div>
                 </div>
-                <input type="number" step="0.1" min="0" max="100" name="risk_appetite" value="{{ old('risk_appetite', 50) }}" required class="footer-email-input" />
+                <div class="accel-input" style="display:flex; gap:8px; align-items:center;">
+                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="Decrease">−</button>
+                    <input type="number" step="0.01" min="0" max="100" name="risk_appetite" value="{{ old('risk_appetite', 50) }}" required class="footer-email-input" data-accel="percent" />
+                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="Increase">+</button>
+                </div>
             </label>
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">
@@ -91,7 +102,11 @@
                         </svg>
                     </div>
                 </div>
-                <input type="number" step="0.1" min="0" max="100" name="market_influence" value="{{ old('market_influence', 50) }}" required class="footer-email-input" />
+                <div class="accel-input" style="display:flex; gap:8px; align-items:center;">
+                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="Decrease">−</button>
+                    <input type="number" step="0.01" min="0" max="100" name="market_influence" value="{{ old('market_influence', 50) }}" required class="footer-email-input" data-accel="percent" />
+                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="Increase">+</button>
+                </div>
             </label>
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">
@@ -104,7 +119,11 @@
                         </svg>
                     </div>
                 </div>
-                <input type="number" step="0.01" min="0" max="100" name="inflation_rate" value="{{ old('inflation_rate', 2) }}" required class="footer-email-input" />
+                <div class="accel-input" style="display:flex; gap:8px; align-items:center;">
+                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="Decrease">−</button>
+                    <input type="number" step="0.01" min="0" max="100" name="inflation_rate" value="{{ old('inflation_rate', 2) }}" required class="footer-email-input" data-accel="percent" />
+                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="Increase">+</button>
+                </div>
             </label>
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">
@@ -130,6 +149,67 @@
 @endsection
 
 @include('components.tutorial', ['currentPage' => 'create'])
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+    const getStep = (elapsedMs) => {
+        if (elapsedMs >= 4000) return 1;
+        if (elapsedMs >= 2000) return 0.1;
+        return 0.01;
+    };
+    const setupAccel = (container) => {
+        const input = container.querySelector('input[data-accel="percent"]');
+        const minus = container.querySelector('.accel-minus');
+        const plus = container.querySelector('.accel-plus');
+        if (!input || !minus || !plus) return;
+
+        const min = Number(input.min ?? 0);
+        const max = Number(input.max ?? 100);
+        let timer = null;
+        let start = 0;
+
+        const tick = (dir) => {
+            const elapsed = Date.now() - start;
+            const step = getStep(elapsed) * dir;
+            const current = Number(input.value || 0);
+            const next = clamp(Math.round((current + step) * 100) / 100, min, max);
+            input.value = next.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        };
+
+        const startHold = (dir) => {
+            if (timer) clearInterval(timer);
+            start = Date.now();
+            tick(dir);
+            timer = setInterval(() => tick(dir), 50);
+        };
+
+        const stopHold = () => {
+            if (timer) clearInterval(timer);
+            timer = null;
+        };
+
+        const bind = (btn, dir) => {
+            btn.addEventListener('mousedown', () => startHold(dir));
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); startHold(dir); }, { passive:false });
+        };
+
+        bind(minus, -1);
+        bind(plus, 1);
+        ['mouseup','mouseleave','touchend','touchcancel'].forEach(evt => {
+            minus.addEventListener(evt, stopHold);
+            plus.addEventListener(evt, stopHold);
+        });
+        document.addEventListener('mouseup', stopHold);
+        document.addEventListener('touchend', stopHold);
+    };
+
+    document.querySelectorAll('.accel-input').forEach(setupAccel);
+});
+</script>
+@endpush
 
 <style>
 .info-bubble {
