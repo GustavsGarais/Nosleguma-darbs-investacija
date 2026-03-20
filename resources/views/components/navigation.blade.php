@@ -74,6 +74,14 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('support.create') }}" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+                            </svg>
+                            <span>{{ __('Support') }}</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('quick-tour') }}" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <g>

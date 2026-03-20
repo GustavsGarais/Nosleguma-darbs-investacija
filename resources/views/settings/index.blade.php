@@ -18,6 +18,12 @@
         </div>
     @endif
 
+    @if (session('status') === 'password-updated')
+        <div role="status" style="padding:12px 16px; border-radius:10px; background:color-mix(in srgb, var(--c-primary) 18%, var(--c-surface)); border:1px solid color-mix(in srgb, var(--c-primary) 35%, var(--c-border));">
+            <strong>{{ __('Password updated.') }}</strong> {{ __('Your password has been changed successfully.') }}
+        </div>
+    @endif
+
     @if (session('status') === 'two-factor-enabled')
         <div role="status" style="padding:12px 16px; border-radius:10px; background:color-mix(in srgb, var(--c-primary) 18%, var(--c-surface)); border:1px solid color-mix(in srgb, var(--c-primary) 35%, var(--c-border));">
             <strong>{{ __('Two-factor authentication enabled.') }}</strong> {{ __('Your account is now more secure.') }}
@@ -43,16 +49,14 @@
     <div style="display:flex; flex-direction:column; gap:24px;">
         <!-- Profile -->
         <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; background:color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%); display:flex; flex-direction:column; gap:16px;">
-            <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <h2 style="margin:0;">{{ __('Profile') }}</h2>
-                    <div class="info-bubble" data-tooltip="{{ __('Your name and email sync across reports, invites, and alerts.') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                            <path d="M12 17h.01"></path>
-                        </svg>
-                    </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <h2 style="margin:0;">{{ __('Profile') }}</h2>
+                <div class="info-bubble" data-tooltip="{{ __('Your name is synced across reports, invites, and alerts. Email cannot be changed.') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <path d="M12 17h.01"></path>
+                    </svg>
                 </div>
             </div>
             <form method="POST" action="{{ route('settings.profile') }}" style="display:flex; flex-direction:column; gap:16px;">
@@ -67,13 +71,23 @@
                     @enderror
                 </label>
 
-                <label style="display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; flex-direction:column; gap:6px;">
                     <span style="font-weight:600;">{{ __('Email address') }}</span>
-                    <input type="email" name="email" value="{{ old('email', $user->email) }}" class="footer-email-input" required />
-                    @error('email')
-                        <span style="color:#e53935; font-size:12px;">{{ $message }}</span>
-                    @enderror
-                </label>
+                    <div style="position:relative; display:flex; align-items:center;">
+                        <input
+                            type="email"
+                            value="{{ $user->email }}"
+                            class="footer-email-input"
+                            readonly
+                            style="cursor:not-allowed; opacity:0.65; padding-right:40px;"
+                        />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; right:12px; color:var(--c-on-surface-2); pointer-events:none;">
+                            <rect width="11" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <span style="font-size:12px; color:var(--c-on-surface-2);">{{ __('Email address cannot be changed.') }}</span>
+                </div>
 
                 <button type="submit" class="btn btn-primary" style="align-self:flex-start;">{{ __('Save profile') }}</button>
             </form>
@@ -81,26 +95,72 @@
 
         <!-- Security -->
         <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
-            <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <h2 style="margin:0;">{{ __('Security') }}</h2>
-                    <div class="info-bubble" data-tooltip="{{ __('Manage your password and two-factor authentication to keep your account secure.') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                            <path d="M12 17h.01"></path>
-                        </svg>
-                    </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <h2 style="margin:0;">{{ __('Security') }}</h2>
+                <div class="info-bubble" data-tooltip="{{ __('Manage your password and two-factor authentication to keep your account secure.') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <path d="M12 17h.01"></path>
+                    </svg>
                 </div>
             </div>
             <div style="display:grid; gap:16px;">
-                <div style="border-radius:12px; padding:16px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-secondary) 5%); display:flex; justify-content:space-between; align-items:center; gap:12px;">
-                    <div>
-                        <h4 style="margin:0 0 4px;">{{ __('Password') }}</h4>
-                        <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">{{ __('Minimum 12 characters with uppercase, lowercase, and numbers or symbols. Forgot your password? Request a reset link from the login page.') }}</p>
+                <!-- Change Password -->
+                <div style="border-radius:12px; padding:16px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-secondary) 5%); display:flex; flex-direction:column; gap:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                        <div>
+                            <h4 style="margin:0 0 4px;">{{ __('Password') }}</h4>
+                            <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">{{ __('Minimum 12 characters with uppercase, lowercase, and numbers or symbols.') }}</p>
+                        </div>
+                        <button
+                            type="button"
+                            id="toggle-password-form"
+                            class="btn btn-outline"
+                            onclick="
+                                const form = document.getElementById('change-password-form');
+                                const open = form.style.display === 'flex';
+                                form.style.display = open ? 'none' : 'flex';
+                                this.textContent = open ? '{{ __('Change password') }}' : '{{ __('Cancel') }}';
+                            "
+                        >{{ __('Change password') }}</button>
                     </div>
-                    <a class="btn btn-outline" href="{{ route('password.request') }}">{{ __('Forgot password?') }}</a>
+
+                    <form
+                        id="change-password-form"
+                        method="POST"
+                        action="{{ route('settings.password') }}"
+                        style="display:none; flex-direction:column; gap:12px; padding-top:12px; border-top:1px solid var(--c-border);"
+                    >
+                        @csrf
+                        @method('patch')
+
+                        <label style="display:flex; flex-direction:column; gap:6px;">
+                            <span style="font-weight:600; font-size:14px;">{{ __('Current password') }}</span>
+                            <input type="password" name="current_password" class="footer-email-input" required autocomplete="current-password" />
+                            @error('current_password', 'updatePassword')
+                                <span style="color:#e53935; font-size:12px;">{{ $message }}</span>
+                            @enderror
+                        </label>
+
+                        <label style="display:flex; flex-direction:column; gap:6px;">
+                            <span style="font-weight:600; font-size:14px;">{{ __('New password') }}</span>
+                            <input type="password" name="password" class="footer-email-input" required autocomplete="new-password" />
+                            @error('password', 'updatePassword')
+                                <span style="color:#e53935; font-size:12px;">{{ $message }}</span>
+                            @enderror
+                        </label>
+
+                        <label style="display:flex; flex-direction:column; gap:6px;">
+                            <span style="font-weight:600; font-size:14px;">{{ __('Confirm new password') }}</span>
+                            <input type="password" name="password_confirmation" class="footer-email-input" required autocomplete="new-password" />
+                        </label>
+
+                        <button type="submit" class="btn btn-primary" style="align-self:flex-start;">{{ __('Update password') }}</button>
+                    </form>
                 </div>
+
+                <!-- 2FA -->
                 <div style="border-radius:12px; padding:16px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-secondary) 5%); display:flex; justify-content:space-between; align-items:center; gap:12px;">
                     <div>
                         <h4 style="margin:0 0 4px;">{{ __('Two-Factor Authentication (2FA)') }}</h4>
@@ -125,16 +185,14 @@
 
         <!-- Notifications -->
         <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
-            <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <h2 style="margin:0;">{{ __('Notifications') }}</h2>
-                    <div class="info-bubble" data-tooltip="{{ __('These toggles only affect this browser for now and are stored locally.') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                            <path d="M12 17h.01"></path>
-                        </svg>
-                    </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <h2 style="margin:0;">{{ __('Notifications') }}</h2>
+                <div class="info-bubble" data-tooltip="{{ __('These toggles only affect this browser for now and are stored locally.') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <path d="M12 17h.01"></path>
+                    </svg>
                 </div>
             </div>
             <div style="display:grid; gap:12px;">
@@ -152,16 +210,14 @@
 
         <!-- Currency -->
         <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
-            <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <h2 style="margin:0;">{{ __('Currency & Region') }}</h2>
-                    <div class="info-bubble" data-tooltip="{{ __('Rates are fetched from real-time exchange rate API and refresh on load.') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                            <path d="M12 17h.01"></path>
-                        </svg>
-                    </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <h2 style="margin:0;">{{ __('Currency & Region') }}</h2>
+                <div class="info-bubble" data-tooltip="{{ __('Rates are fetched from real-time exchange rate API and refresh on load.') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <path d="M12 17h.01"></path>
+                    </svg>
                 </div>
             </div>
             <div style="display:grid; gap:12px;">
@@ -195,16 +251,14 @@
 
         <!-- Danger zone -->
         <article style="border:1px solid #e53935; border-radius:16px; padding:24px; background:color-mix(in srgb, #e53935 10%, var(--c-surface)); display:flex; flex-direction:column; gap:16px;">
-            <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <h2 style="margin:0; color:#e53935;">{{ __('Danger zone') }}</h2>
-                    <div class="info-bubble" data-tooltip="{{ __('Deleting your account clears every simulation and cannot be undone.') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#e53935; cursor:help;">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                            <path d="M12 17h.01"></path>
-                        </svg>
-                    </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <h2 style="margin:0; color:#e53935;">{{ __('Danger zone') }}</h2>
+                <div class="info-bubble" data-tooltip="{{ __('Deleting your account clears every simulation and cannot be undone.') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#e53935; cursor:help;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <path d="M12 17h.01"></path>
+                    </svg>
                 </div>
             </div>
             <form method="POST" action="{{ route('settings.destroy') }}" style="display:flex; flex-direction:column; gap:16px;" onsubmit="return confirm('{{ __('Delete your account and all simulations? This cannot be undone.') }}');">
@@ -227,6 +281,14 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // Auto-open password form if there were validation errors in that bag
+    @if($errors->hasBag('updatePassword') && $errors->getBag('updatePassword')->any())
+        const pwForm = document.getElementById('change-password-form');
+        const pwToggle = document.getElementById('toggle-password-form');
+        if (pwForm) pwForm.style.display = 'flex';
+        if (pwToggle) pwToggle.textContent = '{{ __('Cancel') }}';
+    @endif
+
     const toggles = document.querySelectorAll('[data-setting-key]');
     const localKey = 'nosleguma-settings';
     const saved = JSON.parse(localStorage.getItem(localKey) || '{}');
@@ -245,58 +307,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultEl = document.getElementById('converted-amount');
     const previewEls = document.querySelectorAll('[data-preview-base]');
 
-    // Default fallback rates (used if API fails)
-    const defaultRates = {
-        EUR: 1,
-        USD: 1.08,
-        GBP: 0.86,
-        JPY: 162.5,
-    };
-
+    const defaultRates = { EUR: 1, USD: 1.08, GBP: 0.86, JPY: 162.5 };
     let rates = { ...defaultRates };
+    const currencySymbols = { EUR: '€', USD: '$', GBP: '£', JPY: '¥' };
 
-    const currencySymbols = {
-        EUR: '€',
-        USD: '$',
-        GBP: '£',
-        JPY: '¥',
-    };
-
-    // Fetch real-time exchange rates from API
     async function fetchExchangeRates() {
         try {
-            // Use a stable CORS-friendly endpoint (no API key required).
             const response = await fetch('https://api.frankfurter.app/latest?from=EUR');
             if (!response.ok) throw new Error('API request failed');
-            
             const data = await response.json();
             if (data && data.rates) {
-                rates = {
-                    EUR: 1,
-                    USD: data.rates.USD || defaultRates.USD,
-                    GBP: data.rates.GBP || defaultRates.GBP,
-                    JPY: data.rates.JPY || defaultRates.JPY,
-                };
-                
-                // Store rates with timestamp
-                try {
-                    localStorage.setItem('nosleguma-currency-rates', JSON.stringify({
-                        rates: rates,
-                        timestamp: Date.now()
-                    }));
-                } catch (e) {}
-                
+                rates = { EUR: 1, USD: data.rates.USD || defaultRates.USD, GBP: data.rates.GBP || defaultRates.GBP, JPY: data.rates.JPY || defaultRates.JPY };
+                try { localStorage.setItem('nosleguma-currency-rates', JSON.stringify({ rates, timestamp: Date.now() })); } catch (e) {}
                 renderCurrency();
                 return true;
             }
         } catch (error) {
-            console.warn('Failed to fetch exchange rates, using cached or default rates:', error);
-            // Try cached rates
             try {
                 const cached = localStorage.getItem('nosleguma-currency-rates');
                 if (cached) {
                     const parsed = JSON.parse(cached);
-                    if (parsed.timestamp && (Date.now() - parsed.timestamp) < 24 * 60 * 60 * 1000) {
+                    if (parsed.timestamp && (Date.now() - parsed.timestamp) < 86400000) {
                         rates = parsed.rates || defaultRates;
                         renderCurrency();
                         return true;
@@ -305,7 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (e) {}
             rates = { ...defaultRates };
             renderCurrency();
-            return false;
         }
         return false;
     }
@@ -314,96 +344,44 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${currencySymbols[currency]}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
-    function convert(amount, currency) {
-        const rate = rates[currency] ?? 1;
-        return amount * rate;
-    }
-
     function renderCurrency() {
         const amount = parseFloat(amountInput.value) || 0;
         const currency = select.value;
-        const converted = convert(amount, currency);
-        resultEl.textContent = format(converted, currency);
-
+        resultEl.textContent = format(amount * (rates[currency] ?? 1), currency);
         previewEls.forEach(el => {
             const base = parseFloat(el.dataset.previewBase) || 0;
-            const previewAmount = convert(base, currency);
-            const previewLabel = el.querySelector('.currency-preview');
-            if (previewLabel) {
-                previewLabel.textContent = format(previewAmount, currency);
-            }
+            const label = el.querySelector('.currency-preview');
+            if (label) label.textContent = format(base * (rates[currency] ?? 1), currency);
         });
-
         localStorage.setItem('nosleguma-currency-preference', currency);
     }
 
-    // Fetch rates on load
     fetchExchangeRates();
 
     const storedCurrency = localStorage.getItem('nosleguma-currency-preference');
-    if (storedCurrency && rates[storedCurrency]) {
-        select.value = storedCurrency;
-    }
+    if (storedCurrency && rates[storedCurrency]) select.value = storedCurrency;
 
     amountInput?.addEventListener('input', renderCurrency);
-    select?.addEventListener('change', async () => {
-        // Fetch fresh rates when currency changes
-        await fetchExchangeRates();
-        renderCurrency();
-    });
+    select?.addEventListener('change', async () => { await fetchExchangeRates(); renderCurrency(); });
 
     renderCurrency();
 });
 </script>
 <style>
-.info-bubble {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    transition: opacity 0.2s;
-}
-
-.info-bubble:hover {
-    opacity: 0.8;
-}
-
+.info-bubble { position:relative; display:inline-flex; align-items:center; transition:opacity 0.2s; }
+.info-bubble:hover { opacity:0.8; }
 .info-bubble:hover::after {
     content: attr(data-tooltip);
-    position: absolute;
-    bottom: calc(100% + 12px);
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 14px 18px;
-    background: var(--c-surface) !important;
-    border: 2px solid var(--c-border);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    width: max-content;
-    max-width: 300px;
-    min-width: 220px;
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--c-on-surface) !important;
-    font-weight: 500;
-    z-index: 10000;
-    pointer-events: none;
-    white-space: normal;
-    text-align: left;
-    opacity: 1 !important;
+    position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%);
+    padding: 14px 18px; background: var(--c-surface) !important; border: 2px solid var(--c-border);
+    border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); width: max-content;
+    max-width: 300px; min-width: 220px; font-size: 14px; line-height: 1.7;
+    color: var(--c-on-surface) !important; font-weight: 500; z-index: 10000;
+    pointer-events: none; white-space: normal; text-align: left; opacity: 1 !important;
 }
-
 .info-bubble:hover::before {
-    content: '';
-    position: absolute;
-    bottom: calc(100% + 4px);
-    left: 50%;
-    transform: translateX(-50%);
-    border: 7px solid transparent;
-    border-top-color: var(--c-border);
-    z-index: 10001;
-    pointer-events: none;
-    filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.1));
+    content: ''; position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%);
+    border: 7px solid transparent; border-top-color: var(--c-border); z-index: 10001; pointer-events: none;
 }
 </style>
 @endpush
-

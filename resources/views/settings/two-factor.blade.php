@@ -65,7 +65,13 @@
 			</p>
 			
 			<div style="display:flex; justify-content:center; padding:20px; background:white; border-radius:12px; border:1px solid var(--c-border);">
-				<img src="{{ $qrCode }}" alt="{{ __('QR Code') }}" style="max-width:100%; height:auto;" />
+				@php
+				@endphp
+				@if (is_string($qrCode) && str_starts_with(trim($qrCode), 'data:'))
+					<img src="{{ $qrCode }}" alt="{{ __('QR Code') }}" style="max-width:100%; height:auto;" />
+				@else
+					{!! $qrCode !!}
+				@endif
 			</div>
 
 			<div style="padding:12px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-primary) 5%); border-radius:8px;">

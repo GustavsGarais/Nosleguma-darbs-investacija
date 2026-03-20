@@ -3,137 +3,185 @@
 @section('title', $simulation->name)
 
 @section('dashboard_content')
-<section class="auth-card" aria-label="Simulation details">
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
-        <h1 style="margin:0;">{{ $simulation->name }}</h1>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button id="start-tutorial" class="btn btn-outline" type="button">📚 {{ __('Start Tutorial') }}</button>
-            <a class="btn btn-secondary" href="{{ route('simulations.edit', $simulation) }}">{{ __('Edit') }}</a>
-            <form method="POST" action="{{ route('simulations.destroy', $simulation) }}" onsubmit="return confirm('{{ __('Delete this simulation?') }}');" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-outline">{{ __('Delete') }}</button>
-            </form>
-            <a class="btn btn-outline" href="{{ route('simulations.index') }}">{{ __('Back') }}</a>
-        </div>
-    </div>
+<style>
+    .sim-run-shell { display:grid; gap:16px; }
+    .sim-run-header { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+    .sim-run-grid { display:grid; grid-template-columns: 1.8fr 0.9fr; gap:16px; align-items:start; }
+    .sim-run-main { display:grid; gap:16px; }
+    .sim-run-side { position: sticky; top: 16px; display:grid; gap:12px; }
+    .sim-run-chartWrap { position:relative; height: min(56vh, 520px); min-height: 340px; }
+    .sim-kpis { display:grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap:10px; }
+    .sim-kpi { border:1px solid var(--c-border); border-radius:12px; padding:12px; background: color-mix(in srgb, var(--c-surface) 96%, transparent); }
+    .sim-kpiLabel { margin:0; color: var(--c-on-surface-2); font-size:12px; text-transform:uppercase; letter-spacing:0.06em; }
+    .sim-kpiValue { margin:6px 0 0; font-size:22px; font-weight:800; }
+    .sim-accordion { border:1px solid var(--c-border); border-radius:14px; overflow:hidden; background: var(--c-surface); }
+    .sim-accordion summary { cursor:pointer; padding:12px 14px; font-weight:700; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .sim-accordion summary::-webkit-details-marker { display:none; }
+    .sim-accordion summary:hover { background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); }
+    .sim-accordionBody { padding:14px; border-top:1px solid var(--c-border); }
+    @media (max-width: 1100px) {
+        .sim-run-grid { grid-template-columns: 1fr; }
+        .sim-run-side { position: static; }
+        .sim-kpis { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    }
+</style>
 
-    <div style="margin-top:16px; display:grid; gap:16px;">
-        <!-- Simulation Controls -->
-        <section class="auth-card" aria-label="Run controls" style="padding:16px;">
-            <h3 style="margin:0 0 12px;">{{ __('Simulation Controls') }}</h3>
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-bottom:16px;">
-                <label style="display:grid; gap:6px;">
-                    <span style="font-weight:600;">{{ __('Duration (months)') }}</span>
-                    <input id="months-input" type="number" min="12" max="600" step="12" value="120" class="footer-email-input" />
-                </label>
-                <label style="display:grid; gap:6px;">
-                    <span style="font-weight:600;">{{ __('Speed (seconds/step)') }}</span>
-                    <input id="speed-input" type="number" min="0.1" max="10" step="0.1" value="0.25" class="footer-email-input" />
-                </label>
-                <label style="display:grid; gap:6px;">
-                    <span style="font-weight:600;">{{ __('Market Regime') }}</span>
-                    <select id="preset-select" class="footer-email-input">
-                        <option value="balanced">{{ __('Balanced (default)') }}</option>
-                        <option value="growth">{{ __('Growth / Bullish') }}</option>
-                        <option value="defensive">{{ __('Defensive / Bearish') }}</option>
-                        <option value="volatile">{{ __('Choppy & volatile') }}</option>
-                        <option value="shock">{{ __('Stress test (crash + recovery)') }}</option>
-                    </select>
-                </label>
-                <div style="display:grid; gap:6px;">
-                    <span style="font-weight:600;">{{ __('Status') }}</span>
-                    <div id="status-display" style="padding:10px 12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                        {{ __('Ready') }}
+<section class="sim-run-shell" aria-label="Simulation details">
+    <div class="sim-run-grid">
+        <main class="sim-run-main">
+            <section class="auth-card" aria-label="Simulation header" style="padding:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+                    <div style="min-width:260px;">
+                        <h1 style="margin:0;">{{ $simulation->name }}</h1>
+                        <p style="margin:6px 0 0; color:var(--c-on-surface-2); font-size:13px;">
+                            {{ __('Tip: keep the chart visible while you adjust controls. Use Step for learning; Run for long horizons.') }}
+                        </p>
+                    </div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button id="start-tutorial" class="btn btn-outline" type="button">📚 {{ __('Start Tutorial') }}</button>
+                        <a class="btn btn-secondary" href="{{ route('simulations.edit', $simulation) }}">{{ __('Edit') }}</a>
+                        <a class="btn btn-outline" href="{{ route('simulations.index') }}">{{ __('Back') }}</a>
+                        <form method="POST" action="{{ route('simulations.destroy', $simulation) }}" onsubmit="return confirm('{{ __('Delete this simulation?') }}');" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-outline">{{ __('Delete') }}</button>
+                        </form>
                     </div>
                 </div>
-            </div>
-            <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-                <button id="btn-run" class="btn btn-primary">▶ {{ __('Run') }}</button>
-                <button id="btn-step" class="btn btn-secondary" title="{{ __('Advance by one month') }}">➜ {{ __('Step') }}</button>
-                <button id="btn-pause" class="btn btn-secondary" disabled>⏸ {{ __('Pause') }}</button>
-                <button id="btn-reset" class="btn btn-outline">🔄 {{ __('Reset') }}</button>
-                <button id="btn-save" class="btn btn-outline" title="{{ __('Save the latest simulation results to your dashboard') }}">💾 {{ __('Save Progress') }}</button>
-                <span id="save-status" style="font-size:13px; color:var(--c-on-surface-2);">{{ __('Not saved yet') }}</span>
-            </div>
-            <div style="margin-top:12px; display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:10px;">
-                <div id="learning-note" style="padding:12px; border-radius:10px; border:1px solid var(--c-border); background:color-mix(in srgb, var(--c-surface) 90%, var(--c-primary) 10%); font-size:14px;"></div>
-                <div id="risk-tip" style="padding:12px; border-radius:10px; border:1px solid var(--c-border); background:color-mix(in srgb, var(--c-surface) 94%, var(--c-secondary) 6%); font-size:14px;"></div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Summary Cards -->
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
-            <div class="auth-card" style="padding:16px;">
-                <h4 style="margin:0 0 8px; color: var(--c-on-surface-2); font-size:14px; text-transform:uppercase;">{{ __('Current Value') }}</h4>
-                <p id="current-value" style="margin:0; font-size:24px; font-weight:700; color: var(--c-primary);">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
-            </div>
-            <div class="auth-card" style="padding:16px;">
-                <h4 style="margin:0 0 8px; color: var(--c-on-surface-2); font-size:14px; text-transform:uppercase;">{{ __('Total Contributed') }}</h4>
-                <p id="total-contributed" style="margin:0; font-size:24px; font-weight:700;">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
-            </div>
-            <div class="auth-card" style="padding:16px;">
-                <h4 style="margin:0 0 8px; color: var(--c-on-surface-2); font-size:14px; text-transform:uppercase;">{{ __('Total Gain') }}</h4>
-                <p id="total-gain" style="margin:0; font-size:24px; font-weight:700; color: var(--c-primary);">€0.00</p>
-            </div>
-            <div class="auth-card" style="padding:16px;">
-                <h4 style="margin:0 0 8px; color: var(--c-on-surface-2); font-size:14px; text-transform:uppercase;">{{ __('Real Value (Inflation Adj.)') }}</h4>
-                <p id="real-value" style="margin:0; font-size:24px; font-weight:700; color: var(--c-secondary);">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
-            </div>
-            <div class="auth-card" style="padding:16px;">
-                <h4 style="margin:0 0 8px; color: var(--c-on-surface-2); font-size:14px; text-transform:uppercase;">{{ __('Max Drawdown') }}</h4>
-                <p id="drawdown" style="margin:0; font-size:24px; font-weight:700; color:#ef4444;">0%</p>
-            </div>
-            <div class="auth-card" style="padding:16px;">
-                <h4 style="margin:0 0 8px; color: var(--c-on-surface-2); font-size:14px; text-transform:uppercase;">{{ __('Projected CAGR') }}</h4>
-                <p id="cagr" style="margin:0; font-size:24px; font-weight:700;">0%</p>
-            </div>
-        </div>
+            <section class="auth-card" aria-label="Summary" style="padding:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px;">
+                    <h3 style="margin:0;">{{ __('Summary') }}</h3>
+                    <span style="color:var(--c-on-surface-2); font-size:13px;">{{ __('Key indicators at a glance') }}</span>
+                </div>
+                <div class="sim-kpis">
+                    <div class="sim-kpi">
+                        <p class="sim-kpiLabel">{{ __('Current Value') }}</p>
+                        <p id="current-value" class="sim-kpiValue" style="color: var(--c-primary);">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                    </div>
+                    <div class="sim-kpi">
+                        <p class="sim-kpiLabel">{{ __('Total Contributed') }}</p>
+                        <p id="total-contributed" class="sim-kpiValue">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                    </div>
+                    <div class="sim-kpi">
+                        <p class="sim-kpiLabel">{{ __('Total Gain') }}</p>
+                        <p id="total-gain" class="sim-kpiValue" style="color: var(--c-primary);">€0.00</p>
+                    </div>
+                    <div class="sim-kpi">
+                        <p class="sim-kpiLabel">{{ __('Real Value (Inflation Adj.)') }}</p>
+                        <p id="real-value" class="sim-kpiValue" style="color: var(--c-secondary);">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                    </div>
+                    <div class="sim-kpi">
+                        <p class="sim-kpiLabel">{{ __('Max Drawdown') }}</p>
+                        <p id="drawdown" class="sim-kpiValue" style="color:#ef4444;">0%</p>
+                    </div>
+                    <div class="sim-kpi">
+                        <p class="sim-kpiLabel">{{ __('Projected CAGR') }}</p>
+                        <p id="cagr" class="sim-kpiValue">0%</p>
+                    </div>
+                </div>
+            </section>
 
-        <!-- Chart -->
-        <section class="auth-card" aria-label="Chart" style="padding:16px;">
-            <h3 style="margin:0 0 12px;">{{ __('Investment Growth Over Time') }}</h3>
-            <div style="position:relative; height:400px;">
-                <canvas id="sim-chart" aria-label="Simulation chart"></canvas>
-            </div>
-        </section>
+            <section class="auth-card" aria-label="Chart" style="padding:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px;">
+                    <h3 style="margin:0;">{{ __('Investment Growth Over Time') }}</h3>
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        <div id="status-display" style="padding:8px 10px; border-radius:10px; border:1px solid var(--c-border); background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); font-weight:700; font-size:13px;">
+                            {{ __('Ready') }}
+                        </div>
+                        <span id="save-status" style="font-size:13px; color:var(--c-on-surface-2);">{{ __('Not saved yet') }}</span>
+                    </div>
+                </div>
+                <div class="sim-run-chartWrap">
+                    <canvas id="sim-chart" aria-label="Simulation chart"></canvas>
+                </div>
+            </section>
 
-        <!-- Settings Display -->
-        <section class="auth-card" aria-label="Settings" style="padding:16px;">
-            <h3 style="margin:0 0 12px;">{{ __('Simulation Parameters') }}</h3>
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:12px;">
-                <div style="padding:12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                    <span style="color: var(--c-on-surface-2); font-size:14px;">{{ __('Initial Investment') }}</span>
-                    <p style="margin:4px 0 0; font-size:18px; font-weight:700;">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+            <details class="sim-accordion" open>
+                <summary aria-label="Market Events & Teaching Moments">
+                    <span>{{ __('Market Events & Teaching Moments') }}</span>
+                    <span style="color:var(--c-on-surface-2); font-size:13px;">{{ __('Highlights as you run') }}</span>
+                </summary>
+                <div class="sim-accordionBody">
+                    <ul id="event-log" style="margin:0; padding-left:18px; display:grid; gap:8px; font-size:14px; color:var(--c-on-surface-2);"></ul>
                 </div>
-                <div style="padding:12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                    <span style="color: var(--c-on-surface-2); font-size:14px;">{{ __('Monthly Contribution') }}</span>
-                    <p style="margin:4px 0 0; font-size:18px; font-weight:700;">€{{ number_format($simulation->settings['monthlyContribution'], 2) }}</p>
-                </div>
-                <div style="padding:12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                    <span style="color: var(--c-on-surface-2); font-size:14px;">{{ __('Annual Growth Rate') }}</span>
-                    <p style="margin:4px 0 0; font-size:18px; font-weight:700;">{{ number_format($simulation->settings['growthRate'] * 100, 2) }}%</p>
-                </div>
-                <div style="padding:12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                    <span style="color: var(--c-on-surface-2); font-size:14px;">{{ __('Inflation Rate') }}</span>
-                    <p style="margin:4px 0 0; font-size:18px; font-weight:700;">{{ number_format($simulation->settings['inflationRate'] * 100, 2) }}%</p>
-                </div>
-                <div style="padding:12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                    <span style="color: var(--c-on-surface-2); font-size:14px;">{{ __('Risk Appetite') }}</span>
-                    <p style="margin:4px 0 0; font-size:18px; font-weight:700;">{{ number_format($simulation->settings['riskAppetite'] * 100, 0) }}%</p>
-                </div>
-                <div style="padding:12px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                    <span style="color: var(--c-on-surface-2); font-size:14px;">{{ __('Market Influence') }}</span>
-                    <p style="margin:4px 0 0; font-size:18px; font-weight:700;">{{ number_format($simulation->settings['marketInfluence'] * 100, 0) }}%</p>
-                </div>
-            </div>
-        </section>
+            </details>
 
-        <!-- Event log for educational feedback -->
-        <section class="auth-card" aria-label="Notable events" style="padding:16px;">
-            <h3 style="margin:0 0 12px;">{{ __('Market Events & Teaching Moments') }}</h3>
-            <ul id="event-log" style="margin:0; padding-left:18px; display:grid; gap:8px; font-size:14px; color:var(--c-on-surface-2);"></ul>
-        </section>
+            <details class="sim-accordion">
+                <summary aria-label="Settings">
+                    <span>{{ __('Simulation Parameters') }}</span>
+                    <span style="color:var(--c-on-surface-2); font-size:13px;">{{ __('What you assumed') }}</span>
+                </summary>
+                <div class="sim-accordionBody">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
+                        <div style="padding:12px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
+                            <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Initial Investment') }}</span>
+                            <p style="margin:4px 0 0; font-size:18px; font-weight:800;">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                        </div>
+                        <div style="padding:12px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
+                            <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Monthly Contribution') }}</span>
+                            <p style="margin:4px 0 0; font-size:18px; font-weight:800;">€{{ number_format($simulation->settings['monthlyContribution'], 2) }}</p>
+                        </div>
+                        <div style="padding:12px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
+                            <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Annual Growth Rate') }}</span>
+                            <p style="margin:4px 0 0; font-size:18px; font-weight:800;">{{ number_format($simulation->settings['growthRate'] * 100, 2) }}%</p>
+                        </div>
+                        <div style="padding:12px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
+                            <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Inflation Rate') }}</span>
+                            <p style="margin:4px 0 0; font-size:18px; font-weight:800;">{{ number_format($simulation->settings['inflationRate'] * 100, 2) }}%</p>
+                        </div>
+                        <div style="padding:12px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
+                            <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Risk Appetite') }}</span>
+                            <p style="margin:4px 0 0; font-size:18px; font-weight:800;">{{ number_format($simulation->settings['riskAppetite'] * 100, 0) }}%</p>
+                        </div>
+                        <div style="padding:12px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
+                            <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Market Influence') }}</span>
+                            <p style="margin:4px 0 0; font-size:18px; font-weight:800;">{{ number_format($simulation->settings['marketInfluence'] * 100, 0) }}%</p>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </main>
+
+        <aside class="sim-run-side" aria-label="Run controls">
+            <section class="auth-card" aria-label="Run controls" style="padding:16px;">
+                <h3 style="margin:0 0 10px;">{{ __('Simulation Controls') }}</h3>
+                <div style="display:grid; grid-template-columns: 1fr; gap:10px; margin-bottom:12px;">
+                    <label style="display:grid; gap:6px;">
+                        <span style="font-weight:700;">{{ __('Duration (months)') }}</span>
+                        <input id="months-input" type="number" min="12" max="600" step="12" value="120" class="footer-email-input" />
+                    </label>
+                    <label style="display:grid; gap:6px;">
+                        <span style="font-weight:700;">{{ __('Speed (seconds/step)') }}</span>
+                        <input id="speed-input" type="number" min="0.1" max="10" step="0.1" value="0.25" class="footer-email-input" />
+                    </label>
+                    <label style="display:grid; gap:6px;">
+                        <span style="font-weight:700;">{{ __('Market Regime') }}</span>
+                        <select id="preset-select" class="footer-email-input">
+                            <option value="balanced">{{ __('Balanced (default)') }}</option>
+                            <option value="growth">{{ __('Growth / Bullish') }}</option>
+                            <option value="defensive">{{ __('Defensive / Bearish') }}</option>
+                            <option value="volatile">{{ __('Choppy & volatile') }}</option>
+                            <option value="shock">{{ __('Stress test (crash + recovery)') }}</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+                    <button id="btn-run" class="btn btn-primary" style="flex:1; justify-content:center;">▶ {{ __('Run') }}</button>
+                    <button id="btn-pause" class="btn btn-secondary" style="flex:1; justify-content:center;" disabled>⏸ {{ __('Pause') }}</button>
+                    <button id="btn-step" class="btn btn-secondary" style="flex:1; justify-content:center;" title="{{ __('Advance by one month') }}">➜ {{ __('Step') }}</button>
+                    <button id="btn-reset" class="btn btn-outline" style="flex:1; justify-content:center;">🔄 {{ __('Reset') }}</button>
+                    <button id="btn-save" class="btn btn-outline" style="flex:1; justify-content:center;" title="{{ __('Save the latest simulation results to your dashboard') }}">💾 {{ __('Save Progress') }}</button>
+                </div>
+
+                <div style="margin-top:12px; display:grid; gap:10px;">
+                    <div id="learning-note" style="padding:12px; border-radius:12px; border:1px solid var(--c-border); background:color-mix(in srgb, var(--c-surface) 90%, var(--c-primary) 10%); font-size:14px; line-height:1.6;"></div>
+                    <div id="risk-tip" style="padding:12px; border-radius:12px; border:1px solid var(--c-border); background:color-mix(in srgb, var(--c-surface) 94%, var(--c-secondary) 6%); font-size:14px; line-height:1.6;"></div>
+                </div>
+            </section>
+        </aside>
     </div>
 </section>
 @endsection

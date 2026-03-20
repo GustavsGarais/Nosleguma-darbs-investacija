@@ -32,7 +32,7 @@
         </label>
 
         @php($s = $simulation->settings)
-        <div style="display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px;">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">
             <label style="display:grid; gap:6px;">
                 <span>{{ __('Initial Investment') }}</span>
                 <input type="number" step="1" name="initial_investment" value="{{ old('initial_investment', $s['initialInvestment'] ?? 1000) }}" required class="footer-email-input" />

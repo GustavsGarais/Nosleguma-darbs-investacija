@@ -71,32 +71,13 @@ php artisan serve --host=127.0.0.1 --port=8080
 
 admin remote
 Email: admin@example.com
-Password: YourSecurePassword123!
-
-php artisan tinker
-use App\Models\User;
-
-// See all users (raw)
-User::all();
-
-// See only important columns
-User::select('id', 'name', 'email', 'is_admin')->get();
-
-// Count users
-User::count();
-
-// Find one by email
-User::where('email', 'admin@example.com')->first();
+Password: School
 
 
 BUGS:
-
-The "Edit simulation" should have % percentile 0%-100% rather than 0-1 while it can't go past 0% or 100% and and arrows to increase the number goes +0.01 rather then slowly it increasing the longer you hold, so after 2 sec it goes to +0.1 and again too +1
-
-When pressing the 2FA button it crashes and says this: 
-
-the currency doesn't show the real converting rate, it says $1160,00, rounds the currency. rather then saying the actual currect currency rate.
-
-Some buttons are shaped diffrently from what are next to one another like in simnulation actions: "edit" and "delete" are diffrently shaped, same with same with admin panel language and theme
+In the simulation creation page the buttonse that increase the numbers leave holding the button for too long it increases to a full number but leaves a 0.4. The timing is a bit off, it should only increase when its a 0 Then it should increase into a +1.0
 
 The tutorial blackends everything, but the "Simulation tutorial" even tho its trying to highlight the parts where it wants to show you. And the tutorial ends after the 4 steps of "Simulation tutorial" which should continue on by telling how to create the simulation and what each one does.
+
+When someone looses their 2FA there is no real way to gain access to it. Will create a gmail for a bot to handle those things of sending emails and responses.
+Admins shouldn't be able to change the password themselves, but other buttons to disable 2FA and to ask the user to change their passwords. But only would work with gmail sender would work.

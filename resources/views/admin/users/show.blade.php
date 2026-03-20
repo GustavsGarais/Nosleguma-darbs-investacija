@@ -55,6 +55,32 @@
     </div>
 
     <div class="admin-card">
+        <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">Two-Factor Authentication</h2>
+        <div style="display: grid; gap: 12px;">
+            <div>
+                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Status</p>
+                @if($user->hasTwoFactorEnabled())
+                    <span class="admin-badge" style="background: #10b98120; color: #10b981;">Enabled</span>
+                @else
+                    <span class="admin-badge" style="background: var(--admin-border); color: var(--admin-text-muted);">Disabled</span>
+                @endif
+            </div>
+
+            @if($user->hasTwoFactorEnabled() && $user->id !== auth()->id())
+                <div>
+                    <p style="margin: 0 0 8px; font-size: 13px; color: var(--admin-text-muted); line-height:1.5;">
+                        Disable 2FA clears the user's 2FA secret so they can log in again.
+                    </p>
+                    <form method="POST" action="{{ route('admin.users.disableTwoFactor', $user) }}" onsubmit="return confirm('Disable 2FA for this user?');">
+                        @csrf
+                        <button type="submit" class="admin-btn admin-btn-danger" style="width:100%;">Disable 2FA</button>
+                    </form>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <div class="admin-card">
         <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">Statistics</h2>
         <div style="display: grid; gap: 12px;">
             <div>

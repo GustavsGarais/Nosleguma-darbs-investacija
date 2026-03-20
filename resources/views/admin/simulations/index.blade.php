@@ -44,12 +44,12 @@
             <table style="width:100%; border-collapse:collapse;">
                 <thead>
                     <tr>
-                        <th style="text-align:left; padding:12px 8px; border-bottom:2px solid var(--c-border);">Name</th>
-                        <th style="text-align:left; padding:12px 8px; border-bottom:2px solid var(--c-border);">User</th>
-                        <th style="text-align:left; padding:12px 8px; border-bottom:2px solid var(--c-border);">Initial Investment</th>
-                        <th style="text-align:left; padding:12px 8px; border-bottom:2px solid var(--c-border);">Latest Value</th>
-                        <th style="text-align:left; padding:12px 8px; border-bottom:2px solid var(--c-border);">Created</th>
-                        <th style="text-align:left; padding:12px 8px; border-bottom:2px solid var(--c-border);">Actions</th>
+                        <th style="text-align:left; padding:12px 8px; border-bottom:2px solid var(--c-border);">{{ __('Name') }}</th>
+                        <th style="text-align:left; padding:12px 8px; border-bottom:2px solid var(--c-border);">{{ __('User') }}</th>
+                        <th style="text-align:left; padding:12px 8px; border-bottom:2px solid var(--c-border);">{{ __('Initial Investment') }}</th>
+                        <th style="text-align:left; padding:12px 8px; border-bottom:2px solid var(--c-border);">{{ __('Latest Value') }}</th>
+                        <th style="text-align:left; padding:12px 8px; border-bottom:2px solid var(--c-border);">{{ __('Created') }}</th>
+                        <th style="text-align:left; padding:12px 8px; border-bottom:2px solid var(--c-border);">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -77,11 +77,11 @@
                             </td>
                             <td style="padding:12px 8px;">
                                 <div style="display:flex; gap:8px;">
-                                    <a class="btn btn-secondary btn-sm" href="{{ route('admin.simulations.show', $simulation) }}">View</a>
-                                    <form method="POST" action="{{ route('admin.simulations.delete', $simulation) }}" onsubmit="return confirm('Delete this simulation?');" style="margin:0;">
+                                    <a class="btn btn-secondary btn-sm" href="{{ route('admin.simulations.show', $simulation) }}">{{ __('View') }}</a>
+                                    <form method="POST" action="{{ route('admin.simulations.delete', $simulation) }}" onsubmit="return confirm('{{ __('Delete this simulation?') }}');" style="margin:0;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-outline btn-sm">Delete</button>
+                                        <button type="submit" class="btn btn-outline btn-sm">{{ __('Delete') }}</button>
                                     </form>
                                 </div>
                             </td>
