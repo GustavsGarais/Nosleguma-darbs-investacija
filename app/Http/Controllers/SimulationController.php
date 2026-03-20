@@ -3,14 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Simulation;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class SimulationController extends Controller
 {
     use AuthorizesRequests;
+
+    private function percentToDecimal(float|int|string $value, float $fallback = 0.0): float
+    {
+        if (is_string($value)) {
+            $value = preg_replace('/[^0-9.\-]/', '', $value);
+        }
+        $num = is_numeric($value) ? (float) $value : $fallback;
+        $num = max(0.0, min(100.0, $num));
+        return $num / 100.0;
+    }
 
     public function index(Request $request): View
     {
@@ -35,6 +45,7 @@ class SimulationController extends Controller
             'name' => 'required|string|max:30',
             'initial_investment' => 'required|numeric|min:0',
             'monthly_contribution' => 'required|numeric|min:0',
+            // UI uses percent (0-100). Stored as decimal (0-1).
             'growth_rate' => 'required|numeric|min:0|max:100',
             'risk_appetite' => 'required|numeric|min:0|max:100',
             'market_influence' => 'required|numeric|min:0|max:100',
@@ -42,29 +53,27 @@ class SimulationController extends Controller
             'investors' => 'required|integer|min:1'
         ]);
 
-        $normalizePercent = static fn (float $value): float => round(min(100, max(0, $value)) / 100, 4);
-
         auth()->user()->simulations()->create([
             'name' => $validated['name'],
             'settings' => [
                 'initialInvestment' => $validated['initial_investment'],
                 'monthlyContribution' => $validated['monthly_contribution'],
-                'growthRate' => $normalizePercent($validated['growth_rate']),
-                'riskAppetite' => $normalizePercent($validated['risk_appetite']),
-                'marketInfluence' => $normalizePercent($validated['market_influence']),
-                'inflationRate' => $normalizePercent($validated['inflation_rate']),
+                'growthRate' => $this->percentToDecimal($validated['growth_rate'], 7.0),
+                'riskAppetite' => $this->percentToDecimal($validated['risk_appetite'], 50.0),
+                'marketInfluence' => $this->percentToDecimal($validated['market_influence'], 50.0),
+                'inflationRate' => $this->percentToDecimal($validated['inflation_rate'], 2.0),
                 'investors' => $validated['investors']
             ]
         ]);
 
         return redirect()->route('simulations.index')
-            ->with('success', __('Simulation created successfully!'));
+            ->with('success', 'Simulation created successfully!');
     }
 
-    public function show(Simulation $simulation): RedirectResponse
+    public function show(Simulation $simulation): View
     {
         $this->authorize('view', $simulation);
-        return redirect()->route('simulations.index', ['simulation' => $simulation->id]);
+        return view('simulations.show', compact('simulation'));
     }
 
     public function edit(Simulation $simulation): View
@@ -81,6 +90,7 @@ class SimulationController extends Controller
             'name' => 'required|string|max:30',
             'initial_investment' => 'required|numeric|min:0',
             'monthly_contribution' => 'required|numeric|min:0',
+            // UI uses percent (0-100). Stored as decimal (0-1).
             'growth_rate' => 'required|numeric|min:0|max:100',
             'risk_appetite' => 'required|numeric|min:0|max:100',
             'market_influence' => 'required|numeric|min:0|max:100',
@@ -88,29 +98,27 @@ class SimulationController extends Controller
             'investors' => 'required|integer|min:1'
         ]);
 
-        $normalizePercent = static fn (float $value): float => round(min(100, max(0, $value)) / 100, 4);
-
         $simulation->update([
             'name' => $validated['name'],
             'settings' => [
                 'initialInvestment' => $validated['initial_investment'],
                 'monthlyContribution' => $validated['monthly_contribution'],
-                'growthRate' => $normalizePercent($validated['growth_rate']),
-                'riskAppetite' => $normalizePercent($validated['risk_appetite']),
-                'marketInfluence' => $normalizePercent($validated['market_influence']),
-                'inflationRate' => $normalizePercent($validated['inflation_rate']),
+                'growthRate' => $this->percentToDecimal($validated['growth_rate'], 7.0),
+                'riskAppetite' => $this->percentToDecimal($validated['risk_appetite'], 50.0),
+                'marketInfluence' => $this->percentToDecimal($validated['market_influence'], 50.0),
+                'inflationRate' => $this->percentToDecimal($validated['inflation_rate'], 2.0),
                 'investors' => $validated['investors']
             ]
         ]);
 
-        return redirect()->route('simulations.index', ['simulation' => $simulation->id])
-            ->with('success', __('Simulation updated successfully!'));
+        return redirect()->route('simulations.show', $simulation)
+            ->with('success', 'Simulation updated successfully!');
     }
 
     public function destroy(Simulation $simulation): RedirectResponse
     {
         $this->authorize('delete', $simulation);
-
+        
         $simulation->delete();
 
         return redirect()->route('simulations.index')
@@ -127,9 +135,9 @@ class SimulationController extends Controller
 
         $months = $validated['months'] ?? 120;
         $settings = $simulation->settings;
-
+        
         $results = $this->calculateSimulation($settings, $months);
-
+        
         $simulation->update(['data' => $results]);
 
         return response()->json([
@@ -178,7 +186,7 @@ class SimulationController extends Controller
         $annualInflation = $settings['inflationRate'];
         $monthlyReturnRate = $annualReturn / 12;
         $monthlyInflationRate = $annualInflation / 12;
-
+        
         $results = [];
 
         for ($month = 0; $month < $months; $month++) {
@@ -189,7 +197,7 @@ class SimulationController extends Controller
             $randomness = (mt_rand(-1000, 1000) / 1000); // -1 to 1
             $riskImpact = $randomness * $settings['riskAppetite'] * $settings['marketInfluence'];
             $adjustedReturn = $monthlyReturnRate + $riskImpact;
-
+            
             // Calculate interest
             $interestEarned = $currentValue * $adjustedReturn;
             $currentValue = max(0, $currentValue + $interestEarned);

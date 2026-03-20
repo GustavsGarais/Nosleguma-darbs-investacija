@@ -47,7 +47,7 @@
                 <a href="{{ route('register') }}" class="btn btn-primary btn-lg">{{ __('Create Simulation') }}</a>
             @endauth
             <a href="{{ route('quick-tour') }}" class="btn btn-secondary">{{ __('Quick Tour') }}</a>
-            <button class="btn btn-outline">{{ __('Learn More') }}</button>
+            <a class="btn btn-outline" href="#learn-more">{{ __('Learn More') }}</a>
         </div>
 
     </div>
@@ -65,6 +65,88 @@
                 </div>
             </div>
             <img src="https://images.pexels.com/photos/95916/pexels-photo-95916.jpeg?auto=compress&cs=tinysrgb&w=1500" alt="Flatlay of a business analytics report, keyboard, pen, and smartphone on a wooden desk." />
+        </div>
+    </div>
+</section>
+
+<section id="learn-more" class="home-section" aria-label="{{ __('Learn more') }}">
+    <div class="home-section__inner">
+        <div class="home-section__header">
+            <div>
+                <p class="home-section__kicker">{{ __('Built for learning') }}</p>
+                <h2 class="home-section__title">{{ __('Understand compounding — not just charts') }}</h2>
+                <p class="home-section__subtitle">
+                    {{ __('This app is designed to help you build intuition. Run scenarios, step month-by-month, and compare nominal growth vs inflation-adjusted purchasing power.') }}
+                </p>
+            </div>
+            @auth
+                <a class="btn btn-primary" href="{{ route('simulations.index') }}">{{ __('Open dashboard') }}</a>
+            @else
+                <a class="btn btn-primary" href="{{ route('register') }}">{{ __('Create free account') }}</a>
+            @endauth
+        </div>
+
+        <div class="home-cards" aria-label="{{ __('Key features') }}">
+            <div class="home-card">
+                <div class="home-card__icon" aria-hidden="true">⏱</div>
+                <h3 class="home-card__title">{{ __('Run or Step') }}</h3>
+                <p class="home-card__text">{{ __('Use Step mode to see exactly what happens each month. Then Run to understand longer horizons (10–30 years).') }}</p>
+            </div>
+            <div class="home-card">
+                <div class="home-card__icon" aria-hidden="true">📉</div>
+                <h3 class="home-card__title">{{ __('Risk & drawdowns') }}</h3>
+                <p class="home-card__text">{{ __('Volatility matters. The simulator highlights drawdowns so you learn why staying consistent is hard — and why it matters.') }}</p>
+            </div>
+            <div class="home-card">
+                <div class="home-card__icon" aria-hidden="true">🧾</div>
+                <h3 class="home-card__title">{{ __('Nominal vs real') }}</h3>
+                <p class="home-card__text">{{ __('A bigger number is not always a better outcome. Compare nominal value to real value after inflation.') }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="home-section" aria-label="{{ __('How it works') }}">
+    <div class="home-section__inner">
+        <div class="home-section__header">
+            <div>
+                <p class="home-section__kicker">{{ __('How it works') }}</p>
+                <h2 class="home-section__title">{{ __('A simple workflow') }}</h2>
+                <p class="home-section__subtitle">{{ __('Create a scenario, run it, and save snapshots so you can compare outcomes.') }}</p>
+            </div>
+        </div>
+
+        <div class="home-steps">
+            <div class="home-step">
+                <div class="home-step__num">1</div>
+                <h3 class="home-step__title">{{ __('Create a scenario') }}</h3>
+                <p class="home-step__text">{{ __('Set an initial investment, monthly contributions, and assumptions like growth and inflation.') }}</p>
+            </div>
+            <div class="home-step">
+                <div class="home-step__num">2</div>
+                <h3 class="home-step__title">{{ __('Run the simulation') }}</h3>
+                <p class="home-step__text">{{ __('Use market regimes (balanced, growth, defensive, volatile, stress test) to explore different paths.') }}</p>
+            </div>
+            <div class="home-step">
+                <div class="home-step__num">3</div>
+                <h3 class="home-step__title">{{ __('Learn and compare') }}</h3>
+                <p class="home-step__text">{{ __('Save progress, review events, and compare multiple scenarios to understand trade-offs.') }}</p>
+            </div>
+        </div>
+
+        <div style="margin-top:18px;" class="home-ctaRow">
+            <div>
+                <p class="home-ctaRow__title">{{ __('Try the guided demo first') }}</p>
+                <p class="home-ctaRow__text">{{ __('If you’re new, start with the Quick Tour and then create your own simulation.') }}</p>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <a href="{{ route('quick-tour') }}" class="btn btn-secondary">{{ __('Quick Tour') }}</a>
+                @auth
+                    <a href="{{ route('simulations.create') }}" class="btn btn-primary">{{ __('Create Simulation') }}</a>
+                @else
+                    <a href="{{ route('register') }}" class="btn btn-primary">{{ __('Create free account') }}</a>
+                @endauth
+            </div>
         </div>
     </div>
 </section>

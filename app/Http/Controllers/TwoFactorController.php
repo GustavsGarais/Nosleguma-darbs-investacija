@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use PragmaRX\Google2FA\Google2FA;
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Validation\ValidationException;
+use PragmaRX\Google2FALaravel\Google2FA;
 use Illuminate\Support\Facades\Crypt;
 
 class TwoFactorController extends Controller
@@ -18,29 +18,38 @@ class TwoFactorController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
-        $google2fa = new Google2FA();
+        /** @var \PragmaRX\Google2FALaravel\Google2FA $google2fa */
+        $google2fa = app(Google2FA::class);
         
-        // Generate secret if not exists
+        // Generate secret if not exists (or if stored value can't be decrypted)
         if (!$user->two_factor_secret) {
             $user->two_factor_secret = Crypt::encryptString($google2fa->generateSecretKey());
             $user->save();
         }
-        
-        $secret = Crypt::decryptString($user->two_factor_secret);
+
+        try {
+            $secret = Crypt::decryptString($user->two_factor_secret);
+        } catch (\Throwable $e) {
+            // If APP_KEY changed or value is corrupted, re-generate a fresh secret
+            $user->two_factor_secret = Crypt::encryptString($google2fa->generateSecretKey());
+            $user->two_factor_confirmed_at = null;
+            $user->two_factor_recovery_codes = null;
+            $user->save();
+            $secret = Crypt::decryptString($user->two_factor_secret);
+        }
         $qrCodeUrl = $google2fa->getQRCodeUrl(
             config('app.name'),
             $user->email,
             $secret
         );
-        
-        // Generate QR code image
-        $qrCode = QrCode::create($qrCodeUrl)
-            ->setSize(300)
-            ->setMargin(10);
-        
-        $writer = new PngWriter();
-        $result = $writer->write($qrCode);
-        $qrCodeDataUri = 'data:image/png;base64,' . base64_encode($result->getString());
+
+        // Generate QR code inline image (data URI) using Pragmarx QR service
+        $qrCodeDataUri = $google2fa->getQRCodeInline(
+            config('app.name'),
+            $user->email,
+            $secret,
+            300
+        );
         
         return view('settings.two-factor', [
             'user' => $user,
@@ -60,15 +69,42 @@ class TwoFactorController extends Controller
         ]);
 
         $user = $request->user();
-        $google2fa = new Google2FA();
-        $secret = Crypt::decryptString($user->two_factor_secret);
+        if (!$user->two_factor_secret) {
+            return redirect()->route('settings.two-factor')
+                ->withErrors(['code' => __('Two-factor authentication secret is missing. Please reload the setup page and try again.')]);
+        }
+        $throttleKey = '2fa:enable:' . $user->id . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            throw ValidationException::withMessages([
+                'code' => __('Too many attempts. Please try again in :seconds seconds.', [
+                    'seconds' => $seconds,
+                ]),
+            ]);
+        }
+
+        /** @var \PragmaRX\Google2FALaravel\Google2FA $google2fa */
+        $google2fa = app(Google2FA::class);
+        try {
+            $secret = Crypt::decryptString($user->two_factor_secret);
+        } catch (\Throwable $e) {
+            return redirect()->route('settings.two-factor')
+                ->withErrors(['code' => __('Two-factor authentication secret is invalid. Please reload the setup page and try again.')]);
+        }
+        $code = preg_replace('/\s+/', '', trim((string) $request->code));
         
         // Verify the code
-        $valid = $google2fa->verifyKey($secret, $request->code, 2); // 2 = 2 time windows tolerance
+        $valid = ctype_digit($code) && strlen($code) === 6
+            ? $google2fa->verifyKey($secret, $code, 2) // 2 = 2 time windows tolerance
+            : false;
         
         if (!$valid) {
+            RateLimiter::hit($throttleKey, 60);
             return back()->withErrors(['code' => __('The provided two factor authentication code was invalid.')]);
         }
+
+        RateLimiter::clear($throttleKey);
         
         // Generate recovery codes
         $recoveryCodes = [];

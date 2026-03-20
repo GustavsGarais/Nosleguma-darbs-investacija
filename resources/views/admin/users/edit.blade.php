@@ -65,27 +65,6 @@
                 <p style="margin: 8px 0 0; font-size: 13px; color: var(--admin-text-muted);">Grant admin privileges to this user</p>
             </div>
 
-            <div>
-                <label for="password" style="display: block; margin-bottom: 6px; font-weight: 500;">New Password (optional)</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    name="password" 
-                    class="admin-input"
-                >
-                <p style="margin: 8px 0 0; font-size: 13px; color: var(--admin-text-muted);">Leave blank to keep current password</p>
-            </div>
-
-            <div>
-                <label for="password_confirmation" style="display: block; margin-bottom: 6px; font-weight: 500;">Confirm New Password</label>
-                <input 
-                    type="password" 
-                    id="password_confirmation" 
-                    name="password_confirmation" 
-                    class="admin-input"
-                >
-            </div>
-
             <div style="display: flex; gap: 12px; margin-top: 8px;">
                 <button type="submit" class="admin-btn admin-btn-primary">Update User</button>
                 <a href="{{ route('admin.users.show', $user) }}" class="admin-btn admin-btn-secondary">Cancel</a>

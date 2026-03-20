@@ -12,7 +12,7 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Display the user's profile / settings form.
      */
     public function edit(Request $request): View
     {
@@ -22,16 +22,12 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user's profile information.
+     * Update the user's profile information (name only — email is locked).
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
+        // Only 'name' comes through validated — email is never touched.
         $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
         $request->user()->save();
 
         return Redirect::route('settings')->with('status', 'profile-updated');

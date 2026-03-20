@@ -65,6 +65,23 @@
   --color-on-surface-secondary: #374151;
 }
 
+/* Aptos Display (bold) - prefer for headings site-wide
+   Add the AptosDisplay-Bold.woff2 file to public/fonts/AptosDisplay-Bold.woff2 to enable.
+   This places Aptos first for --font-family-heading while keeping Orbitron as a fallback.
+*/
+@font-face {
+  font-family: 'Aptos Display';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Aptos Display Bold'), local('AptosDisplay-Bold'), url('/fonts/AptosDisplay-Bold.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* prefer Aptos for headings */
+:root {
+  --font-family-heading: 'Aptos Display', "Orbitron", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
 /* Common Components */
 .btn {
   gap: var(--spacing-xs);

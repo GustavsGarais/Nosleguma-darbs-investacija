@@ -96,6 +96,9 @@
                         <p style="margin: 4px 0 0; font-size: 12px; color: var(--admin-text-muted);">{{ $ticket->user->email }}</p>
                     @else
                         <span style="color: var(--admin-text-muted);">Anonymous</span>
+                        @if($ticket->contact_email)
+                            <p style="margin: 6px 0 0; font-size: 12px; color: var(--admin-text-muted);">{{ $ticket->contact_email }}</p>
+                        @endif
                     @endif
                 </div>
                 <div>
@@ -133,6 +136,26 @@
                     </div>
                 @endif
             </div>
+
+            @php
+                $isTwoFactorRecovery = $ticket->subject === 'Lost 2FA / Account Recovery';
+            @endphp
+            @if($isTwoFactorRecovery)
+                <div class="admin-card" style="margin-top: 24px;">
+                    <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: 600;">Account Recovery (2FA)</h2>
+
+                    <p style="margin: 0 0 14px; color: var(--admin-text-muted); line-height: 1.6;">
+                        Disable 2FA for the user related to this ticket and notify them by email.
+                    </p>
+
+                    <form method="POST" action="{{ route('admin.tickets.disableTwoFactor', $ticket) }}"
+                          onsubmit="return confirm('Disable 2FA for this account and send the notification email?');">
+                        @csrf
+                        <textarea name="admin_response" rows="3" class="admin-textarea" placeholder="Optional admin note..." style="width:100%; margin-bottom: 12px;"></textarea>
+                        <button type="submit" class="admin-btn admin-btn-primary" style="width: 100%;">Disable 2FA & Notify</button>
+                    </form>
+                </div>
+            @endif
         </div>
     </div>
 </div>

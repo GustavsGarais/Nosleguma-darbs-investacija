@@ -29,6 +29,8 @@
 					required 
 					autofocus 
 					autocomplete="one-time-code"
+					inputmode="numeric"
+					pattern="[0-9]*"
 					class="footer-email-input" 
 					placeholder="000000"
 					maxlength="10"

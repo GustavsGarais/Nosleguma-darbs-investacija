@@ -3,14 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\TwoFactorDisabledMail;
 use App\Models\SupportTicket;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class SupportTicketController extends Controller
 {
+    private const SUPPORT_SUBJECT = 'Lost 2FA / Account Recovery';
+
     /**
      * Display all support tickets
      */
@@ -109,5 +114,61 @@ class SupportTicketController extends Controller
 
         return redirect()->route('admin.tickets.index')
             ->with('success', 'Ticket deleted successfully!');
+    }
+
+    /**
+     * Admin action: disable 2FA for the user related to this ticket and email them.
+     */
+    public function disableTwoFactor(Request $request, SupportTicket $ticket): RedirectResponse
+    {
+        $validated = $request->validate([
+            'admin_response' => 'nullable|string|max:5000',
+        ]);
+
+        if ($ticket->subject !== self::SUPPORT_SUBJECT) {
+            abort(404);
+        }
+
+        $ticket->loadMissing(['user']);
+
+        $user = $ticket->user;
+        if (!$user && $ticket->contact_email) {
+            $user = User::where('email', $ticket->contact_email)->first();
+        }
+
+        // Mark ticket resolved and store the admin response.
+        $ticket->status = 'resolved';
+        $ticket->priority = 'urgent';
+        $ticket->resolved_at = now();
+        $ticket->admin_response = $validated['admin_response']
+            ?? '2FA was disabled by an admin after an account recovery request.';
+        $ticket->save();
+
+        if (!$user) {
+            return redirect()->route('admin.tickets.show', $ticket)
+                ->with('success', 'Ticket resolved, but no matching user was found for the provided email.');
+        }
+
+        // Disable 2FA so the user can log in again.
+        $user->two_factor_secret = null;
+        $user->two_factor_recovery_codes = null;
+        $user->two_factor_confirmed_at = null;
+        $user->save();
+
+        // Send email (depends on your MAIL_* configuration; default is MAIL_MAILER=log).
+        try {
+            Mail::to($user->email)->send(new TwoFactorDisabledMail($user->name, $ticket->id));
+        } catch (\Throwable $e) {
+            // Redirect successfully, but log the error so you can debug email sending.
+            Log::error('Failed to send 2FA disabled email', [
+                'user_id' => $user?->id,
+                'ticket_id' => $ticket->id,
+                'contact_email' => $ticket->contact_email,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        return redirect()->route('admin.tickets.show', $ticket)
+            ->with('success', '2FA disabled and user notified (if mail is configured).');
     }
 }

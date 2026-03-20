@@ -12,16 +12,14 @@
                 <h1 style="margin:0 0 8px;">{{ __('Welcome :name!', ['name' => auth()->user()->name]) }}</h1>
                 <p style="margin:0; color: var(--c-on-surface);">{{ __("You're signed in. Your data is loaded from the database.") }}</p>
             </div>
-            @if(auth()->user()->tutorial_completed)
-                <button id="start-tutorial" class="btn btn-outline" type="button">📚 {{ __('Start Tutorial') }}</button>
-            @endif
+            <button id="start-tutorial" class="btn btn-outline" type="button">📚 {{ __('Start Tutorial') }}</button>
         </div>
     </section>
 
     <section class="auth-card" aria-label="Simulations" style="margin-top:24px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
             <h2 style="margin:0;">{{ __('Your Simulations') }}</h2>
-        <a href="{{ route('simulations.create') }}" class="btn btn-primary">New Simulation</a>
+        <a href="{{ route('simulations.create') }}" class="btn btn-primary">{{ __('New Simulation') }}</a>
     </div>
 
     @if(session('success'))
@@ -35,11 +33,11 @@
             <table style="width:100%; border-collapse:collapse;">
                 <thead>
                     <tr>
-                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Name</th>
-                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Latest Value</th>
-                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Last Updated</th>
-                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Created</th>
-                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">Actions</th>
+                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">{{ __('Name') }}</th>
+                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">{{ __('Latest Value') }}</th>
+                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">{{ __('Last Updated') }}</th>
+                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">{{ __('Created') }}</th>
+                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,11 +60,11 @@
                             <td style="padding:8px; border-bottom:1px solid var(--c-border);">{{ $updatedText }}</td>
                                 <td style="padding:8px; border-bottom:1px solid var(--c-border);">{{ $sim->created_at->diffForHumans() }}</td>
                             <td style="padding:8px; border-bottom:1px solid var(--c-border); display:flex; gap:8px;">
-                                    <a class="btn btn-secondary btn-sm" href="{{ route('simulations.edit', $sim) }}">Edit</a>
-                                    <form method="POST" action="{{ route('simulations.destroy', $sim) }}" onsubmit="return confirm('Delete this simulation?');">
+                                    <a class="btn btn-outline btn-sm" href="{{ route('simulations.edit', $sim) }}">{{ __('Edit') }}</a>
+                                    <form method="POST" action="{{ route('simulations.destroy', $sim) }}" onsubmit="return confirm('{{ __('Delete this simulation?') }}');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-outline btn-sm">Delete</button>
+                                    <button type="submit" class="btn btn-outline btn-sm">{{ __('Delete') }}</button>
                                 </form>
                             </td>
                         </tr>
@@ -277,10 +275,10 @@
                     <h1 style="margin:4px 0 8px; font-size:24px; font-weight:700;">{{ $displayName }}</h1>
                 </div>
                 <div style="display: flex; gap: 8px; align-items:center;">
-                    <form method="POST" action="{{ route('simulations.destroy', $simulation) }}" onsubmit="return confirm('Delete this simulation?');" style="display:inline;">
+                    <form method="POST" action="{{ route('simulations.destroy', $simulation) }}" onsubmit="return confirm('{{ __('Delete this simulation?') }}');" style="display:inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-outline">Delete</button>
+                        <button type="submit" class="btn btn-outline">{{ __('Delete') }}</button>
                     </form>
                 </div>
             </header>

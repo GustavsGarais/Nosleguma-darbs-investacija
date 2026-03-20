@@ -5,6 +5,7 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SimulationController;
 use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\TwoFactorRecoveryRequestController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,13 @@ Route::get('/quick-tour', function () {
 
 Route::post('/language', [LanguageController::class, 'switch'])->name('language.switch');
 
+// Public support (no login required)
+Route::get('/support', [TwoFactorRecoveryRequestController::class, 'create'])->name('support.create');
+Route::post('/support', [TwoFactorRecoveryRequestController::class, 'store'])->name('support.store');
+Route::get('/support/thanks', function () {
+    return view('support.two-factor-recovery-thanks');
+})->name('support.thanks');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return redirect()->route('simulations.index');
@@ -32,11 +40,12 @@ Route::middleware(['auth'])->group(function () {
     // Settings
     Route::get('/settings', [ProfileController::class, 'edit'])->name('settings');
     Route::patch('/settings/profile', [ProfileController::class, 'update'])->name('settings.profile');
+    Route::patch('/settings/password', [\App\Http\Controllers\Auth\PasswordController::class, 'update'])->name('settings.password');
     Route::delete('/settings', [ProfileController::class, 'destroy'])->name('settings.destroy');
     
-    // Two-Factor Authentication
+    // Two-Factor Authentication (setup / enable / disable / recovery codes)
     Route::get('/settings/two-factor', [\App\Http\Controllers\TwoFactorController::class, 'show'])->name('settings.two-factor');
-    Route::post('/settings/two-factor/enable', [\App\Http\Controllers\TwoFactorController::class, 'enable'])->name('two-factor.enable');
+    Route::post('/settings/two-factor', [\App\Http\Controllers\TwoFactorController::class, 'enable'])->name('two-factor.enable');
     Route::post('/settings/two-factor/disable', [\App\Http\Controllers\TwoFactorController::class, 'disable'])->name('two-factor.disable');
     Route::post('/settings/two-factor/recovery-codes', [\App\Http\Controllers\TwoFactorController::class, 'regenerateRecoveryCodes'])->name('two-factor.recovery-codes');
     
@@ -60,12 +69,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
     Route::patch('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
+    Route::post('/users/{user}/disable-2fa', [AdminController::class, 'disableTwoFactor'])->name('users.disableTwoFactor');
     
     // Support tickets management
     Route::get('/tickets', [AdminSupportTicketController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/{ticket}', [AdminSupportTicketController::class, 'show'])->name('tickets.show');
     Route::patch('/tickets/{ticket}/status', [AdminSupportTicketController::class, 'updateStatus'])->name('tickets.updateStatus');
     Route::delete('/tickets/{ticket}', [AdminSupportTicketController::class, 'destroy'])->name('tickets.delete');
+    Route::post('/tickets/{ticket}/disable-2fa', [AdminSupportTicketController::class, 'disableTwoFactor'])->name('tickets.disableTwoFactor');
 });
 
 require __DIR__.'/auth.php';

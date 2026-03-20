@@ -8,7 +8,6 @@ use App\Models\SupportTicket;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -122,21 +121,35 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'is_admin' => 'boolean',
-            'password' => 'nullable|string|min:12|confirmed',
         ]);
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
         $user->is_admin = $request->has('is_admin') ? (bool)$request->is_admin : false;
 
-        if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
-        }
-
         $user->save();
 
         return redirect()->route('admin.users.show', $user)
             ->with('success', 'User updated successfully!');
+    }
+
+    /**
+     * Admin action: disable 2FA for a given user (no password changes allowed).
+     */
+    public function disableTwoFactor(Request $request, User $user): RedirectResponse
+    {
+        if ($user->id === auth()->id()) {
+            return redirect()->route('admin.users.show', $user)
+                ->with('error', 'You cannot disable your own 2FA from here.');
+        }
+
+        $user->two_factor_secret = null;
+        $user->two_factor_recovery_codes = null;
+        $user->two_factor_confirmed_at = null;
+        $user->save();
+
+        return redirect()->route('admin.users.show', $user)
+            ->with('success', '2FA disabled for this user.');
     }
 
     /**

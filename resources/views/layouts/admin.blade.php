@@ -189,6 +189,7 @@
             cursor: pointer;
             text-decoration: none;
             transition: all 0.2s;
+            min-height: 40px;
         }
 
         .admin-btn-primary {
@@ -275,6 +276,7 @@
             border-radius: 8px;
             color: var(--admin-text);
             font-size: 14px;
+            min-height: 40px;
         }
 
         .admin-textarea {
@@ -349,14 +351,14 @@
                     <form id="admin-locale-form" method="POST" action="{{ route('language.switch') }}" style="flex:1; min-width:0;">
                         @csrf
                         <label for="admin-locale" style="font-size:12px; color:var(--admin-text-muted); text-transform:uppercase; letter-spacing:0.06em;">{{ __('Language') }}</label>
-                        <select id="admin-locale" name="locale" class="admin-select" style="max-width:140px; margin-top:6px;">
+                        <select id="admin-locale" name="locale" class="admin-select" style="margin-top:6px;">
                             <option value="en" @selected(app()->getLocale() === 'en')>{{ __('English') }}</option>
                             <option value="lv" @selected(app()->getLocale() === 'lv')>{{ __('Latviešu') }}</option>
                         </select>
                     </form>
                     <div style="flex-shrink:0;">
                         <span style="font-size:12px; color:var(--admin-text-muted); text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:6px;">{{ __('Theme') }}</span>
-                        <button type="button" id="admin-theme-toggle" class="admin-btn admin-btn-secondary" style="padding:8px 12px; display:inline-flex; align-items:center; gap:6px;" title="{{ __('Toggle light or dark mode') }}" aria-pressed="false">
+                        <button type="button" id="admin-theme-toggle" class="admin-btn admin-btn-secondary" style="display:inline-flex; align-items:center; gap:6px;" title="{{ __('Toggle light or dark mode') }}" aria-pressed="false">
                             <svg id="admin-theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
                             <svg id="admin-theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
                             <span id="admin-theme-label">{{ __('Light') }}</span>
