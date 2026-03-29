@@ -31,7 +31,7 @@
                 'navigate' => true,
             ],
             [
-                'target' => 'table a[href*="simulations.index"], table a[href*="simulation"]',
+                'target' => 'table tbody a[href*="simulations/"]:not([href*="edit"]):not([href*="create"])',
                 'position' => 'bottom',
                 'heading' => __('tutorial.dashboard.h5'),
                 'content' => __('tutorial.dashboard.4'),
@@ -107,6 +107,12 @@
                 'content' => __('tutorial.show.1'),
             ],
             [
+                'target' => '.sim-dash-toolbar-actions',
+                'position' => 'bottom',
+                'heading' => __('tutorial.show.h2b'),
+                'content' => __('tutorial.show.1b'),
+            ],
+            [
                 'target' => 'section[aria-label="Run controls"]',
                 'position' => 'bottom',
                 'heading' => __('tutorial.show.h3'),
@@ -129,6 +135,12 @@
                 'position' => 'right',
                 'heading' => __('tutorial.show.h6'),
                 'content' => __('tutorial.show.5'),
+            ],
+            [
+                'target' => '#secondary-scenario',
+                'position' => 'right',
+                'heading' => __('tutorial.show.h6b'),
+                'content' => __('tutorial.show.5b'),
             ],
             [
                 'target' => '#btn-run',
@@ -177,6 +189,12 @@
                 'position' => 'top',
                 'heading' => __('tutorial.show.h14'),
                 'content' => __('tutorial.show.13'),
+            ],
+            [
+                'target' => '#cagr',
+                'position' => 'top',
+                'heading' => __('tutorial.show.h14b'),
+                'content' => __('tutorial.show.13b'),
             ],
             [
                 'target' => '#event-log',

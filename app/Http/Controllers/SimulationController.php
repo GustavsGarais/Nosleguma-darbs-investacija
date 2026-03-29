@@ -22,16 +22,11 @@ class SimulationController extends Controller
         return $num / 100.0;
     }
 
-    public function index(Request $request): View
+    public function index(): View
     {
         $simulations = auth()->user()->simulations()->latest()->paginate(10);
-        $simulation = null;
 
-        if ($request->has('simulation')) {
-            $simulation = auth()->user()->simulations()->find($request->simulation);
-        }
-
-        return view('simulations.index', compact('simulations', 'simulation'));
+        return view('simulations.index', compact('simulations'));
     }
 
     public function create(): View
@@ -125,27 +120,6 @@ class SimulationController extends Controller
             ->with('success', 'Simulation deleted successfully!');
     }
 
-    public function run(Request $request, Simulation $simulation)
-    {
-        $this->authorize('update', $simulation);
-
-        $validated = $request->validate([
-            'months' => 'nullable|integer|min:12|max:600',
-        ]);
-
-        $months = $validated['months'] ?? 120;
-        $settings = $simulation->settings;
-        
-        $results = $this->calculateSimulation($settings, $months);
-        
-        $simulation->update(['data' => $results]);
-
-        return response()->json([
-            'success' => true,
-            'data' => $results
-        ]);
-    }
-
     public function snapshot(Request $request, Simulation $simulation)
     {
         $this->authorize('update', $simulation);
@@ -157,9 +131,26 @@ class SimulationController extends Controller
             'contributions' => 'required|numeric|min:0',
             'total_gain' => 'required|numeric',
             'currency' => 'nullable|string|in:EUR,USD,GBP,JPY',
+            'history' => 'nullable|array|max:601',
+            'history.*.month' => 'required|integer|min:0|max:600',
+            'history.*.value' => 'required|numeric',
+            'history.*.inflationAdjusted' => 'required|numeric',
+            'history.*.contributions' => 'required|numeric',
         ]);
 
         $data = $simulation->data ?? [];
+
+        if (! empty($validated['history'])) {
+            $data['history'] = array_map(static function (array $row) {
+                return [
+                    'month' => (int) $row['month'],
+                    'value' => round((float) $row['value'], 2),
+                    'inflationAdjusted' => round((float) $row['inflationAdjusted'], 2),
+                    'contributions' => round((float) $row['contributions'], 2),
+                ];
+            }, $validated['history']);
+        }
+
         $data['snapshot'] = [
             'month' => $validated['month'],
             'value' => round($validated['value'], 2),
@@ -176,46 +167,5 @@ class SimulationController extends Controller
             'success' => true,
             'snapshot' => $data['snapshot'],
         ]);
-    }
-
-    private function calculateSimulation(array $settings, int $months): array
-    {
-        $currentValue = $settings['initialInvestment'];
-        $monthlyContribution = $settings['monthlyContribution'];
-        $annualReturn = $settings['growthRate'];
-        $annualInflation = $settings['inflationRate'];
-        $monthlyReturnRate = $annualReturn / 12;
-        $monthlyInflationRate = $annualInflation / 12;
-        
-        $results = [];
-
-        for ($month = 0; $month < $months; $month++) {
-            // Add monthly contribution
-            $currentValue += $monthlyContribution;
-
-            // Apply volatility based on risk and market influence
-            $randomness = (mt_rand(-1000, 1000) / 1000); // -1 to 1
-            $riskImpact = $randomness * $settings['riskAppetite'] * $settings['marketInfluence'];
-            $adjustedReturn = $monthlyReturnRate + $riskImpact;
-            
-            // Calculate interest
-            $interestEarned = $currentValue * $adjustedReturn;
-            $currentValue = max(0, $currentValue + $interestEarned);
-
-            // Calculate inflation-adjusted value
-            // Use $month + 1 because the loop starts at 0, but after 1 month we need 1 month of inflation adjustment
-            $inflationAdjusted = $currentValue / pow(1 + $monthlyInflationRate, $month + 1);
-
-            // Store result
-            $results[] = [
-                'month' => $month,
-                'value' => round($currentValue, 2),
-                'inflationAdjusted' => round($inflationAdjusted, 2),
-                'contributions' => ($month + 1) * $monthlyContribution,
-                'interestEarned' => round($interestEarned, 2)
-            ];
-        }
-
-        return $results;
     }
 }

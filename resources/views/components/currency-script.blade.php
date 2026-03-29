@@ -1,6 +1,11 @@
+@php
+    $serverCurrencyPreference = $serverCurrencyPreference
+        ?? (auth()->check() ? auth()->user()->currency_preference : null);
+@endphp
 @once
 @push('scripts')
 <script>
+window.__NOS_SERVER_CURRENCY__ = @json($serverCurrencyPreference);
 (function() {
     if (window.NosCurrencyFormatter) {
         window.NosCurrencyFormatter.render();
@@ -73,6 +78,10 @@
     }
 
     function getPreferredCurrency() {
+        const server = window.__NOS_SERVER_CURRENCY__;
+        if (server && currencyRates[server]) {
+            return server;
+        }
         try {
             const stored = localStorage.getItem('nosleguma-currency-preference');
             if (stored && currencyRates[stored]) {

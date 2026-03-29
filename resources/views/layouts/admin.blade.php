@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <title>{{ __('Admin Panel') }} - {{ config('app.name') }}</title>
+    <title>{{ __('Admin Panel') }} | {{ config('app.name') }}</title>
+    <meta name="application-name" content="{{ config('app.name') }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#07a05a" />
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml" />
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any" />
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}" />
     
-    <!-- Styles -->
+    <!-- Styles (same token + site bundle as main app) -->
     @vite(['resources/css/app.css'])
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/homepage.css') }}" />
     <!-- Apply saved theme so admin uses same light/dark as rest of site -->
     <script>
     (function(){
@@ -90,7 +93,7 @@
 
         .admin-nav-link {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
             padding: 12px 16px;
             color: var(--admin-text-muted);
@@ -99,6 +102,11 @@
             transition: all 0.2s;
             font-size: 14px;
             font-weight: 500;
+            min-width: 0;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            hyphens: auto;
         }
 
         .admin-nav-link:hover {
@@ -114,6 +122,61 @@
         .admin-nav-link svg {
             width: 20px;
             height: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* Long unbroken strings (URLs, tokens) must not blow out fixed sidebar */
+        .admin-sidebar-header h1,
+        .admin-sidebar-header p {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        /* Two-column admin pages: allow columns to shrink below content intrinsic width */
+        .admin-grid-2 {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+            gap: 24px;
+            align-items: start;
+            width: 100%;
+        }
+
+        .admin-grid-2 > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 960px) {
+            .admin-grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .admin-prose {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            max-width: 100%;
+            hyphens: auto;
+        }
+
+        .admin-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+
+        .admin-header-row > div:first-child {
+            min-width: 0;
+            flex: 1 1 240px;
+        }
+
+        .admin-header-row h1,
+        .admin-header-row p {
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .admin-content {
@@ -175,6 +238,9 @@
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 24px;
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .admin-btn {
@@ -239,6 +305,9 @@
         .admin-table td {
             padding: 16px 12px;
             border-bottom: 1px solid var(--admin-border);
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            vertical-align: top;
         }
 
         .admin-table tbody tr:hover {
@@ -325,6 +394,8 @@
             border-radius: 8px;
             margin-bottom: 24px;
             border: 1px solid;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .admin-alert-success {
@@ -347,7 +418,7 @@
             <div class="admin-sidebar-header">
                 <h1>{{ __('Admin Panel') }}</h1>
                 <p>{{ auth()->user()->name }}</p>
-                <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:16px; align-items:flex-start;">
+                <div style="margin-top:12px; display:grid; grid-template-columns:1fr; gap:12px;">
                     <form id="admin-locale-form" method="POST" action="{{ route('language.switch') }}" style="flex:1; min-width:0;">
                         @csrf
                         <label for="admin-locale" style="font-size:12px; color:var(--admin-text-muted); text-transform:uppercase; letter-spacing:0.06em;">{{ __('Language') }}</label>

@@ -1,3 +1,7 @@
+@import './tokens.css';
+@import './site.css';
+@import './simulation-show.css';
+
 @font-face {
 	font-family: 'Aptos Display';
 	font-style: normal;
@@ -6,14 +10,19 @@
 	font-display: swap;
 }
 
+:root {
+	--font-family-heading: 'Aptos Display', "Orbitron", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+		"Helvetica Neue", Arial;
+}
+
 .home-hero-title {
-	font-family: 'Aptos Display', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+	font-family: 'Aptos Display', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+		"Noto Sans";
 	font-weight: 700;
 	line-height: 1.05;
 	letter-spacing: -0.01em;
 }
 
 .hero-subtitle {
-	/* slightly tighter spacing for subtitle */
 	letter-spacing: -0.005em;
 }

@@ -9,7 +9,7 @@
 			<h1 style="margin:0;">{{ __('Two-Factor Authentication') }}</h1>
 			<p style="margin:6px 0 0; color:var(--c-on-surface-2);">{{ __('Add an extra layer of security to your account.') }}</p>
 		</div>
-		<a class="btn btn-outline" href="{{ route('settings') }}">← {{ __('Back') }}</a>
+		<a class="btn btn-secondary" href="{{ route('settings') }}">← {{ __('Back') }}</a>
 	</header>
 
 	@if ($user->hasTwoFactorEnabled())
@@ -39,7 +39,7 @@
 
 			<form method="POST" action="{{ route('two-factor.recovery-codes') }}" style="margin-top:8px;">
 				@csrf
-				<button type="submit" class="btn btn-outline">{{ __('Regenerate Recovery Codes') }}</button>
+				<button type="submit" class="btn btn-secondary">{{ __('Regenerate Recovery Codes') }}</button>
 			</form>
 		</article>
 

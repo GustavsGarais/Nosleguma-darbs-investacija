@@ -21,8 +21,12 @@ Route::get('/quick-tour', function () {
 Route::post('/language', [LanguageController::class, 'switch'])->name('language.switch');
 
 // Public support (no login required)
-Route::get('/support', [TwoFactorRecoveryRequestController::class, 'create'])->name('support.create');
-Route::post('/support', [TwoFactorRecoveryRequestController::class, 'store'])->name('support.store');
+Route::get('/support', [TwoFactorRecoveryRequestController::class, 'create'])
+    ->middleware('throttle:two-factor-recovery-support-page')
+    ->name('support.create');
+Route::post('/support', [TwoFactorRecoveryRequestController::class, 'store'])
+    ->middleware('throttle:two-factor-recovery-support-submit')
+    ->name('support.store');
 Route::get('/support/thanks', function () {
     return view('support.two-factor-recovery-thanks');
 })->name('support.thanks');
@@ -34,12 +38,12 @@ Route::middleware(['auth'])->group(function () {
     
     // Simulation routes
     Route::resource('simulations', SimulationController::class);
-    Route::post('/simulations/{simulation}/run', [SimulationController::class, 'run'])->name('simulations.run');
     Route::post('/simulations/{simulation}/snapshot', [SimulationController::class, 'snapshot'])->name('simulations.snapshot');
 
     // Settings
     Route::get('/settings', [ProfileController::class, 'edit'])->name('settings');
     Route::patch('/settings/profile', [ProfileController::class, 'update'])->name('settings.profile');
+    Route::patch('/settings/currency', [ProfileController::class, 'updateCurrency'])->name('settings.currency');
     Route::patch('/settings/password', [\App\Http\Controllers\Auth\PasswordController::class, 'update'])->name('settings.password');
     Route::delete('/settings', [ProfileController::class, 'destroy'])->name('settings.destroy');
     

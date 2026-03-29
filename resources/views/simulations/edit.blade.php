@@ -6,7 +6,7 @@
 <section class="auth-card" aria-label="{{ __('Edit Simulation') }}">
     <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
         <h1 style="margin:0;">{{ __('Edit Simulation') }}</h1>
-        <a class="btn btn-outline" href="{{ route('simulations.index', ['simulation' => $simulation->id]) }}">{{ __('Back') }}</a>
+        <a class="btn btn-secondary" href="{{ route('simulations.show', $simulation) }}">{{ __('Back') }}</a>
     </div>
 
     @if ($errors->any())
@@ -80,7 +80,7 @@
         </div>
 
         <div style="display:flex; gap:12px;">
-            <a href="{{ route('simulations.index', ['simulation' => $simulation->id]) }}" class="btn btn-outline">{{ __('Cancel') }}</a>
+            <a href="{{ route('simulations.show', $simulation) }}" class="btn btn-outline">{{ __('Cancel') }}</a>
             <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
         </div>
     </form>

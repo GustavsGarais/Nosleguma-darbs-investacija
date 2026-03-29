@@ -5,7 +5,7 @@
             $showThemeToggle = !request()->is('admin*');
         @endphp
 
-        <a href="{{ url('/') }}">
+        <a href="{{ url('/') }}" class="navigation__brand">
             <div aria-label="{{ config('app.name') }}" class="navigation__logo">
                 <div class="navigation__logo-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -25,7 +25,7 @@
                 @auth
                     <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                         @csrf
-                        <button type="submit" class="btn btn-outline" style="display:flex; align-items:center; gap:8px; padding:8px 16px; border-color:var(--c-border); color:var(--c-on-surface);">
+                        <button type="submit" class="btn btn-secondary" style="display:flex; align-items:center; gap:8px; padding:8px 16px;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                 <polyline points="16 17 21 12 16 7"></polyline>
@@ -35,15 +35,9 @@
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}">
-                        <div class="navigation__action-link">
-                            <span>{{ __('Log In') }}</span>
-                        </div>
-                    </a>
-                    <a href="{{ route('register') }}">
-                        <div class="btn btn-primary">
-                            <span>{{ __('Get Started') }}</span>
-                        </div>
+                    <a href="{{ route('login') }}" class="btn btn-outline navigation__login">{{ __('Log In') }}</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary">
+                        <span>{{ __('Get Started') }}</span>
                     </a>
                 @endauth
             </div>
@@ -130,7 +124,7 @@
                             ];
                         @endphp
                         <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
-                            <span style="font-size:12px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--c-muted);">{{ __('Language') }}</span>
+                            <span style="font-size:12px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--c-on-surface-2);">{{ __('Language') }}</span>
                             <div style="display:flex; gap:6px;">
                                 @foreach ($supportedLocales as $localeCode => $label)
                                     <form method="POST" action="{{ route('language.switch') }}" style="margin:0;">
@@ -169,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.style.overflow = !isExpanded ? "hidden" : "";
         });
 
-        const navigationLinks = navigationMenu.querySelectorAll(".navigation__link, .navigation__action-link, .btn");
+        const navigationLinks = navigationMenu.querySelectorAll(".navigation__link, .btn");
         navigationLinks.forEach((link) => {
             link.addEventListener("click", () => {
                 navigationToggle.setAttribute("aria-expanded", "false");

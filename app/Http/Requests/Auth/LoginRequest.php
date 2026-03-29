@@ -20,6 +20,20 @@ class LoginRequest extends FormRequest
     }
 
     /**
+     * Normalize credentials (email case; password is not trimmed by global middleware).
+     */
+    protected function prepareForValidation(): void
+    {
+        $email = $this->input('email');
+        $password = $this->input('password');
+
+        $this->merge([
+            'email' => is_string($email) ? Str::lower(trim($email)) : $email,
+            'password' => is_string($password) ? trim($password) : $password,
+        ]);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>

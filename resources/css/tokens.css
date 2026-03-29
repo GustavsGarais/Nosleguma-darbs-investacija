@@ -1,0 +1,67 @@
+/**
+ * Single source of design tokens (light + dark).
+ * Replaces duplicate :root blocks from legacy public CSS files.
+ */
+:root {
+	--c-surface: #ffffff;
+	--c-on-surface: #0f172a;
+	--c-on-surface-2: #374151;
+	--c-link: #068a4f;
+	--c-link-hover: #056b3f;
+	--c-primary: #07a05a;
+	--c-primary-700: #068a4f;
+	--c-secondary: #d98e12;
+	--c-accent: #00ffd1;
+	--c-border: #e5e7eb;
+	--shadow-1: 0 4px 16px rgba(0, 0, 0, 0.06);
+	--shadow-2: 0 8px 32px rgba(0, 0, 0, 0.1);
+	--r-sm: 6px;
+	--r-md: 10px;
+	--r-lg: 14px;
+	--space-xs: 0.375rem;
+	--space-sm: 0.5rem;
+	--space-md: 0.75rem;
+	--space-lg: 1rem;
+	--space-xl: 1.5rem;
+	--space-2xl: 2rem;
+	--space-3xl: 3rem;
+	--maxw: 1280px;
+	--nav-h: 64px;
+	--font-family-body: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+		"Helvetica Neue", Arial, "Noto Sans";
+	--font-family-heading: "Orbitron", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+		"Helvetica Neue", Arial; /* Aptos prepended in app.css after @font-face */
+	--section-gap: clamp(2rem, 5vw, 6rem);
+	--content-max-width: 84rem;
+	/* Aliases for older rules that still reference --color-* */
+	--color-primary: var(--c-primary);
+	--color-secondary: var(--c-secondary);
+	--color-surface: var(--c-surface);
+	--color-on-surface: var(--c-on-surface);
+	--color-on-surface-secondary: var(--c-on-surface-2);
+	--color-on-primary: #ffffff;
+	--color-border: var(--c-border);
+	--color-accent: var(--c-accent);
+}
+
+[data-theme="dark"] {
+	--c-surface: #0b1220;
+	--c-on-surface: #e5ecf6;
+	--c-on-surface-2: #c7d2fe;
+	--c-link: #a78bfa;
+	--c-link-hover: #c4b5fd;
+	--c-primary: #7c3aed;
+	--c-primary-700: #6d28d9;
+	--c-secondary: #f59e0b;
+	--c-accent: #a78bfa;
+	--c-border: #1f2937;
+	--shadow-1: 0 4px 16px rgba(0, 0, 0, 0.5);
+	--shadow-2: 0 8px 32px rgba(0, 0, 0, 0.6);
+	--color-primary: var(--c-primary);
+	--color-secondary: var(--c-secondary);
+	--color-surface: var(--c-surface);
+	--color-on-surface: var(--c-on-surface);
+	--color-on-surface-secondary: var(--c-on-surface-2);
+	--color-border: var(--c-border);
+	--color-accent: var(--c-accent);
+}
