@@ -91,10 +91,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
-    const getStep = (elapsedMs) => {
-        if (elapsedMs >= 4000) return 1;
-        if (elapsedMs >= 2000) return 0.1;
-        return 0.01;
+    const deltaHundredths = (elapsedMs) => {
+        if (elapsedMs >= 4000) return 100;
+        if (elapsedMs >= 2000) return 10;
+        return 1;
     };
     const setupAccel = (container) => {
         const input = container.querySelector('input[data-accel="percent"]');
@@ -104,23 +104,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const min = Number(input.min ?? 0);
         const max = Number(input.max ?? 100);
+        const scale = 100;
+        const minInt = Math.round(min * scale);
+        const maxInt = Math.round(max * scale);
         let timer = null;
         let start = 0;
+        let holdInt = 0;
+        let holdDir = 1;
 
-        const tick = (dir) => {
+        const applyStep = () => {
             const elapsed = Date.now() - start;
-            const step = getStep(elapsed) * dir;
-            const current = Number(input.value || 0);
-            const next = clamp(Math.round((current + step) * 100) / 100, min, max);
+            const d = deltaHundredths(elapsed) * holdDir;
+            holdInt = clamp(holdInt + d, minInt, maxInt);
+            const next = holdInt / scale;
             input.value = next.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
             input.dispatchEvent(new Event('input', { bubbles: true }));
         };
 
         const startHold = (dir) => {
             if (timer) clearInterval(timer);
+            holdDir = dir;
             start = Date.now();
-            tick(dir);
-            timer = setInterval(() => tick(dir), 50);
+            const raw = Number(String(input.value || 0).replace(',', '.')) || 0;
+            holdInt = Math.round(raw * scale);
+            holdInt = clamp(holdInt, minInt, maxInt);
+            applyStep();
+            timer = setInterval(applyStep, 50);
         };
 
         const stopHold = () => {

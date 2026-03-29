@@ -204,25 +204,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let timer = null;
         let start = 0;
+        /** While button held: value kept as integer × scale (no float += from input each frame). */
+        let holdInt = 0;
+        let holdDir = 1;
+        const scale = decimals > 0 ? Math.pow(10, decimals) : 1;
+        const minInt = Number.isFinite(min) ? Math.round(min * scale) : -Number.MAX_SAFE_INTEGER;
+        const maxInt = Number.isFinite(max) ? Math.round(max * scale) : Number.MAX_SAFE_INTEGER;
 
-        const tick = (dir) => {
+        const applyStep = () => {
             const elapsed = Date.now() - start;
-            const step = computeStep(elapsed, baseStep, mode) * dir;
-            const current = Number(input.value || 0);
-            const nextRaw = clamp(current + step, min, max);
-
-            const factor = decimals > 0 ? Math.pow(10, decimals) : 1;
-            const next = decimals > 0 ? Math.round(nextRaw * factor) / factor : Math.round(nextRaw);
-
-            input.value = formatValue(next, decimals);
+            const mag = computeStep(elapsed, baseStep, mode);
+            const deltaInt = mode === 'int'
+                ? Math.round(mag) * holdDir
+                : Math.round(mag * scale) * holdDir;
+            holdInt = clamp(holdInt + deltaInt, minInt, maxInt);
+            const next = holdInt / scale;
+            input.value = mode === 'int'
+                ? String(holdInt)
+                : formatValue(next, decimals);
             input.dispatchEvent(new Event('input', { bubbles: true }));
         };
 
         const startHold = (dir) => {
             if (timer) clearInterval(timer);
+            holdDir = dir;
             start = Date.now();
-            tick(dir);
-            timer = setInterval(() => tick(dir), 50);
+            const raw = Number(String(input.value || 0).replace(',', '.')) || 0;
+            holdInt = mode === 'int'
+                ? Math.round(raw)
+                : Math.round(raw * scale);
+            holdInt = clamp(holdInt, minInt, maxInt);
+            applyStep();
+            timer = setInterval(applyStep, 50);
         };
 
         const stopHold = () => {
