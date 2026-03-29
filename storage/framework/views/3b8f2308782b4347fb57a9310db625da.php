@@ -2,7 +2,7 @@
     $serverCurrencyPreference = $serverCurrencyPreference
         ?? (auth()->check() ? auth()->user()->currency_preference : null);
 ?>
-<?php if (! $__env->hasRenderedOnce('d9bfc018-0027-449e-8a33-0ddab453bc6d')): $__env->markAsRenderedOnce('d9bfc018-0027-449e-8a33-0ddab453bc6d'); ?>
+<?php if (! $__env->hasRenderedOnce('98fc5e02-047c-4167-83de-f8415debfa7f')): $__env->markAsRenderedOnce('98fc5e02-047c-4167-83de-f8415debfa7f'); ?>
 <?php $__env->startPush('scripts'); ?>
 <script>
 window.__NOS_SERVER_CURRENCY__ = <?php echo json_encode($serverCurrencyPreference, 15, 512) ?>;

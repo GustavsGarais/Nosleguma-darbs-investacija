@@ -362,11 +362,49 @@
 
         .admin-stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 32px;
             align-items: stretch;
             width: 100%;
+            /* Six KPI cards: use fixed column counts so rows stay full at any zoom (auto-fit often yields 4+2 and empty tracks). */
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        @media (min-width: 520px) {
+            .admin-stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (min-width: 900px) {
+            .admin-stats-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        /* Odd counts (e.g. 5 ticket KPIs): flex so the last row stretches evenly at any zoom */
+        .admin-stats-grid--flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .admin-stats-grid--flex .admin-stat-card {
+            flex: 1 1 170px;
+            min-width: min(100%, 160px);
+        }
+
+        .admin-user-detail-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 24px;
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        @media (min-width: 768px) {
+            .admin-user-detail-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
         }
 
         .admin-stat-card {

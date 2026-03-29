@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Edit User'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -40,15 +38,12 @@
             </div>
 
             <div>
-                <label for="email" style="display: block; margin-bottom: 6px; font-weight: 500;">Email</label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    value="<?php echo e(old('email', $user->email)); ?>" 
-                    required
-                    class="admin-input"
-                >
+                <p style="margin: 0 0 6px; font-weight: 500;">Email</p>
+                <div class="admin-input" style="margin: 0; background: color-mix(in srgb, var(--admin-surface-light) 85%, var(--admin-border)); cursor: default;">
+                    <?php echo e($user->email); ?>
+
+                </div>
+                <p style="margin: 8px 0 0; font-size: 13px; color: var(--admin-text-muted);"><?php echo e(__('Administrators cannot change a user\'s email address.')); ?></p>
             </div>
 
             <div>

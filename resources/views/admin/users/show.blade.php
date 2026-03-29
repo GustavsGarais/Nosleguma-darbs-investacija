@@ -14,69 +14,61 @@
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 24px;">
+<div class="admin-user-detail-grid">
     <div class="admin-card">
-        <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">User Information</h2>
-        <div style="display: grid; gap: 12px;">
-            <div>
-                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Name</p>
-                <p style="margin: 0; font-weight: 600;">{{ $user->name }}</p>
-            </div>
-            <div>
-                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Email</p>
-                <p style="margin: 0; font-weight: 600;">{{ $user->email }}</p>
-            </div>
-            <div>
-                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Role</p>
-                <p style="margin: 0;">
-                    @if($user->is_admin)
-                        <span class="admin-badge" style="background: var(--admin-primary)20; color: var(--admin-primary);">Admin</span>
-                    @else
-                        <span class="admin-badge" style="background: var(--admin-border); color: var(--admin-text-muted);">User</span>
-                    @endif
-                </p>
-            </div>
-            <div>
-                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Member Since</p>
-                <p style="margin: 0; font-weight: 600;">{{ $user->created_at->format('F d, Y') }}</p>
-                <p style="margin: 4px 0 0; font-size: 12px; color: var(--admin-text-muted);">{{ $user->created_at->diffForHumans() }}</p>
-            </div>
-            <div>
-                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Tutorial Completed</p>
-                <p style="margin: 0;">
-                    @if($user->tutorial_completed)
-                        <span style="color: var(--admin-success); font-weight: 600;">Yes</span>
-                    @else
-                        <span style="color: var(--admin-text-muted);">No</span>
-                    @endif
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="admin-card">
-        <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">Two-Factor Authentication</h2>
-        <div style="display: grid; gap: 12px;">
-            <div>
-                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Status</p>
-                @if($user->hasTwoFactorEnabled())
-                    <span class="admin-badge" style="background: #10b98120; color: #10b981;">Enabled</span>
-                @else
-                    <span class="admin-badge" style="background: var(--admin-border); color: var(--admin-text-muted);">Disabled</span>
-                @endif
-            </div>
-
-            @if($user->hasTwoFactorEnabled() && $user->id !== auth()->id())
+        <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">{{ __('User information & security') }}</h2>
+        <div style="display: grid; gap: 16px;">
+            <div style="display: grid; gap: 12px;">
                 <div>
-                    <p style="margin: 0 0 8px; font-size: 13px; color: var(--admin-text-muted); line-height:1.5;">
-                        Disable 2FA clears the user's 2FA secret so they can log in again.
-                    </p>
-                    <form method="POST" action="{{ route('admin.users.disableTwoFactor', $user) }}" onsubmit="return confirm('Disable 2FA for this user?');">
-                        @csrf
-                        <button type="submit" class="admin-btn admin-btn-danger" style="width:100%;">Disable 2FA</button>
-                    </form>
+                    <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Name</p>
+                    <p style="margin: 0; font-weight: 600;">{{ $user->name }}</p>
                 </div>
-            @endif
+                <div>
+                    <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Email</p>
+                    <p style="margin: 0; font-weight: 600;">{{ $user->email }}</p>
+                </div>
+                <div>
+                    <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Role</p>
+                    <p style="margin: 0;">
+                        @if($user->is_admin)
+                            <span class="admin-badge" style="background: var(--admin-primary)20; color: var(--admin-primary);">Admin</span>
+                        @else
+                            <span class="admin-badge" style="background: var(--admin-border); color: var(--admin-text-muted);">User</span>
+                        @endif
+                    </p>
+                </div>
+                <div>
+                    <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Member Since</p>
+                    <p style="margin: 0; font-weight: 600;">{{ $user->created_at->format('F d, Y') }}</p>
+                    <p style="margin: 4px 0 0; font-size: 12px; color: var(--admin-text-muted);">{{ $user->created_at->diffForHumans() }}</p>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--admin-border); padding-top: 16px;">
+                <h3 style="margin: 0 0 12px; font-size: 15px; font-weight: 600;">{{ __('Two-Factor Authentication') }}</h3>
+                <div style="display: grid; gap: 12px;">
+                    <div>
+                        <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Status</p>
+                        @if($user->hasTwoFactorEnabled())
+                            <span class="admin-badge" style="background: #10b98120; color: #10b981;">Enabled</span>
+                        @else
+                            <span class="admin-badge" style="background: var(--admin-border); color: var(--admin-text-muted);">Disabled</span>
+                        @endif
+                    </div>
+
+                    @if($user->hasTwoFactorEnabled() && $user->id !== auth()->id())
+                        <div>
+                            <p style="margin: 0 0 8px; font-size: 13px; color: var(--admin-text-muted); line-height:1.5;">
+                                {{ __('Disabling 2FA clears the user\'s secret so they can sign in again without an authenticator code.') }}
+                            </p>
+                            <form method="POST" action="{{ route('admin.users.disableTwoFactor', $user) }}" onsubmit="return confirm('{{ __('Disable 2FA for this user?') }}');">
+                                @csrf
+                                <button type="submit" class="admin-btn admin-btn-danger" style="width:100%;">{{ __('Disable 2FA') }}</button>
+                            </form>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 

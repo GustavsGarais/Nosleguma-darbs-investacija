@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'User Details'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -14,69 +12,62 @@
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 24px;">
+<div class="admin-user-detail-grid">
     <div class="admin-card">
-        <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">User Information</h2>
-        <div style="display: grid; gap: 12px;">
-            <div>
-                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Name</p>
-                <p style="margin: 0; font-weight: 600;"><?php echo e($user->name); ?></p>
-            </div>
-            <div>
-                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Email</p>
-                <p style="margin: 0; font-weight: 600;"><?php echo e($user->email); ?></p>
-            </div>
-            <div>
-                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Role</p>
-                <p style="margin: 0;">
-                    <?php if($user->is_admin): ?>
-                        <span class="admin-badge" style="background: var(--admin-primary)20; color: var(--admin-primary);">Admin</span>
-                    <?php else: ?>
-                        <span class="admin-badge" style="background: var(--admin-border); color: var(--admin-text-muted);">User</span>
-                    <?php endif; ?>
-                </p>
-            </div>
-            <div>
-                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Member Since</p>
-                <p style="margin: 0; font-weight: 600;"><?php echo e($user->created_at->format('F d, Y')); ?></p>
-                <p style="margin: 4px 0 0; font-size: 12px; color: var(--admin-text-muted);"><?php echo e($user->created_at->diffForHumans()); ?></p>
-            </div>
-            <div>
-                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Tutorial Completed</p>
-                <p style="margin: 0;">
-                    <?php if($user->tutorial_completed): ?>
-                        <span style="color: var(--admin-success); font-weight: 600;">Yes</span>
-                    <?php else: ?>
-                        <span style="color: var(--admin-text-muted);">No</span>
-                    <?php endif; ?>
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="admin-card">
-        <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">Two-Factor Authentication</h2>
-        <div style="display: grid; gap: 12px;">
-            <div>
-                <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Status</p>
-                <?php if($user->hasTwoFactorEnabled()): ?>
-                    <span class="admin-badge" style="background: #10b98120; color: #10b981;">Enabled</span>
-                <?php else: ?>
-                    <span class="admin-badge" style="background: var(--admin-border); color: var(--admin-text-muted);">Disabled</span>
-                <?php endif; ?>
-            </div>
-
-            <?php if($user->hasTwoFactorEnabled() && $user->id !== auth()->id()): ?>
+        <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;"><?php echo e(__('User information & security')); ?></h2>
+        <div style="display: grid; gap: 16px;">
+            <div style="display: grid; gap: 12px;">
                 <div>
-                    <p style="margin: 0 0 8px; font-size: 13px; color: var(--admin-text-muted); line-height:1.5;">
-                        Disable 2FA clears the user's 2FA secret so they can log in again.
-                    </p>
-                    <form method="POST" action="<?php echo e(route('admin.users.disableTwoFactor', $user)); ?>" onsubmit="return confirm('Disable 2FA for this user?');">
-                        <?php echo csrf_field(); ?>
-                        <button type="submit" class="admin-btn admin-btn-danger" style="width:100%;">Disable 2FA</button>
-                    </form>
+                    <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Name</p>
+                    <p style="margin: 0; font-weight: 600;"><?php echo e($user->name); ?></p>
                 </div>
-            <?php endif; ?>
+                <div>
+                    <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Email</p>
+                    <p style="margin: 0; font-weight: 600;"><?php echo e($user->email); ?></p>
+                </div>
+                <div>
+                    <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Role</p>
+                    <p style="margin: 0;">
+                        <?php if($user->is_admin): ?>
+                            <span class="admin-badge" style="background: var(--admin-primary)20; color: var(--admin-primary);">Admin</span>
+                        <?php else: ?>
+                            <span class="admin-badge" style="background: var(--admin-border); color: var(--admin-text-muted);">User</span>
+                        <?php endif; ?>
+                    </p>
+                </div>
+                <div>
+                    <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Member Since</p>
+                    <p style="margin: 0; font-weight: 600;"><?php echo e($user->created_at->format('F d, Y')); ?></p>
+                    <p style="margin: 4px 0 0; font-size: 12px; color: var(--admin-text-muted);"><?php echo e($user->created_at->diffForHumans()); ?></p>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--admin-border); padding-top: 16px;">
+                <h3 style="margin: 0 0 12px; font-size: 15px; font-weight: 600;"><?php echo e(__('Two-Factor Authentication')); ?></h3>
+                <div style="display: grid; gap: 12px;">
+                    <div>
+                        <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">Status</p>
+                        <?php if($user->hasTwoFactorEnabled()): ?>
+                            <span class="admin-badge" style="background: #10b98120; color: #10b981;">Enabled</span>
+                        <?php else: ?>
+                            <span class="admin-badge" style="background: var(--admin-border); color: var(--admin-text-muted);">Disabled</span>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if($user->hasTwoFactorEnabled() && $user->id !== auth()->id()): ?>
+                        <div>
+                            <p style="margin: 0 0 8px; font-size: 13px; color: var(--admin-text-muted); line-height:1.5;">
+                                <?php echo e(__('Disabling 2FA clears the user\'s secret so they can sign in again without an authenticator code.')); ?>
+
+                            </p>
+                            <form method="POST" action="<?php echo e(route('admin.users.disableTwoFactor', $user)); ?>" onsubmit="return confirm('<?php echo e(__('Disable 2FA for this user?')); ?>');">
+                                <?php echo csrf_field(); ?>
+                                <button type="submit" class="admin-btn admin-btn-danger" style="width:100%;"><?php echo e(__('Disable 2FA')); ?></button>
+                            </form>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 <head>
-    <title><?php echo e(__('Admin Panel')); ?> - <?php echo e(config('app.name')); ?></title>
+    <title><?php echo e(__('Admin Panel')); ?> | <?php echo e(config('app.name')); ?></title>
+    <meta name="application-name" content="<?php echo e(config('app.name')); ?>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <meta name="theme-color" content="#07a05a" />
+    <link rel="icon" href="<?php echo e(asset('favicon.svg')); ?>" type="image/svg+xml" />
+    <link rel="icon" href="<?php echo e(asset('favicon.ico')); ?>" sizes="any" />
+    <link rel="manifest" href="<?php echo e(asset('site.webmanifest')); ?>" />
     
     <!-- Styles (same token + site bundle as main app) -->
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css']); ?>
@@ -357,11 +362,49 @@
 
         .admin-stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 32px;
             align-items: stretch;
             width: 100%;
+            /* Six KPI cards: use fixed column counts so rows stay full at any zoom (auto-fit often yields 4+2 and empty tracks). */
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        @media (min-width: 520px) {
+            .admin-stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (min-width: 900px) {
+            .admin-stats-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        /* Odd counts (e.g. 5 ticket KPIs): flex so the last row stretches evenly at any zoom */
+        .admin-stats-grid--flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .admin-stats-grid--flex .admin-stat-card {
+            flex: 1 1 170px;
+            min-width: min(100%, 160px);
+        }
+
+        .admin-user-detail-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 24px;
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        @media (min-width: 768px) {
+            .admin-user-detail-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
         }
 
         .admin-stat-card {

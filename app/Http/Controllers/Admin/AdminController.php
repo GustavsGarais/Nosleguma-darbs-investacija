@@ -119,12 +119,10 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'is_admin' => 'boolean',
         ]);
 
         $user->name = $validated['name'];
-        $user->email = $validated['email'];
         $user->is_admin = $request->has('is_admin') ? (bool)$request->is_admin : false;
 
         $user->save();

@@ -1,5 +1,3 @@
-
-
 <?php
     $simulationRunnerConfig = [
         'snapshotUrl' => route('simulations.snapshot', $simulation),

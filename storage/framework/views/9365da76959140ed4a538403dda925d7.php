@@ -1,12 +1,10 @@
-
-
 <?php $__env->startSection('title', __('Report an Issue')); ?>
 
 <?php $__env->startSection('dashboard_content'); ?>
 <section class="auth-card" aria-label="<?php echo e(__('Report an Issue')); ?>">
     <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
         <h1 style="margin:0;"><?php echo e(__('Report an Issue')); ?></h1>
-        <a href="<?php echo e(route('tickets.index')); ?>" class="btn btn-outline"><?php echo e(__('View My Tickets')); ?></a>
+        <a href="<?php echo e(route('tickets.index')); ?>" class="btn btn-secondary"><?php echo e(__('View My Tickets')); ?></a>
     </div>
 
     <?php if($errors->any()): ?>

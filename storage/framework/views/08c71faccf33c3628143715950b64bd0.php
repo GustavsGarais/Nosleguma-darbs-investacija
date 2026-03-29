@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Ticket #' . $ticket->id); ?>
 
 <?php $__env->startSection('content'); ?>

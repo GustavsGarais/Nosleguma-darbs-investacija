@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Support Tickets'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -38,7 +36,7 @@
         <?php endif; ?>
     </form>
 
-    <div class="admin-stats-grid" style="margin-bottom: 24px;">
+    <div class="admin-stats-grid admin-stats-grid--flex" style="margin-bottom: 24px;">
         <div class="admin-stat-card">
             <div class="admin-stat-label">Total</div>
             <div class="admin-stat-value"><?php echo e($stats['total']); ?></div>

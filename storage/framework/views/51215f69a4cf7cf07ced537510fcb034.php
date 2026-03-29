@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('content'); ?>
 <div class="dashboard-shell">
     <aside class="dashboard-sidebar auth-card" aria-label="<?php echo e(__('Sidebar navigation')); ?>">
