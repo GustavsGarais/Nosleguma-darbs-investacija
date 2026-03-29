@@ -1,0 +1,221 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Simulation;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
+class SimulationController extends Controller
+{
+    use AuthorizesRequests;
+
+    private function percentToDecimal(float|int|string $value, float $fallback = 0.0): float
+    {
+        if (is_string($value)) {
+            $value = preg_replace('/[^0-9.\-]/', '', $value);
+        }
+        $num = is_numeric($value) ? (float) $value : $fallback;
+        $num = max(0.0, min(100.0, $num));
+        return $num / 100.0;
+    }
+
+    public function index(Request $request): View
+    {
+        $simulations = auth()->user()->simulations()->latest()->paginate(10);
+        $simulation = null;
+
+        if ($request->has('simulation')) {
+            $simulation = auth()->user()->simulations()->find($request->simulation);
+        }
+
+        return view('simulations.index', compact('simulations', 'simulation'));
+    }
+
+    public function create(): View
+    {
+        return view('simulations.create');
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:30',
+            'initial_investment' => 'required|numeric|min:0',
+            'monthly_contribution' => 'required|numeric|min:0',
+            // UI uses percent (0-100). Stored as decimal (0-1).
+            'growth_rate' => 'required|numeric|min:0|max:100',
+            'risk_appetite' => 'required|numeric|min:0|max:100',
+            'market_influence' => 'required|numeric|min:0|max:100',
+            'inflation_rate' => 'required|numeric|min:0|max:100',
+            'investors' => 'required|integer|min:1'
+        ]);
+
+        auth()->user()->simulations()->create([
+            'name' => $validated['name'],
+            'settings' => [
+                'initialInvestment' => $validated['initial_investment'],
+                'monthlyContribution' => $validated['monthly_contribution'],
+                'growthRate' => $this->percentToDecimal($validated['growth_rate'], 7.0),
+                'riskAppetite' => $this->percentToDecimal($validated['risk_appetite'], 50.0),
+                'marketInfluence' => $this->percentToDecimal($validated['market_influence'], 50.0),
+                'inflationRate' => $this->percentToDecimal($validated['inflation_rate'], 2.0),
+                'investors' => $validated['investors']
+            ]
+        ]);
+
+        return redirect()->route('simulations.index')
+            ->with('success', 'Simulation created successfully!');
+    }
+
+    public function show(Simulation $simulation): View
+    {
+        $this->authorize('view', $simulation);
+        return view('simulations.show', compact('simulation'));
+    }
+
+    public function edit(Simulation $simulation): View
+    {
+        $this->authorize('update', $simulation);
+        return view('simulations.edit', compact('simulation'));
+    }
+
+    public function update(Request $request, Simulation $simulation): RedirectResponse
+    {
+        $this->authorize('update', $simulation);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:30',
+            'initial_investment' => 'required|numeric|min:0',
+            'monthly_contribution' => 'required|numeric|min:0',
+            // UI uses percent (0-100). Stored as decimal (0-1).
+            'growth_rate' => 'required|numeric|min:0|max:100',
+            'risk_appetite' => 'required|numeric|min:0|max:100',
+            'market_influence' => 'required|numeric|min:0|max:100',
+            'inflation_rate' => 'required|numeric|min:0|max:100',
+            'investors' => 'required|integer|min:1'
+        ]);
+
+        $simulation->update([
+            'name' => $validated['name'],
+            'settings' => [
+                'initialInvestment' => $validated['initial_investment'],
+                'monthlyContribution' => $validated['monthly_contribution'],
+                'growthRate' => $this->percentToDecimal($validated['growth_rate'], 7.0),
+                'riskAppetite' => $this->percentToDecimal($validated['risk_appetite'], 50.0),
+                'marketInfluence' => $this->percentToDecimal($validated['market_influence'], 50.0),
+                'inflationRate' => $this->percentToDecimal($validated['inflation_rate'], 2.0),
+                'investors' => $validated['investors']
+            ]
+        ]);
+
+        return redirect()->route('simulations.show', $simulation)
+            ->with('success', 'Simulation updated successfully!');
+    }
+
+    public function destroy(Simulation $simulation): RedirectResponse
+    {
+        $this->authorize('delete', $simulation);
+        
+        $simulation->delete();
+
+        return redirect()->route('simulations.index')
+            ->with('success', 'Simulation deleted successfully!');
+    }
+
+    public function run(Request $request, Simulation $simulation)
+    {
+        $this->authorize('update', $simulation);
+
+        $validated = $request->validate([
+            'months' => 'nullable|integer|min:12|max:600',
+        ]);
+
+        $months = $validated['months'] ?? 120;
+        $settings = $simulation->settings;
+        
+        $results = $this->calculateSimulation($settings, $months);
+        
+        $simulation->update(['data' => $results]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $results
+        ]);
+    }
+
+    public function snapshot(Request $request, Simulation $simulation)
+    {
+        $this->authorize('update', $simulation);
+
+        $validated = $request->validate([
+            'month' => 'required|integer|min:0',
+            'value' => 'required|numeric|min:0',
+            'real_value' => 'required|numeric|min:0',
+            'contributions' => 'required|numeric|min:0',
+            'total_gain' => 'required|numeric',
+            'currency' => 'nullable|string|in:EUR,USD,GBP,JPY',
+        ]);
+
+        $data = $simulation->data ?? [];
+        $data['snapshot'] = [
+            'month' => $validated['month'],
+            'value' => round($validated['value'], 2),
+            'real_value' => round($validated['real_value'], 2),
+            'contributions' => round($validated['contributions'], 2),
+            'total_gain' => round($validated['total_gain'], 2),
+            'currency' => $validated['currency'] ?? 'EUR',
+            'captured_at' => now()->toIso8601String(),
+        ];
+
+        $simulation->update(['data' => $data]);
+
+        return response()->json([
+            'success' => true,
+            'snapshot' => $data['snapshot'],
+        ]);
+    }
+
+    private function calculateSimulation(array $settings, int $months): array
+    {
+        $currentValue = $settings['initialInvestment'];
+        $monthlyContribution = $settings['monthlyContribution'];
+        $annualReturn = $settings['growthRate'];
+        $annualInflation = $settings['inflationRate'];
+        $monthlyReturnRate = $annualReturn / 12;
+        $monthlyInflationRate = $annualInflation / 12;
+        
+        $results = [];
+
+        for ($month = 0; $month < $months; $month++) {
+            // Add monthly contribution
+            $currentValue += $monthlyContribution;
+
+            // Apply volatility based on risk and market influence
+            $randomness = (mt_rand(-1000, 1000) / 1000); // -1 to 1
+            $riskImpact = $randomness * $settings['riskAppetite'] * $settings['marketInfluence'];
+            $adjustedReturn = $monthlyReturnRate + $riskImpact;
+            
+            // Calculate interest
+            $interestEarned = $currentValue * $adjustedReturn;
+            $currentValue = max(0, $currentValue + $interestEarned);
+
+            // Calculate inflation-adjusted value
+            // Use $month + 1 because the loop starts at 0, but after 1 month we need 1 month of inflation adjustment
+            $inflationAdjusted = $currentValue / pow(1 + $monthlyInflationRate, $month + 1);
+
+            // Store result
+            $results[] = [
+                'month' => $month,
+                'value' => round($currentValue, 2),
+                'inflationAdjusted' => round($inflationAdjusted, 2),
+                'contributions' => ($month + 1) * $monthlyContribution,
+                'interestEarned' => round($interestEarned, 2)
+            ];
+        }
+
+        return $results;
+    }
+}

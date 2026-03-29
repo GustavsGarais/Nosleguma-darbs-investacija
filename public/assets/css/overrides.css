@@ -1,0 +1,39 @@
+/* Desktop overrides to ensure horizontal topbar and stable footer */
+
+@media (min-width: 992px) {
+	.navigation__menu {
+		display: flex !important;
+		align-items: center !important;
+		justify-content: flex-end !important;
+		position: static !important;
+		transform: none !important;
+		opacity: 1 !important;
+		pointer-events: auto !important;
+	}
+	.navigation__list {
+		display: flex !important;
+		flex-direction: row !important;
+		align-items: center !important;
+	}
+	.navigation__actions {
+		display: flex !important;
+		flex-direction: row !important;
+		align-items: center !important;
+	}
+}
+
+/* Footer container hardening */
+.footer-container {
+	width: 100%;
+	box-sizing: border-box;
+}
+.footer-content-wrapper {
+	max-width: var(--content-max-width);
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Ensure hero does not exceed viewport width on small CSS race conditions */
+.hero {
+	box-sizing: border-box;
+}
