@@ -6,7 +6,7 @@
 <section class="auth-card" aria-label="{{ __('Report an Issue') }}">
     <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
         <h1 style="margin:0;">{{ __('Report an Issue') }}</h1>
-        <a href="{{ route('tickets.index') }}" class="btn btn-outline">{{ __('View My Tickets') }}</a>
+        <a href="{{ route('tickets.index') }}" class="btn btn-secondary">{{ __('View My Tickets') }}</a>
     </div>
 
     @if($errors->any())

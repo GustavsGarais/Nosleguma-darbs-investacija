@@ -3,32 +3,32 @@
 @section('title', 'Ticket #' . $ticket->id)
 
 @section('content')
-<div class="admin-header" style="display: flex; justify-content: space-between; align-items: start;">
+<div class="admin-header admin-header-row">
     <div>
         <h1>Ticket #{{ $ticket->id }}</h1>
         <p>{{ $ticket->subject }}</p>
     </div>
-    <a href="{{ route('admin.tickets.index') }}" class="admin-btn admin-btn-secondary">Back to Tickets</a>
+    <a href="{{ route('admin.tickets.index') }}" class="admin-btn admin-btn-secondary" style="flex-shrink: 0;">Back to Tickets</a>
 </div>
 
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+<div class="admin-grid-2">
     <div>
         <div class="admin-card">
             <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">Ticket Details</h2>
             <div style="margin-bottom: 20px;">
                 <p style="margin: 0 0 8px; font-size: 13px; color: var(--admin-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Subject</p>
-                <p style="margin: 0; font-size: 16px; font-weight: 500;">{{ $ticket->subject }}</p>
+                <p class="admin-prose" style="margin: 0; font-size: 16px; font-weight: 500;">{{ $ticket->subject }}</p>
             </div>
             <div style="margin-bottom: 20px;">
                 <p style="margin: 0 0 8px; font-size: 13px; color: var(--admin-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Description</p>
-                <div style="padding: 16px; background: var(--admin-surface-light); border-radius: 8px; white-space: pre-wrap; line-height: 1.6;">
+                <div class="admin-prose" style="padding: 16px; background: var(--admin-surface-light); border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; line-height: 1.6;">
                     {{ $ticket->description }}
                 </div>
             </div>
             @if($ticket->admin_response)
                 <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--admin-border);">
                     <p style="margin: 0 0 8px; font-size: 13px; color: var(--admin-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Admin Response</p>
-                    <div style="padding: 16px; background: rgba(59, 130, 246, 0.1); border-left: 3px solid var(--admin-primary); border-radius: 8px; white-space: pre-wrap; line-height: 1.6;">
+                    <div class="admin-prose" style="padding: 16px; background: rgba(59, 130, 246, 0.1); border-left: 3px solid var(--admin-primary); border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; line-height: 1.6;">
                         {{ $ticket->admin_response }}
                     </div>
                 </div>

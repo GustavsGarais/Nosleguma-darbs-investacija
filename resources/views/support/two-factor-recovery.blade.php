@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Account Recovery')
+@section('title', __('Account Recovery'))
 
 @section('content')
-    <section class="auth-card" aria-label="Account Recovery">
+    <section class="auth-card" aria-label="{{ __('Account Recovery') }}">
         <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
-            <h1 style="margin:0;">Account Recovery</h1>
-            <a href="{{ url('/') }}" class="btn btn-outline">Back</a>
+            <h1 style="margin:0;">{{ __('Account Recovery') }}</h1>
+            <a href="{{ url('/') }}" class="btn btn-outline">{{ __('Back') }}</a>
         </div>
 
         <p style="margin:12px 0 0; color:var(--c-on-surface-2); font-size:14px; line-height:1.6;">
-            If you lost access to your authenticator (2FA), you can request help here. Add a description so the admin can verify your request, and include the email you used for your account.
+            {{ __('Account recovery help text') }}
         </p>
 
         @if($errors->any())
@@ -28,7 +28,7 @@
 
             <div style="display:grid; gap:16px;">
                 <div>
-                    <label for="contact_email" style="display:block; margin-bottom:6px; font-weight:600;">Email for account</label>
+                    <label for="contact_email" style="display:block; margin-bottom:6px; font-weight:600;">{{ __('Email for account') }}</label>
                     <input
                         id="contact_email"
                         name="contact_email"
@@ -42,25 +42,25 @@
                 </div>
 
                 <div>
-                    <label for="description" style="display:block; margin-bottom:6px; font-weight:600;">Description</label>
+                    <label for="description" style="display:block; margin-bottom:6px; font-weight:600;">{{ __('Description') }}</label>
                     <textarea
                         id="description"
                         name="description"
                         rows="10"
                         required
-                        maxlength="2000"
-                        placeholder="Explain that you lost 2FA access and what happened. Include any helpful details."
+                        maxlength="400"
+                        placeholder="{{ __('2FA recovery description placeholder') }}"
                         style="width:100%; padding:10px 12px; border:1px solid var(--c-border); border-radius:8px; background:var(--c-surface); color:var(--c-on-surface); font-family:inherit; resize:vertical;"
                     >{{ old('description') }}</textarea>
-                    <p style="margin:8px 0 0; font-size:13px; color:var(--c-on-surface-2);">Maximum 400 words (admin preview readability).</p>
+                    <p style="margin:8px 0 0; font-size:13px; color:var(--c-on-surface-2);">{{ __('Maximum 400 words hint') }}</p>
                 </div>
 
                 <div style="display:flex; gap:12px; flex-wrap:wrap;">
                     <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center; min-width:220px;">
-                        Submit request
+                        {{ __('Submit request') }}
                     </button>
                     <a href="{{ url('/') }}" class="btn btn-outline" style="min-width:200px; justify-content:center; display:inline-flex; align-items:center;">
-                        Cancel
+                        {{ __('Cancel') }}
                     </a>
                 </div>
             </div>

@@ -9,12 +9,18 @@
             <h1 style="margin:0;">{{ __('Account') }}</h1>
             <p style="margin:6px 0 0; color:var(--c-on-surface-2);">{{ __('Manage profile info, security, notifications, and currency in one place.') }}</p>
         </div>
-        <a class="btn btn-outline" href="{{ route('simulations.index') }}">← {{ __('Back') }}</a>
+        <a class="btn btn-secondary" href="{{ route('simulations.index') }}">← {{ __('Back') }}</a>
     </header>
 
     @if (session('status') === 'profile-updated')
         <div role="status" style="padding:12px 16px; border-radius:10px; background:color-mix(in srgb, var(--c-primary) 18%, var(--c-surface)); border:1px solid color-mix(in srgb, var(--c-primary) 35%, var(--c-border));">
             <strong>{{ __('Saved.') }}</strong> {{ __('Your account details are up to date.') }}
+        </div>
+    @endif
+
+    @if (session('status') === 'currency-updated')
+        <div role="status" style="padding:12px 16px; border-radius:10px; background:color-mix(in srgb, var(--c-primary) 18%, var(--c-surface)); border:1px solid color-mix(in srgb, var(--c-primary) 35%, var(--c-border));">
+            <strong>{{ __('Currency saved.') }}</strong> {{ __('Your display currency is synced to your account.') }}
         </div>
     @endif
 
@@ -116,7 +122,7 @@
                         <button
                             type="button"
                             id="toggle-password-form"
-                            class="btn btn-outline"
+                            class="btn btn-secondary"
                             onclick="
                                 const form = document.getElementById('change-password-form');
                                 const open = form.style.display === 'flex';
@@ -212,7 +218,7 @@
         <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
             <div style="display:flex; align-items:center; gap:6px;">
                 <h2 style="margin:0;">{{ __('Currency & Region') }}</h2>
-                <div class="info-bubble" data-tooltip="{{ __('Rates are fetched from real-time exchange rate API and refresh on load.') }}">
+                <div class="info-bubble" data-tooltip="{{ __('Your choice is saved on your account (not just this browser). Rates load from a public exchange API.') }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
                         <circle cx="12" cy="12" r="10"></circle>
                         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -306,6 +312,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const select = document.getElementById('currency-select');
     const resultEl = document.getElementById('converted-amount');
     const previewEls = document.querySelectorAll('[data-preview-base]');
+    const settingsCurrencyUrl = @json(route('settings.currency'));
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    const accountCurrency = @json($user->currency_preference ?? 'EUR');
 
     const defaultRates = { EUR: 1, USD: 1.08, GBP: 0.86, JPY: 162.5 };
     let rates = { ...defaultRates };
@@ -353,16 +362,47 @@ document.addEventListener('DOMContentLoaded', () => {
             const label = el.querySelector('.currency-preview');
             if (label) label.textContent = format(base * (rates[currency] ?? 1), currency);
         });
-        localStorage.setItem('nosleguma-currency-preference', currency);
+        try { localStorage.setItem('nosleguma-currency-preference', currency); } catch (e) {}
+    }
+
+    async function persistCurrencyPreference(currency) {
+        if (!settingsCurrencyUrl || !csrf) return;
+        const res = await fetch(settingsCurrencyUrl, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrf,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({ currency_preference: currency }),
+        });
+        if (!res.ok) throw new Error('currency save failed');
+        const data = await res.json().catch(() => ({}));
+        if (data.currency_preference) {
+            window.__NOS_SERVER_CURRENCY__ = data.currency_preference;
+        }
+        if (window.NosCurrencyFormatter) {
+            await window.NosCurrencyFormatter.render();
+        }
     }
 
     fetchExchangeRates();
 
-    const storedCurrency = localStorage.getItem('nosleguma-currency-preference');
-    if (storedCurrency && rates[storedCurrency]) select.value = storedCurrency;
+    if (accountCurrency && rates[accountCurrency]) {
+        select.value = accountCurrency;
+    }
 
     amountInput?.addEventListener('input', renderCurrency);
-    select?.addEventListener('change', async () => { await fetchExchangeRates(); renderCurrency(); });
+    select?.addEventListener('change', async () => {
+        await fetchExchangeRates();
+        try {
+            await persistCurrencyPreference(select.value);
+        } catch (err) {
+            console.warn(err);
+        }
+        renderCurrency();
+    });
 
     renderCurrency();
 });

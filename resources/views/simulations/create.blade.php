@@ -6,7 +6,7 @@
 <section class="auth-card" aria-label="Create Simulation">
     <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
         <h1 style="margin:0;">{{ __('Create Simulation') }}</h1>
-        <a href="{{ route('simulations.index') }}" class="btn btn-outline">← {{ __('Back') }}</a>
+        <a href="{{ route('simulations.index') }}" class="btn btn-secondary">← {{ __('Back') }}</a>
     </div>
 
     @if ($errors->any())

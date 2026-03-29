@@ -1,5 +1,15 @@
 @extends('layouts.app')
 
+@php
+    $qtChart = [
+        'month' => __('qt_chart_month'),
+        'axisY' => __('qt_chart_axis_value'),
+        'nominal' => __('qt_chart_nominal'),
+        'real' => __('qt_chart_real'),
+        'contrib' => __('qt_chart_contrib'),
+    ];
+@endphp
+
 @section('title', __('Quick Tour Simulation (read-only template)'))
 
 @section('content')
@@ -104,9 +114,10 @@
     </div>
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    const qtChart = @json($qtChart);
     const chartCanvas = document.getElementById('qt-chart');
     const btnRun = document.getElementById('qt-run');
     const btnStep = document.getElementById('qt-step');
@@ -154,20 +165,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() || '#07a05a';
     const secondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--c-secondary').trim() || '#d98e12';
 
+    const contribColor = getComputedStyle(document.documentElement).getPropertyValue('--c-on-surface-2').trim() || '#94a3b8';
+
     const chart = new Chart(chartCanvas.getContext('2d'), {
         type: 'line',
         data: { labels: [], datasets: [
-            { label: 'Nominal', data: [], borderColor: primaryColor, backgroundColor: primaryColor + '20', borderWidth: 3, fill: true, tension: 0.35, pointRadius: 0 },
-            { label: 'Real (inflation adj.)', data: [], borderColor: secondaryColor, backgroundColor: secondaryColor + '15', borderWidth: 2, borderDash: [5,5], fill: false, tension: 0.35, pointRadius: 0 }
+            { label: qtChart.nominal, data: [], borderColor: primaryColor, backgroundColor: primaryColor + '20', borderWidth: 3, fill: true, tension: 0.35, pointRadius: 0 },
+            { label: qtChart.real, data: [], borderColor: secondaryColor, backgroundColor: secondaryColor + '12', borderWidth: 2, borderDash: [6, 4], fill: false, tension: 0.35, pointRadius: 0 },
+            { label: qtChart.contrib, data: [], borderColor: contribColor, borderWidth: 2, borderDash: [8, 4], fill: false, tension: 0.25, pointRadius: 0 }
         ]},
         options: {
             responsive: true,
             maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
             scales: {
-                x: { title: { display: true, text: 'Month' }, grid: { display: false } },
-                y: { title: { display: true, text: 'Value (€)' },
-                    ticks: { callback: (v) => '€' + Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) }
+                x: { title: { display: true, text: qtChart.month }, grid: { display: false } },
+                y: { title: { display: true, text: qtChart.axisY },
+                    ticks: { callback: (v) => '\u20AC' + Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) }
                 }
             },
             animation: { duration: 0 }
@@ -211,11 +225,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function nextMonthlyReturn() {
-        const baseMonthly = Math.pow(1 + settings.growthRate, 1/12) - 1;
+        const baseMonthly = Math.pow(1 + settings.growthRate, 1 / 12) - 1;
         const vol = (settings.riskAppetite + settings.marketInfluence) / 2;
-        const noise = gaussian() * (0.03 + vol * 0.04);
-        const shock = Math.random() < 0.05 ? -0.12 : 0;
-        return Math.max(-0.3, Math.min(baseMonthly + noise + shock, 0.12));
+        const roll = Math.random();
+        if (roll < 0.03) {
+            return Math.max(-0.35, -0.15 - Math.random() * 0.2);
+        }
+        if (roll < 0.06) {
+            return Math.min(0.22, 0.08 + Math.random() * 0.1);
+        }
+        const noise = gaussian() * (0.015 + vol * 0.03);
+        return Math.max(-0.3, Math.min(baseMonthly + noise, 0.12));
     }
 
     function stepOnce() {
@@ -242,6 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chart.data.labels = simulationData.map(d => d.month);
         chart.data.datasets[0].data = simulationData.map(d => d.value);
         chart.data.datasets[1].data = simulationData.map(d => d.real);
+        chart.data.datasets[2].data = simulationData.map(d => d.contributions);
         chart.update();
     }
 
@@ -256,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formatCurrency(v) {
-        return '€' + Number(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return '\u20AC' + Number(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     function startRun() {

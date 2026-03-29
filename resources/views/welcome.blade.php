@@ -55,53 +55,16 @@
     <div class="visual-stack">
         <div class="backplate"></div>
         <div class="chart-slice">
-            <img src="https://images.pexels.com/photos/577195/pexels-photo-577195.jpeg?auto=compress&cs=tinysrgb&w=1500" alt="Overhead view of a laptop showing data visualizations and charts on its screen." />
+            <img src="{{ asset('images/hero-chart.svg') }}" width="480" height="360" alt="" decoding="async" loading="lazy" />
         </div>
         <div class="simulation-mockup">
             <div class="mockup-overlay">
                 <div class="mockup-content">
-                    <span class="metric-label">Live Growth</span>
+                    <span class="metric-label">{{ __('Live Growth') }}</span>
                     <span class="metric-value">+24.3%</span>
                 </div>
             </div>
-            <img src="https://images.pexels.com/photos/95916/pexels-photo-95916.jpeg?auto=compress&cs=tinysrgb&w=1500" alt="Flatlay of a business analytics report, keyboard, pen, and smartphone on a wooden desk." />
-        </div>
-    </div>
-</section>
-
-<section id="learn-more" class="home-section" aria-label="{{ __('Learn more') }}">
-    <div class="home-section__inner">
-        <div class="home-section__header">
-            <div>
-                <p class="home-section__kicker">{{ __('Built for learning') }}</p>
-                <h2 class="home-section__title">{{ __('Understand compounding — not just charts') }}</h2>
-                <p class="home-section__subtitle">
-                    {{ __('This app is designed to help you build intuition. Run scenarios, step month-by-month, and compare nominal growth vs inflation-adjusted purchasing power.') }}
-                </p>
-            </div>
-            @auth
-                <a class="btn btn-primary" href="{{ route('simulations.index') }}">{{ __('Open dashboard') }}</a>
-            @else
-                <a class="btn btn-primary" href="{{ route('register') }}">{{ __('Create free account') }}</a>
-            @endauth
-        </div>
-
-        <div class="home-cards" aria-label="{{ __('Key features') }}">
-            <div class="home-card">
-                <div class="home-card__icon" aria-hidden="true">⏱</div>
-                <h3 class="home-card__title">{{ __('Run or Step') }}</h3>
-                <p class="home-card__text">{{ __('Use Step mode to see exactly what happens each month. Then Run to understand longer horizons (10–30 years).') }}</p>
-            </div>
-            <div class="home-card">
-                <div class="home-card__icon" aria-hidden="true">📉</div>
-                <h3 class="home-card__title">{{ __('Risk & drawdowns') }}</h3>
-                <p class="home-card__text">{{ __('Volatility matters. The simulator highlights drawdowns so you learn why staying consistent is hard — and why it matters.') }}</p>
-            </div>
-            <div class="home-card">
-                <div class="home-card__icon" aria-hidden="true">🧾</div>
-                <h3 class="home-card__title">{{ __('Nominal vs real') }}</h3>
-                <p class="home-card__text">{{ __('A bigger number is not always a better outcome. Compare nominal value to real value after inflation.') }}</p>
-            </div>
+            <img src="{{ asset('images/hero-planning.svg') }}" width="480" height="360" alt="" decoding="async" loading="lazy" />
         </div>
     </div>
 </section>
@@ -146,6 +109,43 @@
                 @else
                     <a href="{{ route('register') }}" class="btn btn-primary">{{ __('Create free account') }}</a>
                 @endauth
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="learn-more" class="home-section" aria-label="{{ __('Learn more') }}">
+    <div class="home-section__inner">
+        <div class="home-section__header">
+            <div>
+                <p class="home-section__kicker">{{ __('Built for learning') }}</p>
+                <h2 class="home-section__title">{{ __('Understand compounding — not just charts') }}</h2>
+                <p class="home-section__subtitle">
+                    {{ __('This app is designed to help you build intuition. Run scenarios, step month-by-month, and compare nominal growth vs inflation-adjusted purchasing power.') }}
+                </p>
+            </div>
+            @auth
+                <a class="btn btn-primary" href="{{ route('simulations.index') }}">{{ __('Open dashboard') }}</a>
+            @else
+                <a class="btn btn-primary" href="{{ route('register') }}">{{ __('Create free account') }}</a>
+            @endauth
+        </div>
+
+        <div class="home-cards" aria-label="{{ __('Key features') }}">
+            <div class="home-card">
+                <div class="home-card__icon" aria-hidden="true">⏱</div>
+                <h3 class="home-card__title">{{ __('Run or Step') }}</h3>
+                <p class="home-card__text">{{ __('Use Step mode to see exactly what happens each month. Then Run to understand longer horizons (10–30 years).') }}</p>
+            </div>
+            <div class="home-card">
+                <div class="home-card__icon" aria-hidden="true">📉</div>
+                <h3 class="home-card__title">{{ __('Risk & drawdowns') }}</h3>
+                <p class="home-card__text">{{ __('Volatility matters. The simulator highlights drawdowns so you learn why staying consistent is hard — and why it matters.') }}</p>
+            </div>
+            <div class="home-card">
+                <div class="home-card__icon" aria-hidden="true">🧾</div>
+                <h3 class="home-card__title">{{ __('Nominal vs real') }}</h3>
+                <p class="home-card__text">{{ __('A bigger number is not always a better outcome. Compare nominal value to real value after inflation.') }}</p>
             </div>
         </div>
     </div>

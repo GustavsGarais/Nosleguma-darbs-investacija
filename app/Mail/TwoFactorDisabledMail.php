@@ -18,8 +18,12 @@ class TwoFactorDisabledMail extends Mailable
     public function build(): self
     {
         return $this
-            ->subject('Your 2FA has been disabled')
-            ->view('emails.two_factor_disabled');
+            ->subject(__('mail.2fa_disabled_subject', [], app()->getLocale()))
+            ->view('emails.two_factor_disabled')
+            ->with([
+                'loginUrl' => url('/login'),
+                'passwordResetUrl' => url('/forgot-password'),
+            ]);
     }
 }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,29 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('settings')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Persist display currency (EUR base) for the authenticated user.
+     */
+    public function updateCurrency(Request $request): RedirectResponse|JsonResponse
+    {
+        $validated = $request->validate([
+            'currency_preference' => ['required', 'string', 'in:EUR,USD,GBP,JPY'],
+        ]);
+
+        $request->user()->forceFill([
+            'currency_preference' => $validated['currency_preference'],
+        ])->save();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'ok' => true,
+                'currency_preference' => $request->user()->currency_preference,
+            ]);
+        }
+
+        return Redirect::route('settings')->with('status', 'currency-updated');
     }
 
     /**

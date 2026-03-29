@@ -1,0 +1,227 @@
+/**
+ * Simulation runner dashboard layout.
+ */
+.sim-run-shell {
+	display: grid;
+	gap: 20px;
+}
+
+.sim-dash-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.sim-dash-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	padding: 14px 16px;
+	border-radius: 14px;
+	border: 1px solid var(--c-border);
+	background: color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%);
+}
+
+.sim-dash-toolbar-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	flex: 1 1 auto;
+}
+
+.sim-dash-toolbar-status {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+	margin-left: auto;
+}
+
+.sim-dash-body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, min(360px, 100%));
+	gap: 20px;
+	align-items: start;
+}
+
+.sim-dash-chartCard {
+	padding: 16px;
+	border-radius: 16px;
+	border: 1px solid var(--c-border);
+	background: var(--c-surface);
+	box-shadow: var(--shadow-1);
+	min-width: 0;
+}
+
+.sim-dash-chartTitle {
+	margin: 0 0 12px;
+	font-size: 1.05rem;
+	font-weight: 800;
+}
+
+.sim-run-chartWrap {
+	position: relative;
+	height: min(62vh, 580px);
+	min-height: 380px;
+}
+
+.sim-dash-controls {
+	position: sticky;
+	top: 16px;
+	display: grid;
+	gap: 14px;
+}
+
+.sim-dash-controls h3 {
+	margin: 0 0 8px;
+	font-size: 1rem;
+	overflow-wrap: anywhere;
+	word-break: break-word;
+	hyphens: auto;
+	line-height: 1.3;
+}
+
+.sim-dash-controls label {
+	min-width: 0;
+	max-width: 100%;
+}
+
+.sim-dash-controls label > span:first-child,
+.sim-dash-controls label > .field-label {
+	overflow-wrap: anywhere;
+	word-break: break-word;
+	hyphens: auto;
+	line-height: 1.35;
+}
+
+.sim-dash-controlsBlock {
+	padding: 16px;
+	border-radius: 14px;
+	border: 1px solid var(--c-border);
+	background: color-mix(in srgb, var(--c-surface) 98%, transparent);
+	min-width: 0;
+	max-width: 100%;
+}
+
+.sim-dash-controlsBlock #learning-note,
+.sim-dash-controlsBlock #risk-tip {
+	overflow-wrap: anywhere;
+	word-break: break-word;
+	hyphens: auto;
+}
+
+.sim-kpiGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+	gap: 14px;
+}
+
+.sim-kpi {
+	border: 1px solid var(--c-border);
+	border-radius: 14px;
+	padding: 16px 18px;
+	min-height: 108px;
+	min-width: 0;
+	background: color-mix(in srgb, var(--c-surface) 96%, transparent);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 6px;
+}
+
+.sim-kpiLabel {
+	margin: 0;
+	color: var(--c-on-surface-2);
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	font-weight: 700;
+	overflow-wrap: anywhere;
+	word-break: break-word;
+	hyphens: auto;
+	line-height: 1.3;
+}
+
+.sim-kpiValue {
+	margin: 0;
+	font-size: clamp(22px, 2.4vw, 30px);
+	font-weight: 800;
+	line-height: 1.15;
+	/* Prefer body/UI fonts so €, −, and digits render consistently (display fonts may lack full Latin-1 Supplement). */
+	font-family: var(--font-family-body, Inter, system-ui, -apple-system, "Segoe UI", sans-serif);
+	font-variant-numeric: tabular-nums;
+}
+
+.sim-kpiMeta {
+	margin: 0;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--c-on-surface-2);
+	font-family: var(--font-family-body, Inter, system-ui, -apple-system, "Segoe UI", sans-serif);
+	font-variant-numeric: tabular-nums;
+}
+
+.sim-kpiMeta--up {
+	color: var(--c-primary);
+}
+
+.sim-kpiMeta--down {
+	color: #ef4444;
+}
+
+.sim-accordion {
+	border: 1px solid var(--c-border);
+	border-radius: 14px;
+	overflow: hidden;
+	background: var(--c-surface);
+}
+
+.sim-accordion summary {
+	cursor: pointer;
+	padding: 12px 14px;
+	font-weight: 700;
+	list-style: none;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+}
+
+.sim-accordion summary::-webkit-details-marker {
+	display: none;
+}
+
+.sim-accordion summary:hover {
+	background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);
+}
+
+.sim-accordionBody {
+	padding: 14px;
+	border-top: 1px solid var(--c-border);
+}
+
+@media (max-width: 1100px) {
+	.sim-dash-body {
+		grid-template-columns: 1fr;
+	}
+
+	.sim-dash-controls {
+		position: static;
+	}
+}
+
+@media (max-width: 640px) {
+	.sim-dash-toolbar {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.sim-dash-toolbar-status {
+		margin-left: 0;
+		justify-content: flex-start;
+	}
+}

@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Simulations Management')
+@section('title', __('Simulations Management'))
 
 @section('dashboard_content')
-<section class="auth-card" aria-label="Simulations Management">
+<section class="auth-card" aria-label="{{ __('Simulations Management') }}">
     <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
-        <h1 style="margin:0;">All Simulations</h1>
-        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline">Back to Dashboard</a>
+        <h1 style="margin:0;">{{ __('All Simulations') }}</h1>
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline">{{ __('Back to Dashboard') }}</a>
     </div>
 
     @if(session('success'))
@@ -20,7 +20,7 @@
         <input 
             type="text" 
             name="search" 
-            placeholder="Search by simulation name..." 
+            placeholder="{{ __('Search by simulation name...') }}" 
             value="{{ request('search') }}"
             style="flex:1; min-width:200px; padding:8px 12px; border:1px solid var(--c-border); border-radius:8px; background:var(--c-surface); color:var(--c-on-surface);"
         >
@@ -95,7 +95,7 @@
             {{ $simulations->links() }}
         </div>
     @else
-        <p style="margin-top:16px; color:var(--c-on-surface-2);">No simulations found.</p>
+        <p style="margin-top:16px; color:var(--c-on-surface-2);">{{ __('No simulations found.') }}</p>
     @endif
 </section>
 @endsection
