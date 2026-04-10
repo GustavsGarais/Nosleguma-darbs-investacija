@@ -3,36 +3,39 @@
 @section('title', 'Edit Simulation')
 
 @section('dashboard_content')
-<section class="auth-card" aria-label="{{ __('Edit Simulation') }}">
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
-        <h1 style="margin:0;">{{ __('Edit Simulation') }}</h1>
-        <a class="btn btn-secondary" href="{{ route('simulations.show', $simulation) }}">{{ __('Back') }}</a>
-    </div>
+<section class="auth-card sim-edit-card" aria-label="{{ __('Edit Simulation') }}">
+    <header class="sim-edit-header">
+        <div>
+            <h1 class="sim-edit-title">{{ __('Edit Simulation') }}</h1>
+            <p class="sim-edit-lead">{{ __('Edit simulation subtitle') }}</p>
+        </div>
+        <a class="btn btn-secondary sim-edit-back" href="{{ route('simulations.show', $simulation) }}">{{ __('Back') }}</a>
+    </header>
 
     @if ($errors->any())
-        <div role="alert" aria-live="polite" style="margin:12px 0; padding:10px 12px; border:1px solid var(--c-border); border-radius:10px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);">
-            <ul style="margin:0; padding-left:18px;">
+        <div role="alert" aria-live="polite" class="sim-edit-errors">
+            <ul>
                 @foreach ($errors->all() as $error)
-                    <li style="color: var(--c-on-surface);">{{ $error }}</li>
+                    <li>{{ $error }}</li>
                 @endforeach
             </ul>
         </div>
     @endif
 
-    <form method="POST" action="{{ route('simulations.update', $simulation) }}" style="display:grid; gap:12px;">
+    <form class="sim-edit-form" method="POST" action="{{ route('simulations.update', $simulation) }}">
         @csrf
         @method('PUT')
 
-        <label style="display:grid; gap:6px;">
-            <div style="display:flex; align-items:center; gap:6px;">
+        <label class="sim-edit-name">
+            <span class="sim-edit-label-row">
                 <span>{{ __('Name') }}</span>
-                <span style="font-size:12px; color:var(--c-on-surface-2);">{{ __('(max 30 characters)') }}</span>
-            </div>
+                <span class="sim-edit-hint">{{ __('(max 30 characters)') }}</span>
+            </span>
             <input type="text" name="name" value="{{ old('name', $simulation->name) }}" required maxlength="30" class="footer-email-input" />
         </label>
 
         @php($s = $simulation->settings)
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">
+        <div class="sim-edit-grid">
             <label style="display:grid; gap:6px;">
                 <span>{{ __('Initial Investment') }}</span>
                 <input type="number" step="1" name="initial_investment" value="{{ old('initial_investment', $s['initialInvestment'] ?? 1000) }}" required class="footer-email-input" />
@@ -79,7 +82,7 @@
             </label>
         </div>
 
-        <div style="display:flex; gap:12px;">
+        <div class="sim-edit-actions">
             <a href="{{ route('simulations.show', $simulation) }}" class="btn btn-outline">{{ __('Cancel') }}</a>
             <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
         </div>

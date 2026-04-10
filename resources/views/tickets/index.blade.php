@@ -6,7 +6,7 @@
 <section class="auth-card" aria-label="My Support Tickets">
     <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
         <h1 style="margin:0;">My Support Tickets</h1>
-        <a href="{{ route('tickets.create') }}" class="btn btn-primary">Report New Issue</a>
+        <a href="{{ route('support.index') }}" class="btn btn-primary">Report New Issue</a>
     </div>
 
     @if($tickets->count())
@@ -53,7 +53,7 @@
     @else
         <div style="margin-top:24px; text-align:center; padding:40px;">
             <p style="margin:0 0 16px; color:var(--c-on-surface-2);">You haven't submitted any support tickets yet.</p>
-            <a href="{{ route('tickets.create') }}" class="btn btn-primary">Report Your First Issue</a>
+            <a href="{{ route('support.index') }}" class="btn btn-primary">Report Your First Issue</a>
         </div>
     @endif
 </section>

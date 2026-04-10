@@ -1,113 +1,155 @@
-#  Noslēguma darba tēmas apstiprināšana
+# Investīciju izglītības platforma
 
-**Investīciju izglītības vietne** — simulē, kā darbojas investīcijas izglītojošiem nolūkiem.
-
----
-
-##  Vietnei nepieciešamās funkcijas:
-
-1. Sistēmas pieteikšanās (lietotājvārds un parole, ar reģistrācijas iespēju).
-2. Brīdinājuma paziņojumi vairākās vietās, ka šī ir izglītojoša platforma.
-3. Lietotāja saskarnes iestatījumi: tumšs/gaišs režīms un fonta izvēle.
-4. Vairāku saglabātu simulāciju pārvaldība, kas piesaistītas konkrētam lietotājam.
-5. Iespēja apturēt atsevišķas simulācijas un mainīt to atjaunināšanas ātrumu.
-6. Parametru iestatīšana pirms simulācijas sākuma: sākuma summa, investoru skaits, pieauguma ātrums, riska apetīte un tirgus ietekme.
+**Noslēguma darba projekts** — tīmekļa lietotne, kurā lietotāji var izveidot un palaist **izglītojošas investīciju simulācijas** ar grafikiem, parametriem un (pēc izvēles) “roku” režīmu tirdzniecības galdam. **Nav īstas naudas un nav tirgus prognožu** — mērķis ir izprast salikto procentu likmi, svārstības, inflāciju un risku.
 
 ---
 
-##  Izveidotās pielāgotās simulācijas funkcijas:
+## Galvenās iespējas
 
-1. Imitēta investīciju izmaiņu sistēma (random pieaugums/samazinājums pēc iestatītiem parametriem).
-2. Papildinformācija uzbraucot ar kursoru uz grafika vai vērtībām.
-3. Lietotājs var ietekmēt investīciju apjomu, risku un izmaiņu koeficientus.
-4. Lietotāju pieslēgšanās statusa parādīšana (kurš pašlaik tiešsaistē) — ja funkcija aktīva.
-
----
-
-##  Paveiktais darbs:
-
-1. Pieslēgšanās un reģistrācijas lapas ar SQLite datubāzi un PHP backend.
-2. Investīciju simulācijas lapa ar strādājošu grafiku, vērtību skaitīšanu un apturēšanas funkciju.
-3. Tumšā/gaišā režīma pārslēgšanas funkcija visai vietnei.
-4. Sistēma vairāku lietotāju kontiem.
-5. Backend pilnībā pārbūvēts no localhost uz laravel, no docker, uz Node.js no beigām PHP ar SQLite.
-6. Precīzi atdalīti frontend (`src/`) un backend (`api/`) ceļi vienā projektā.
-7. Integrācija ar valūtas kursu API (exchangerate-api.com) reāllaika valūtas kursu iegūšanai.
-8. Izglītojošie brīdinājumi par simulācijas raksturu un drošību.
+- **Konti:** reģistrācija, pieteikšanās, e-pasta verifikācija, paroles maiņa un atjaunošana.
+- **Divu faktoru autentifikācija (2FA):** ieslēgšana, atslēgšana, atkopšanas kodi; administrātors var palīdzēt pēc atbalsta pieteikuma.
+- **Simulācijas:** vairāki saglabāti scenāriji uz lietotāju; izveide, rediģēšana, dzēšana; palaišana, solis pa mēnesim, pauze, atiestatīšana; saglabāšana uz servera (momentuzņēmums un vēsture).
+- **Režīmi:** klasiskā automātiskā ikmēneša loģika un **hands-on** režīms ar tirdzniecības galdu (pirkšana/pārdošana pret naudas maciņu).
+- **Izglītošana:** iebūvēta pamācība, “ātrais ceļvedis”, brīdinājumi par simulācijas raksturu.
+- **Iestatījumi:** profila vārds (e-pasts profilā netiek mainīts), parole, 2FA, valūtas preferences, konta dzēšana.
+- **Valūtas:** kursu pārveidošana iestatījumos, izmantojot ārēju API (skat. kodu un `.env`).
+- **Atbalsts:** vienota **Support** lapa — pieteikumi, kas piesaistīti kontam, publiska 2FA/konta palīdzība, **paroles atjaunošana** ar divām vēstulēm (drošības paziņojums + saite jaunai parolei).
+- **Administrācija:** statistika, lietotāji, atbalsta pieteikumi, 2FA atslēgšana pēc pārbaudes.
 
 ---
 
-##  Valūtas kursu sistēma:
+## Tehnoloģijas
 
-Lai parādītu pašreizējo valūtas vērtību, programma izmanto tiešsaistes datu avotu (API), kas nodrošina aktuālus valūtas kursus. 
-Programma pieprasa jaunākos datus, nolasa atbildi un parāda valūtas vērtību lietotājam. 
-Šie dati var tikt automātiski atjaunināti, lai saglabātu aktuālu informāciju.
-
-**API izmantošana:**
-- Izmantots exchangerate-api.com bezmaksas API
-- Automātiska kursu atjaunināšana katru stundu
-- Kešošana localStorage 24 stundu garumā
-- Fallback uz noklusējuma kursiem, ja API nav pieejams
+| Slānis | Lietots |
+|--------|---------|
+| Backend | **Laravel 12**, **PHP 8.2+** |
+| Frontend | **Vite**, CSS (dizaina žetoni, komponentes), JS simulators (`simulation-runner.js`) |
+| Datubāze | **MySQL** (ieteicams; piemēroti arī citi Laravel atbalstītie draiveri) |
+| Auth | Laravel Breeze līdzīga plūsma, 2FA (Google2FA) |
 
 ---
 
-##  Izglītojošā simulācijas raksturs:
+## Prasības
 
-Tā kā šis projekts ir investīciju simulācija, tas neizmanto īstu naudu un nemēģina prognozēt tirgu. 
-Tā vietā tas imitē, kā investīcijas parasti darbojas reālajā dzīvē. 
-Investīciju vērtība laika gaitā mainās, pamatojoties uz vidējo pieaugumu un nejaušām svārstībām, kas atspoguļo tirgus uzsprāgumus un kritumus. 
-Dažādi riska līmeņi ietekmē to, cik stabila vai nestabila ir investīcija.
-
-Šī pieeja padara simulāciju reālistisku, vienlaikus saglabājot to drošu un izglītojošu.
-
-**Brīdinājumi:**
-- Izglītojošie brīdinājumi tiek rādīti vairākās vietās platformā
-- Simulācija neizmanto īstu naudu
-- Rezultāti nav reālu tirgus prognožu
-- Simulācija ir paredzēta tikai izglītībai un apmācībai
-
-## Deployment (shared hosting / cPanel)
-
-1. **PHP & Composer** — PHP 8.2+, install dependencies: `composer install --no-dev --optimize-autoloader`
-2. **Environment** — copy `.env.example` to `.env`, set `APP_KEY` (`php artisan key:generate`), `APP_URL`, and **MySQL** credentials (typical on cPanel).
-3. **Database** — `php artisan migrate --force`  
-   If `.env` uses `CACHE_STORE=database` or `QUEUE_CONNECTION=database`, the repo includes migrations for **`cache`**, **`cache_locks`**, **`jobs`**, and **`failed_jobs`** (created via `php artisan cache:table` / `queue:table`). Run `migrate` so those tables exist — otherwise login can fail with “Table '…cache' doesn't exist”.
-4. **Demo data (optional)** — `php artisan db:seed` creates sample users and simulations (see seeder for emails; password is `password`).
-5. **Frontend assets** — this project uses Vite. On the server (or CI), run **`npm ci`** then **`npm run build`** so `public/build` contains compiled CSS/JS. `php artisan serve` alone does not build assets; for local dev you can use `npm run dev` *or* run `npm run build` once and rely on built files.
-6. **Document root** — point the domain to the `public/` folder.
-7. **Email** — set `MAIL_MAILER=smtp` and cPanel SMTP (`MAIL_HOST`, `MAIL_PORT`, usually `465` SSL or `587` TLS, plus `MAIL_USERNAME` / `MAIL_PASSWORD`). With `MAIL_MAILER=log`, messages are written to the log only (good for debugging).
-
-### Email: what to set in `.env` so it really works
-
-| Variable | Purpose |
-|----------|---------|
-| **`APP_URL`** | **Required for links inside emails** (sign-in, password reset). Must be the public site URL, e.g. `https://yourdomain.com` (no trailing slash). Wrong value = broken links in messages. |
-| **`MAIL_MAILER`** | Use `smtp` for real delivery; `log` only writes to `storage/logs`. |
-| **`MAIL_HOST`**, **`MAIL_PORT`** | From cPanel → *Email Accounts* → *Connect Devices* / SMTP settings. |
-| **`MAIL_USERNAME`**, **`MAIL_PASSWORD`** | Full mailbox email and its password. |
-| **`MAIL_ENCRYPTION`** | Often `tls` on port **587**, or `ssl` on **465** (match host instructions). |
-| **`MAIL_FROM_ADDRESS`** | Should be an address that exists on your domain (reduces spam flags). |
-| **`MAIL_FROM_NAME`** | Display name (often same as `APP_NAME`). |
-
-**Quick test:** `php artisan mail:test your@email.com` — if `MAIL_MAILER=log`, check `storage/logs/laravel.log` for the message body; if `smtp`, check your inbox.
+- PHP **8.2 vai jaunāks**
+- **Composer**
+- **Node.js** un **npm** (priekš `npm run build` vai `npm run dev`)
+- **MySQL** (vai cita konfigurācijā norādītā datubāze)
+- Rakstīšanas tiesības mapēm `storage/` un `bootstrap/cache/`
 
 ---
 
-Local dev (example):
+## Uzstādīšana (izstrāde, piemēram, Laragon)
+
+1. **Atkarības**
+
+   ```bash
+   composer install
+   npm ci
+   ```
+
+2. **Vide**
+
+   Nokopējiet `.env.example` uz `.env`. Iestatiet:
+
+   - `APP_NAME`, `APP_URL` (svarīgi saitēm e-pastos)
+   - `APP_KEY` — `php artisan key:generate`
+   - Datubāze: `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, `DB_HOST`
+
+   Projekts bieži izmanto `SESSION_DRIVER=database`, `CACHE_STORE=database`, `QUEUE_CONNECTION=database` — pirms vietnes atvēršanas **pārliecinieties, ka MySQL darbojas**.
+
+3. **Shema**
+
+   ```bash
+   php artisan migrate
+   ```
+
+   Ja izmantojat kešatmiņu/rindu tabulas datubāzē, pēc migrācijām tabulām `cache`, `jobs` u.c. jābūt izveidotām — pretējā gadījumā var rasties kļūdas, piemēram, “Table '…cache' doesn't exist”.
+
+4. **Frontend**
+
+   Izstrādē:
+
+   ```bash
+   npm run dev
+   ```
+
+   Vai vienu reizi salikt produkcijas komplektu:
+
+   ```bash
+   npm run build
+   ```
+
+5. **Serveris**
+
+   ```bash
+   php artisan serve
+   ```
+
+   Atveriet `APP_URL` vai `http://127.0.0.1:8000`. Ja `npm run dev` nedarbojas, pēc `npm run build` pietiek ar saliktajiem failiem mapē `public/build/`.
+
+6. **(Pēc izvēles) demonstrācijas dati**
+
+   ```bash
+   php artisan db:seed
+   ```
+
+   **Parole visiem pēc `db:seed` izveidotajiem demonstrācijas kontiem:** `password` (nepieļaujama ražošanā; nomainiet vai dzēsiet).
+
+   | E-pasts | Loma |
+   |---------|------|
+   | `admin@school.demo` | Administrators |
+   | `demo@school.demo` | Lietotājs ar paraugu simulācijām |
+   | `test@example.com` | Tests |
+   | Papildu konti | `SchoolProjectAccountsSeeder` |
+
+---
+
+## E-pasts un paroles atjaunošana
+
+- **Piegāde:** `.env` iestatiet `MAIL_MAILER=smtp` un aizpildiet `MAIL_*` (hosts, ports, šifrēšana, `MAIL_FROM_ADDRESS`).
+- **Pārbaude:** `php artisan mail:test jusu@epasts.lv`
+- Ja `MAIL_MAILER=log`, vēstules rakstītas `storage/logs/laravel.log`.
+- **Paroles atjaunošana:** lietotājs saņem **divas** vēstules: īsu drošības paziņojumu (ar iespēju atcelt pieprasījumu, ja tas nebijāt jūs) un standarta Laravel e-pastu ar atjaunošanas saiti. No Support lapas var pievienot brīvprātīgu piezīmi, kas parādās drošības vēstulē.
+
+**Svarīgi:** `APP_URL` jāatbilst publiskajai vietnes adresei, citādi saites e-pastos būs nepareizas.
+
+---
+
+## Testēšana
 
 ```bash
-php artisan serve --host=127.0.0.1 --port=8080
+php artisan test
 ```
-
-**Demo accounts** (after `php artisan db:seed`): `demo@school.demo` student (with sample simulations), `admin@school.demo` admin, `test@example.com` — password **`password`**. Change or remove these in production.
 
 ---
 
-admin remote
-Email: admin@example.com
-Password: School
+## Izvietošana (kopīgots hostings / cPanel)
 
+1. `composer install --no-dev --optimize-autoloader`
+2. `.env` ražošanai, `APP_DEBUG=false`, `APP_KEY` (piemēram, `php artisan key:generate`)
+3. `php artisan migrate --force`
+4. `npm ci` un `npm run build`
+5. Dokumentu sakne norādīta uz **`public/`**
+6. E-pasts: SMTP no hostinga; pārbaudiet `APP_URL` un `MAIL_FROM_*`
 
-BUGS:
+---
 
-The tutorial blackends everything, but the "Simulation tutorial" even tho its trying to highlight the parts where it wants to show you. And the tutorial ends after the 4 steps of "Simulation tutorial" which should continue on by telling how to create the simulation and what each one does.
+## Juridisks un pedagoģisks paziņojums
+
+Simulācija izmanto **vienkāršotu nejaušu modeli** mācību nolūkos. Tā **nav** investīciju, nodokļu vai juridiska padoma avots. Pagātnes rezultāti simulācijā neliecina par nākotnes tirgus attīstību.
+
+---
+
+## Projekta struktūra (īsi)
+
+- `app/` — kontrolieri, modeļi, pasta klases, middleware
+- `routes/web.php`, `routes/auth.php`, `routes/console.php` — maršruti un `mail:test` komanda
+- `resources/views/` — Blade veidnes
+- `resources/css/`, `resources/js/` — Vite ievaddati
+- `resources/lang/` — tulkojumi (EN, LV)
+- `database/migrations/`, `database/seeders/` — shēma un demo dati
+
+---
+
+*Šis README apraksta pašreizējo Laravel projektu; novecojušas atsauces uz citiem stekiem (piemēram, atsevišķu `src/` / `api/` sadalījumu šajā repozitorijā vairs neizmanto).*

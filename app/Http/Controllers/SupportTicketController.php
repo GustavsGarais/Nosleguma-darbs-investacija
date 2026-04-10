@@ -3,26 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\SupportTicket;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 
 class SupportTicketController extends Controller
 {
-    /**
-     * Show the form for creating a new ticket
-     */
-    public function create(): View
-    {
-        return view('tickets.create');
-    }
-
     /**
      * Store a newly created ticket
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validateWithBag('ticket', [
             'subject' => 'required|string|max:255',
             'description' => 'required|string|max:2000',
             'error_type' => 'required|in:simulation_error,visual_error,personal_error,translation_error,performance_issue,bug_report,feature_request,other',
@@ -37,15 +29,18 @@ class SupportTicketController extends Controller
         // Count words in description (handles multiple languages better)
         $text = trim($validated['description']);
         $words = preg_split('/\s+/', $text);
-        $words = array_filter($words, function($word) {
-            return !empty(trim($word));
+        $words = array_filter($words, function ($word) {
+            return ! empty(trim($word));
         });
         $wordCount = count($words);
-        
+
         if ($wordCount > 400) {
             return back()
                 ->withInput()
-                ->withErrors(['description' => 'The description must not exceed 400 words. You have ' . $wordCount . ' words.']);
+                ->withErrors(
+                    ['description' => 'The description must not exceed 400 words. You have '.$wordCount.' words.'],
+                    'ticket',
+                );
         }
 
         $ticket = SupportTicket::create([
@@ -91,7 +86,7 @@ class SupportTicketController extends Controller
      */
     private function determinePriority(string $errorType): string
     {
-        return match($errorType) {
+        return match ($errorType) {
             'simulation_error', 'performance_issue' => 'high',
             'visual_error', 'translation_error' => 'medium',
             'bug_report' => 'high',
@@ -106,7 +101,7 @@ class SupportTicketController extends Controller
      */
     public static function getErrorTypeLabel(string $type): string
     {
-        return match($type) {
+        return match ($type) {
             'simulation_error' => 'Simulation Error',
             'visual_error' => 'Visual/UI Error',
             'personal_error' => 'Account/Personal Error',

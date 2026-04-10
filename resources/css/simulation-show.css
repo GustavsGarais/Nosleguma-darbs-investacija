@@ -42,19 +42,300 @@
 }
 
 .sim-dash-body {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, min(360px, 100%));
-	gap: 20px;
-	align-items: start;
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	gap: 16px;
+	min-width: 0;
+	min-height: 0;
+}
+
+/* Left: controls + optional trading desk stacked (desktop); toolbar can hide whole column. */
+.sim-dash-lead {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0;
+	flex: 0 0 auto;
+	min-width: 0;
+	transition:
+		flex-basis 0.25s ease,
+		opacity 0.2s ease,
+		min-width 0.25s ease,
+		max-width 0.25s ease;
+}
+
+/* Vertical stack: Controls rail on top, Trading desk below — one narrow column instead of two side-by-side. */
+.sim-dash-flyout-stack {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	align-self: flex-start;
+	gap: 10px;
+	min-width: 0;
+}
+
+/* Chart column only (flyouts live in .sim-dash-lead stack). */
+.sim-dash-work {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	flex: 1 1 auto;
+	min-width: 0;
+	min-height: 0;
+	gap: 16px;
+}
+
+.sim-dash-body--controls-hidden .sim-dash-lead {
+	flex: 0 0 0;
+	width: 0;
+	min-width: 0;
+	max-width: 0;
+	overflow: hidden;
+	opacity: 0;
+	margin: 0;
+	padding: 0;
+	border: none;
+	pointer-events: none;
+}
+
+.sim-dash-deskSlot {
+	flex: 0 0 auto;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0;
+}
+
+/* Classic mode: no trading UI — enable “Hands-on portfolio lab” in Controls to show the desk rail. */
+.sim-dash-deskSlot:has(#playground-panel[hidden]) {
+	display: none !important;
+}
+
+.sim-dash-chartCol {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+/* Left hover / focus flyout: rail + panel read as one card when open */
+.sim-controls-flyout {
+	--sim-flyout-rail: 46px;
+	--sim-flyout-panel: 300px;
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	flex: 0 0 auto;
+	align-self: flex-start;
+	width: var(--sim-flyout-rail);
+	transition:
+		width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+		box-shadow 0.28s ease,
+		border-color 0.2s ease,
+		background 0.2s ease;
+	overflow: visible;
+	position: relative;
+	z-index: 1;
+	outline: none;
+	border: 1px solid transparent;
+	border-radius: 14px;
+	background: transparent;
+	box-shadow: none;
+}
+
+.sim-controls-flyout:hover,
+.sim-controls-flyout:focus-within {
+	align-items: stretch;
+	width: calc(var(--sim-flyout-rail) + var(--sim-flyout-panel));
+	border-color: var(--c-border);
+	background: var(--c-surface);
+	box-shadow: var(--shadow-1, 0 8px 28px rgba(0, 0, 0, 0.1));
+	/* Keep visible so <select> dropdowns are not clipped by the flyout */
+	overflow: visible;
+}
+
+.sim-controls-flyout__rail {
+	flex: 0 0 var(--sim-flyout-rail);
+	width: var(--sim-flyout-rail);
+	align-self: flex-start;
+	min-height: 0;
+	border-radius: 14px;
+	border: 1px solid var(--c-border);
+	background: color-mix(in srgb, var(--c-surface) 94%, var(--c-primary) 8%);
+	box-shadow: 4px 0 16px rgba(0, 0, 0, 0.05);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 12px 4px;
+	cursor: default;
+	user-select: none;
+	transition: border-radius 0.2s ease, border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+/* Collapsed: compact pill — not stretched to chart column height */
+.sim-controls-flyout:not(:hover):not(:focus-within) .sim-controls-flyout__rail {
+	max-height: min(220px, calc(100vh - 120px));
+}
+
+.sim-controls-flyout:hover .sim-controls-flyout__rail,
+.sim-controls-flyout:focus-within .sim-controls-flyout__rail {
+	align-self: stretch;
+	border: none;
+	border-right: 1px solid var(--c-border);
+	border-radius: 14px 0 0 14px;
+	box-shadow: none;
+	background: color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 5%);
+	max-height: none;
+}
+
+.sim-controls-flyout__icon {
+	font-size: 18px;
+	line-height: 1;
+	opacity: 0.85;
+}
+
+.sim-controls-flyout__label {
+	writing-mode: vertical-rl;
+	text-orientation: mixed;
+	transform: rotate(180deg);
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--c-on-surface-2);
+	white-space: nowrap;
+}
+
+/* Hands-on trading desk: reuse Controls flyout pattern; wider panel + secondary rail tint */
+.sim-playground-flyout {
+	--sim-flyout-panel: max(276px, min(380px, 34vw));
+}
+
+.sim-playground-flyout .sim-controls-flyout__rail {
+	background: color-mix(in srgb, var(--c-surface) 92%, var(--c-secondary) 10%);
+}
+
+.sim-playground-flyout:hover .sim-controls-flyout__rail,
+.sim-playground-flyout:focus-within .sim-controls-flyout__rail {
+	background: color-mix(in srgb, var(--c-surface) 96%, var(--c-secondary) 6%);
+}
+
+/*
+ * Desktop: left column = stacked flyouts; chart fills remaining width. Desk can grow below controls.
+ */
+@media (min-width: 1101px) {
+	.sim-dash-body {
+		align-items: stretch;
+	}
+
+	.sim-dash-lead {
+		min-height: 0;
+		align-self: stretch;
+	}
+
+	.sim-dash-flyout-stack {
+		flex: 1 1 auto;
+		min-height: 0;
+		align-self: stretch;
+		width: 100%;
+		height: 100%;
+	}
+
+	.sim-dash-work {
+		align-self: stretch;
+		min-height: 0;
+	}
+
+	.sim-dash-deskSlot:has(#playground-panel[hidden]) {
+		flex: 0 0 auto;
+	}
+
+	.sim-dash-deskSlot:has(#playground-panel:not([hidden])) {
+		flex: 1 1 auto;
+		min-height: 0;
+		align-self: stretch;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.sim-dash-chartCol {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+		align-self: stretch;
+	}
+
+	.sim-dash-chartCol .sim-dash-chartCard {
+		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	.sim-dash-deskSlot:has(#playground-panel:not([hidden])) #playground-panel.sim-playground-flyout {
+		flex: 1 1 auto;
+		min-height: 0;
+		max-height: none;
+		overflow: hidden;
+		position: static;
+		align-self: stretch;
+	}
+
+	.sim-dash-chartCol .sim-run-chartWrap {
+		flex: 1 1 auto;
+		min-height: min(56vh, 520px);
+		height: auto;
+	}
+
+	.sim-dash-body:has(#playground-panel:not([hidden])) .sim-run-chartWrap {
+		min-height: min(56vh, 520px);
+	}
+
+	.sim-playground-flyout:hover .sim-playground-panel.sim-controls-flyout__panel,
+	.sim-playground-flyout:focus-within .sim-playground-panel.sim-controls-flyout__panel {
+		max-height: min(calc(100vh - var(--nav-h, 64px) - 48px), 900px);
+	}
+
+	/*
+	 * Hands-on: hovering or focusing the trading desk hides the Controls flyout (unless Controls is in use).
+	 * Avoids two side-by-side expanded columns; Controls returns when you move back or focus it.
+	 */
+	.sim-dash-flyout-stack:has(#playground-panel:not([hidden])):is(
+			:has(.sim-playground-flyout:hover),
+			:has(#playground-panel:focus-within)
+		)
+		> .sim-controls-flyout--lead:not(:hover):not(:focus-within) {
+		visibility: hidden;
+		width: 0 !important;
+		min-width: 0 !important;
+		max-width: 0 !important;
+		max-height: 0 !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		border: none !important;
+		overflow: hidden !important;
+		opacity: 0 !important;
+		pointer-events: none !important;
+		flex: 0 0 0 !important;
+		box-shadow: none !important;
+		transition:
+			opacity 0.18s ease,
+			max-height 0.22s ease,
+			max-width 0.22s ease,
+			visibility 0.2s linear;
+	}
 }
 
 .sim-dash-chartCard {
+	flex: 1 1 auto;
+	min-width: 0;
 	padding: 16px;
 	border-radius: 16px;
 	border: 1px solid var(--c-border);
 	background: var(--c-surface);
 	box-shadow: var(--shadow-1);
-	min-width: 0;
 }
 
 .sim-dash-chartTitle {
@@ -71,9 +352,248 @@
 
 .sim-dash-controls {
 	position: sticky;
-	top: 16px;
+	top: calc(var(--nav-h, 64px) + 12px);
+	max-height: calc(100vh - var(--nav-h, 64px) - 24px);
+	overflow-y: auto;
+	overscroll-behavior: contain;
 	display: grid;
 	gap: 14px;
+}
+
+.sim-dash-controls.sim-controls-flyout__panel,
+.sim-playground-panel.sim-controls-flyout__panel {
+	position: relative;
+	top: auto;
+	flex: 0 0 0;
+	width: 0;
+	min-width: 0;
+	max-width: 0;
+	max-height: 0;
+	opacity: 0;
+	overflow: hidden;
+	padding: 0 !important;
+	margin: 0;
+	border: none;
+	gap: 0 !important;
+	pointer-events: none;
+	align-self: flex-start;
+	transition:
+		flex-basis 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+		min-width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+		max-width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+		max-height 0.24s ease,
+		opacity 0.22s ease;
+	box-shadow: none;
+	background: transparent;
+}
+
+.sim-controls-flyout:hover .sim-controls-flyout__panel,
+.sim-controls-flyout:focus-within .sim-controls-flyout__panel {
+	flex: 0 0 var(--sim-flyout-panel);
+	width: var(--sim-flyout-panel);
+	min-width: var(--sim-flyout-panel);
+	max-width: var(--sim-flyout-panel);
+	max-height: min(calc(100vh - 96px), 900px);
+	opacity: 1;
+	overflow-x: visible;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding: 12px 14px 14px !important;
+	border: none;
+	border-radius: 0;
+	background: transparent;
+	gap: 12px !important;
+	pointer-events: auto;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-gutter: stable;
+}
+
+/* Playground “custom amount” row: never clip the Add button */
+.sim-playground-amount-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+
+.sim-playground-amount-input {
+	flex: 1 1 120px;
+	min-width: 4.5rem;
+	max-width: 100%;
+}
+
+.sim-playground-amount-btn {
+	flex: 0 0 auto;
+}
+
+/* Classic mode: remove trading flyout from layout (see also [hidden] on #playground-panel). */
+#playground-panel[hidden] {
+	display: none !important;
+}
+
+.sim-playground-flyout__cue {
+	margin: 0 0 6px;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--c-on-surface-2);
+	line-height: 1.45;
+}
+
+.sim-playground-panel .sim-playground-panel__inner {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	min-width: 0;
+	padding: 4px 2px 8px;
+	border-radius: 12px;
+	background: linear-gradient(
+		145deg,
+		color-mix(in srgb, var(--c-surface) 88%, var(--c-primary) 12%) 0%,
+		var(--c-surface) 48%,
+		color-mix(in srgb, var(--c-surface) 92%, var(--c-secondary) 8%) 100%
+	);
+}
+
+.sim-playground-deck__intro {
+	display: grid;
+	gap: 10px;
+	min-width: 0;
+}
+
+.sim-playground-deck__lead {
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.55;
+	color: var(--c-on-surface-2);
+	max-width: none;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.sim-playground-deck__hint {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.5;
+	padding: 12px 12px 12px 14px;
+	border-radius: 10px;
+	border: 1px dashed color-mix(in srgb, var(--c-border) 70%, var(--c-primary) 30%);
+	background: color-mix(in srgb, var(--c-surface) 95%, var(--c-primary) 5%);
+	color: var(--c-on-surface-2);
+	max-width: none;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.sim-playground-hud {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.sim-playground-hud__tile {
+	padding: 12px 14px;
+	border-radius: 12px;
+	border: 1px solid var(--c-border);
+	background: color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%);
+	display: grid;
+	gap: 4px;
+	min-width: 0;
+}
+
+.sim-playground-hud__label {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--c-on-surface-2);
+}
+
+.sim-playground-hud__value {
+	font-size: clamp(0.95rem, 2.4vw, 1.1rem);
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+	line-height: 1.2;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	min-width: 0;
+}
+
+.sim-playground-hud__value--up {
+	color: var(--c-primary);
+}
+
+.sim-playground-hud__value--down {
+	color: #ef4444;
+}
+
+.sim-playground-actions {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 18px;
+	align-items: stretch;
+}
+
+.sim-playground-actions__col {
+	display: grid;
+	gap: 10px;
+	min-width: 0;
+}
+
+.sim-playground-actions__title {
+	font-size: 13px;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--c-on-surface-2);
+}
+
+.sim-playground-actions__note {
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.45;
+	color: var(--c-on-surface-2);
+}
+
+.sim-playground-actions__btns {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.sim-playground-custom {
+	display: grid;
+	gap: 6px;
+	margin: 0;
+	min-width: 0;
+}
+
+.sim-playground-custom__label {
+	font-weight: 700;
+	font-size: 13px;
+}
+
+.sim-playground-realized {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--c-secondary);
+	padding: 8px 0 2px;
+	margin-top: 4px;
+	border-top: 1px solid var(--c-border);
+	line-height: 1.4;
+	overflow-wrap: anywhere;
+	min-width: 0;
+}
+
+.sim-controls-flyout__panel .footer-email-input {
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.sim-controls-flyout__panel .sim-dash-controlsBlock {
+	box-sizing: border-box;
 }
 
 .sim-dash-controls h3 {
@@ -131,6 +651,80 @@
 	flex-direction: column;
 	justify-content: center;
 	gap: 6px;
+}
+
+/* Collapsible, denser KPI block on the simulation page */
+details.sim-kpi-panel.auth-card {
+	padding: 0;
+	overflow: hidden;
+}
+
+.sim-kpi-panel__summary {
+	list-style: none;
+	cursor: pointer;
+	padding: 12px 16px;
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	min-width: 0;
+	user-select: none;
+}
+
+.sim-kpi-panel__summary::-webkit-details-marker {
+	display: none;
+}
+
+.sim-kpi-panel__summary-text {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+	text-align: left;
+}
+
+.sim-kpi-panel__title {
+	font-size: 1rem;
+	font-weight: 800;
+	line-height: 1.2;
+}
+
+.sim-kpi-panel__subtitle {
+	font-size: 12px;
+	line-height: 1.35;
+	color: var(--c-on-surface-2);
+}
+
+.sim-kpi-panel__body {
+	padding: 0 12px 12px 12px;
+	border-top: 1px solid var(--c-border);
+}
+
+.sim-kpi-panel .sim-kpiGrid {
+	grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+	gap: 8px;
+}
+
+.sim-kpi-panel .sim-kpi {
+	padding: 9px 11px;
+	min-height: 0;
+	border-radius: 10px;
+	gap: 3px;
+	justify-content: flex-start;
+}
+
+.sim-kpi-panel .sim-kpiLabel {
+	font-size: 10px;
+	letter-spacing: 0.06em;
+}
+
+.sim-kpi-panel .sim-kpiValue {
+	font-size: clamp(14px, 1.85vw, 19px);
+}
+
+.sim-kpi-panel .sim-kpiMeta {
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.25;
 }
 
 .sim-kpiLabel {
@@ -204,12 +798,112 @@
 	border-top: 1px solid var(--c-border);
 }
 
-@media (max-width: 1100px) {
-	.sim-dash-body {
+@media (max-width: 720px) {
+	.sim-playground-hud {
 		grid-template-columns: 1fr;
 	}
+}
 
-	.sim-dash-controls {
+@media (max-width: 1100px) {
+	.sim-dash-body {
+		flex-direction: column;
+	}
+
+	.sim-dash-work {
+		flex-direction: column;
+		width: 100%;
+		order: -1;
+		gap: 12px;
+	}
+
+	.sim-playground-flyout:hover .sim-controls-flyout__rail,
+	.sim-playground-flyout:focus-within .sim-controls-flyout__rail {
+		background: color-mix(in srgb, var(--c-surface) 94%, var(--c-secondary) 8%);
+	}
+
+	.sim-dash-lead {
+		flex-direction: column;
+		width: 100%;
+		gap: 12px;
+		order: 1;
+	}
+
+	.sim-dash-flyout-stack {
+		width: 100%;
+		align-self: stretch;
+	}
+
+	.sim-dash-body--controls-hidden .sim-dash-lead {
+		display: none;
+	}
+
+	.sim-dash-chartCol {
+		width: 100%;
+		order: -1;
+	}
+
+	.sim-dash-deskSlot {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.sim-controls-flyout {
+		width: 100% !important;
+		max-height: none;
+		min-height: 0;
+		flex-direction: column;
+	}
+
+	.sim-controls-flyout:hover,
+	.sim-controls-flyout:focus-within {
+		border-color: transparent;
+		background: transparent;
+		box-shadow: none;
+	}
+
+	.sim-controls-flyout:hover .sim-controls-flyout__rail,
+	.sim-controls-flyout:focus-within .sim-controls-flyout__rail {
+		border: 1px solid var(--c-border);
+		border-bottom: none;
+		border-radius: 14px 14px 0 0;
+		border-right: 1px solid var(--c-border);
+		box-shadow: none;
+		background: color-mix(in srgb, var(--c-surface) 94%, var(--c-primary) 8%);
+	}
+
+	.sim-controls-flyout__rail {
+		flex-direction: row;
+		width: 100%;
+		flex: 0 0 auto;
+		border-radius: 14px 14px 0 0;
+		border: 1px solid var(--c-border);
+		border-bottom: none;
+		padding: 10px 14px;
+		justify-content: flex-start;
+		gap: 10px;
+	}
+
+	.sim-controls-flyout__label {
+		writing-mode: horizontal-tb;
+		transform: none;
+	}
+
+	.sim-controls-flyout:hover .sim-controls-flyout__panel,
+	.sim-controls-flyout:focus-within .sim-controls-flyout__panel,
+	.sim-controls-flyout .sim-controls-flyout__panel {
+		flex: 1 1 auto;
+		width: 100% !important;
+		min-width: 0 !important;
+		max-width: none !important;
+		max-height: none !important;
+		opacity: 1 !important;
+		overflow-y: visible;
+		padding: 12px !important;
+		border: 1px solid var(--c-border);
+		border-top: none;
+		border-radius: 0 0 14px 14px;
+		border-left: 1px solid var(--c-border);
+		pointer-events: auto;
 		position: static;
 	}
 }
@@ -224,4 +918,101 @@
 		margin-left: 0;
 		justify-content: flex-start;
 	}
+}
+
+/* Edit simulation (dashboard) — denser layout, uses horizontal space */
+.sim-edit-card {
+	max-width: 1100px;
+	margin-inline: auto;
+	width: 100%;
+}
+
+.sim-edit-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 16px;
+	flex-wrap: wrap;
+	margin-bottom: 4px;
+}
+
+.sim-edit-title {
+	margin: 0;
+	font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+	line-height: 1.2;
+}
+
+.sim-edit-lead {
+	margin: 6px 0 0;
+	font-size: 14px;
+	color: var(--c-on-surface-2);
+	line-height: 1.5;
+	max-width: 42rem;
+}
+
+.sim-edit-back {
+	flex-shrink: 0;
+	align-self: flex-start;
+}
+
+.sim-edit-errors {
+	margin: 12px 0 0;
+	padding: 10px 12px;
+	border: 1px solid var(--c-border);
+	border-radius: 10px;
+	background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);
+}
+
+.sim-edit-errors ul {
+	margin: 0;
+	padding-left: 18px;
+}
+
+.sim-edit-errors li {
+	color: var(--c-on-surface);
+}
+
+.sim-edit-form {
+	display: grid;
+	gap: 18px;
+	margin-top: 12px;
+}
+
+.sim-edit-name {
+	display: grid;
+	gap: 8px;
+}
+
+.sim-edit-label-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 6px 10px;
+}
+
+.sim-edit-hint {
+	font-size: 12px;
+	color: var(--c-on-surface-2);
+}
+
+.sim-edit-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 14px 18px;
+	align-items: start;
+}
+
+.sim-edit-grid > label {
+	display: grid;
+	gap: 6px;
+	min-width: 0;
+}
+
+.sim-edit-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	padding-top: 14px;
+	border-top: 1px solid var(--c-border);
+	margin-top: 2px;
 }

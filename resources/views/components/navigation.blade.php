@@ -3,6 +3,10 @@
         @php
             // Show theme toggle on all public/user pages; exclude admin panel entirely
             $showThemeToggle = !request()->is('admin*');
+            $navSimCurrent = request()->routeIs('simulations.*');
+            $navSupportCurrent = request()->routeIs('support.*') || request()->routeIs('tickets.*') || request()->is('reports');
+            $navAccountCurrent = request()->routeIs('settings*');
+            $navAdminCurrent = request()->is('admin*');
         @endphp
 
         <a href="{{ url('/') }}" class="navigation__brand">
@@ -57,7 +61,7 @@
                 <ul class="navigation__dropdown" style="display:none; position:absolute; top:100%; right:0; z-index:1000; list-style:none; margin:8px 0 0 0; padding:0; min-width:240px; background:var(--c-surface); border:1px solid var(--c-border); border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); overflow:hidden;">
                     <li>
                         @auth
-                            <a href="{{ route('simulations.index') }}" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                            <a href="{{ route('simulations.index') }}" class="navigation__dropdown-link @if($navSimCurrent) navigation__dropdown-link--current @endif" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;" @if($navSimCurrent) aria-current="page" @endif>
                         @else
                             <a href="{{ route('login') }}" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
                         @endauth
@@ -68,25 +72,37 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('support.create') }}" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                        <a href="{{ route('support.index') }}" class="navigation__dropdown-link @if($navSupportCurrent) navigation__dropdown-link--current @endif" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;" @if($navSupportCurrent) aria-current="page" @endif>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
                             </svg>
                             <span>{{ __('Support') }}</span>
                         </a>
                     </li>
+                    @auth
                     <li>
-                        <a href="{{ route('quick-tour') }}" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
+                        <a href="{{ route('settings') }}" class="navigation__dropdown-link @if($navAccountCurrent) navigation__dropdown-link--current @endif" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;" @if($navAccountCurrent) aria-current="page" @endif>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <g>
-                                    <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
-                                    <path d="m19 9l-5 5l-4-4l-3 3"></path>
-                                </g>
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
                             </svg>
-                            <span>{{ __('Features') }}</span>
+                            <span>{{ __('Account') }}</span>
                         </a>
                     </li>
+                    @if(auth()->user()->isAdmin())
                     <li>
+                        <a href="{{ route('admin.dashboard') }}" class="navigation__dropdown-link @if($navAdminCurrent) navigation__dropdown-link--current @endif" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;" @if($navAdminCurrent) aria-current="page" @endif>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                <path d="M2 17l10 5 10-5"></path>
+                                <path d="M2 12l10 5 10-5"></path>
+                            </svg>
+                            <span>{{ __('Admin Panel') }}</span>
+                        </a>
+                    </li>
+                    @endif
+                    @endauth
+                    <li style="border-top:1px solid color-mix(in srgb, var(--c-border) 70%, transparent);">
                         <a href="{{ url('/') }}" class="navigation__dropdown-link" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <g>
@@ -204,6 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        const currentBg = 'color-mix(in srgb, var(--c-primary) 14%, var(--c-surface))';
         dropdownMenu.querySelectorAll('.navigation__dropdown-link').forEach(link => {
             link.addEventListener('click', () => {
                 dropdownToggle.setAttribute('aria-expanded', 'false');
@@ -216,7 +233,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.style.background = 'color-mix(in srgb, var(--c-primary) 10%, var(--c-surface))';
             });
             link.addEventListener('mouseleave', function() {
-                this.style.background = '';
+                const isHere =
+                    this.classList.contains('navigation__dropdown-link--current') ||
+                    this.getAttribute('aria-current') === 'page';
+                this.style.background = isHere ? currentBg : '';
             });
         });
     }

@@ -113,7 +113,7 @@
                 'content' => __('tutorial.show.1b'),
             ],
             [
-                'target' => 'section[aria-label="Run controls"]',
+                'target' => '.sim-dash-toolbar',
                 'position' => 'bottom',
                 'heading' => __('tutorial.show.h3'),
                 'content' => __('tutorial.show.2'),
@@ -212,15 +212,19 @@
     ];
 @endphp
 
-<div id="{{ $tutorialId }}" class="tutorial-overlay" style="display:none; position:fixed; inset:0; z-index:9999; pointer-events:none;">
-    <!-- Dark background overlay (used when no target to spotlight) -->
-    <div class="tutorial-backdrop" style="position:absolute; inset:0; background:rgba(0,0,0,0.0); pointer-events:auto;"></div>
+<div id="{{ $tutorialId }}" class="tutorial-overlay" style="display:none; position:fixed; inset:0; z-index:12000; pointer-events:none;">
+    <!--
+      Full-screen dimming when there is no spotlight target. When a target is highlighted,
+      dimming comes only from .tutorial-spotlight’s box-shadow; this layer stays pointer-events:none
+      so clicks reach the highlighted control (the “hole” was only visual before).
+    -->
+    <div class="tutorial-backdrop" style="position:absolute; inset:0; background:rgba(0,0,0,0.85); pointer-events:none; opacity:0; transition:opacity 0.15s ease;"></div>
 
     <!-- Spotlight "hole" that reveals the highlighted element area -->
     <div class="tutorial-spotlight" style="position:fixed; top:0; left:0; width:0; height:0; border-radius:12px; pointer-events:none; box-shadow:0 0 0 9999px rgba(0,0,0,0.85); opacity:0; transition:opacity 0.15s ease;"></div>
     
     <!-- Tutorial popup - appears next to highlighted element -->
-    <div class="tutorial-popup" style="position:absolute; background:var(--c-surface); border:3px solid var(--c-primary); border-radius:16px; padding:24px; max-width:420px; box-shadow:0 12px 48px rgba(0,0,0,0.6); z-index:10000; pointer-events:auto;">
+    <div class="tutorial-popup" style="position:absolute; background:var(--c-surface); border:3px solid var(--c-primary); border-radius:16px; padding:24px; max-width:420px; box-shadow:0 12px 48px rgba(0,0,0,0.6); z-index:12001; pointer-events:auto;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
             <h3 style="margin:0; font-size:22px; font-weight:700; color:var(--c-primary);">{{ __('tutorial.title') }}</h3>
             <button type="button" class="tutorial-close" aria-label="{{ __('tutorial.close') }}" style="background:none; border:none; cursor:pointer; padding:4px 8px; color:var(--c-on-surface-2); font-size:24px; line-height:1; border-radius:4px; transition:background 0.2s;">&times;</button>
@@ -254,11 +258,30 @@
     let overlay = null;
     let popup = null;
     let highlightedElement = null;
+    let tutorialScrollLocked = false;
+    let resizeReflowTimer = null;
     const stepIndicatorTemplate = @json(__('tutorial.step_x_of_y', ['x' => ':x', 'y' => ':y']));
+
+    function lockTutorialScroll() {
+        if (tutorialScrollLocked) return;
+        tutorialScrollLocked = true;
+        document.documentElement.classList.add('tutorial-scroll-lock');
+    }
+
+    function unlockTutorialScroll() {
+        if (!tutorialScrollLocked) return;
+        tutorialScrollLocked = false;
+        document.documentElement.classList.remove('tutorial-scroll-lock');
+    }
 
     function initTutorial() {
         overlay = document.getElementById(tutorialId);
         if (!overlay) return;
+
+        /* Overlay must sit on <body>, not inside <main>: nav uses z-index:2000 and wins over main’s subtree. */
+        if (overlay.parentElement !== document.body) {
+            document.body.appendChild(overlay);
+        }
 
         popup = overlay.querySelector('.tutorial-popup');
         if (!popup) return;
@@ -287,30 +310,46 @@
 
             highlightedElement = null;
 
-            // Hide spotlight and restore full-dim backdrop
             if (spotlightEl) spotlightEl.style.opacity = '0';
         }
 
         const spotlightEl = overlay.querySelector('.tutorial-spotlight');
         const backdropEl = overlay.querySelector('.tutorial-backdrop');
 
+        function setBackdropSpotlightMode(active) {
+            if (!backdropEl) return;
+            if (active) {
+                backdropEl.style.opacity = '0';
+                backdropEl.style.pointerEvents = 'none';
+            } else {
+                backdropEl.style.opacity = '1';
+                backdropEl.style.pointerEvents = 'auto';
+            }
+        }
+
+        function rectsOverlap(a, b, margin) {
+            const m = margin || 0;
+            return !(a.right + m < b.left || a.left - m > b.right || a.bottom + m < b.top || a.top - m > b.bottom);
+        }
+
         function highlightElement(el) {
             clearHighlight();
 
-            // Store original inline styles so we can restore them later
             if (!el.dataset.tutorialOriginalStyle) {
                 el.dataset.tutorialOriginalStyle = el.getAttribute('style') || '';
             }
 
             highlightedElement = el;
 
-            // Add a subtle highlight (the spotlight does the heavy lifting)
+            try {
+                el.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'auto' });
+            } catch (e) {}
+
             el.style.transition = 'box-shadow 0.15s ease, outline 0.15s ease';
             el.style.boxShadow = '0 0 0 3px rgba(7, 160, 90, 0.55)';
             el.style.outline = '2px solid rgba(7, 160, 90, 0.85)';
             el.style.outlineOffset = '3px';
 
-            // Position spotlight to reveal the target element
             if (spotlightEl) {
                 const rect = el.getBoundingClientRect();
                 const pad = 10;
@@ -330,10 +369,7 @@
                 spotlightEl.style.opacity = '1';
             }
 
-            // When spotlight is active, keep backdrop transparent (still blocks clicks)
-            if (backdropEl) {
-                backdropEl.style.background = 'rgba(0,0,0,0.0)';
-            }
+            setBackdropSpotlightMode(true);
         }
 
         function showStep(stepIndex) {
@@ -349,6 +385,7 @@
             // If we measure while display:none, getBoundingClientRect() returns 0 sizes,
             // which can place the popup off-screen and "freeze" the UI under the backdrop.
             overlay.style.display = 'block';
+            lockTutorialScroll();
             popup.style.visibility = 'hidden';
             popup.style.top = '0px';
             popup.style.left = '0px';
@@ -361,15 +398,11 @@
             }
 
             if (targetEl) {
-                // Highlight the element
                 highlightElement(targetEl);
-                try {
-                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
-                } catch (e) {}
             } else {
                 clearHighlight();
                 if (spotlightEl) spotlightEl.style.opacity = '0';
-                if (backdropEl) backdropEl.style.background = 'rgba(0,0,0,0.85)';
+                setBackdropSpotlightMode(false);
             }
 
             // Update content
@@ -435,6 +468,44 @@
             popup.style.transform = 'none';
             popup.style.visibility = 'visible';
 
+            if (targetEl) {
+                const tr = targetEl.getBoundingClientRect();
+                let pr = popup.getBoundingClientRect();
+                const sides = ['bottom', 'top', 'right', 'left'];
+                let idx = Math.max(0, sides.indexOf(step.position || 'bottom'));
+                let attempts = 0;
+                while (attempts < 4 && rectsOverlap(pr, tr, 20)) {
+                    attempts++;
+                    idx = (idx + 1) % 4;
+                    const pos = sides[idx];
+                    const spacing = 20;
+                    const rect = tr;
+                    switch (pos) {
+                        case 'top':
+                            top = rect.top - pr.height - spacing;
+                            left = rect.left + (rect.width / 2) - (pr.width / 2);
+                            break;
+                        case 'bottom':
+                            top = rect.bottom + spacing;
+                            left = rect.left + (rect.width / 2) - (pr.width / 2);
+                            break;
+                        case 'left':
+                            top = rect.top + (rect.height / 2) - (pr.height / 2);
+                            left = rect.left - pr.width - spacing;
+                            break;
+                        case 'right':
+                            top = rect.top + (rect.height / 2) - (pr.height / 2);
+                            left = rect.right + spacing;
+                            break;
+                    }
+                    top = Math.max(padding, Math.min(top, window.innerHeight - pr.height - padding));
+                    left = Math.max(padding, Math.min(left, window.innerWidth - pr.width - padding));
+                    popup.style.top = top + 'px';
+                    popup.style.left = left + 'px';
+                    pr = popup.getBoundingClientRect();
+                }
+            }
+
             // Handle navigation
             if (step.navigate && targetEl.tagName === 'A') {
                 targetEl.addEventListener('click', function(e) {
@@ -449,6 +520,11 @@
 
         function hideTutorial() {
             clearHighlight();
+            unlockTutorialScroll();
+            if (backdropEl) {
+                backdropEl.style.opacity = '0';
+                backdropEl.style.pointerEvents = 'none';
+            }
             if (overlay) overlay.style.display = 'none';
         }
 
@@ -512,6 +588,14 @@
                 }
             });
         }
+
+        window.addEventListener('resize', () => {
+            if (!overlay || overlay.style.display === 'none') return;
+            clearTimeout(resizeReflowTimer);
+            resizeReflowTimer = setTimeout(() => {
+                showStep(currentStep);
+            }, 120);
+        });
     }
 
     if (document.readyState === 'loading') {

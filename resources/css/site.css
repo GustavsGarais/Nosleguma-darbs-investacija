@@ -7,6 +7,18 @@
 body { color: var(--c-on-surface); background: var(--c-surface); }
 * { box-sizing: border-box; }
 
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
 /* Home / logo: block default link color so gradient + icon colors stay controlled */
 a.navigation__brand,
 a.navigation__brand:visited {
@@ -168,6 +180,14 @@ a.sim-name-link:focus-visible {
 .btn-link:hover { text-decoration: underline; color: var(--c-primary); }
 .btn-link:focus-visible { outline: 2px solid var(--c-primary); outline-offset: 2px; border-radius: 6px; }
 
+/* Tutorial: block page scroll while overlay is open (reduces highlight / spotlight drift) */
+html.tutorial-scroll-lock,
+html.tutorial-scroll-lock body {
+	overflow: hidden;
+	height: 100%;
+	overscroll-behavior: none;
+}
+
 /* Navigation */
 .navigation { position: sticky; top: 0; z-index: 2000; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border-bottom:1px solid var(--c-border); }
 [data-theme="dark"] .navigation { background: rgba(11,18,32,0.7); }
@@ -182,6 +202,11 @@ a.sim-name-link:focus-visible {
 .navigation__item {}
 .navigation__link { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px; text-decoration:none; color: var(--c-on-surface); }
 .navigation__link:hover { background: color-mix(in srgb, var(--c-on-surface) 5%, transparent); }
+.navigation__dropdown-link.navigation__dropdown-link--current,
+.navigation__dropdown-link[aria-current="page"] {
+  background: color-mix(in srgb, var(--c-primary) 14%, var(--c-surface));
+  font-weight: 600;
+}
 .navigation__actions { display:flex; align-items:center; gap:12px; }
 
 /* Desktop navigation panel layout */
@@ -431,57 +456,17 @@ a.sim-name-link:focus-visible {
 	.footer-bottom-content { grid-template-columns: 1fr; text-align:center; }
 }
 
-/* User dashboard: main column may shrink; sidebar labels wrap instead of clipping */
+/* User dashboard: full-width content; app nav lives in the global top bar menu */
 .dashboard-shell {
-  display: grid;
-  grid-template-columns: minmax(0, 190px) minmax(0, 1fr);
-  gap: 24px;
-  align-items: start;
+  display: block;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
 }
 
-.dashboard-sidebar {
-  position: sticky;
-  top: 16px;
-  height: fit-content;
-  padding: 16px;
-  min-width: 0;
-  max-width: 100%;
-}
-
-.dashboard-sidebar .btn {
-  white-space: normal;
-  justify-content: flex-start;
-  text-align: left;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-  line-height: 1.25;
-}
-
-.dashboard-sidebar .dashboard-nav-link.is-current {
-  box-shadow: 0 0 0 2px var(--c-surface), 0 0 0 4px var(--c-primary);
-}
-
-.dashboard-sidebar .dashboard-nav-link.btn-secondary.is-current {
-  box-shadow: 0 0 0 2px var(--c-surface), 0 0 0 4px var(--c-secondary);
-}
-
 .dashboard-content {
   min-width: 0;
   max-width: 100%;
-}
-
-@media (max-width: 720px) {
-  .dashboard-shell {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-sidebar {
-    position: static;
-  }
 }
 
 /* Auth pages */
