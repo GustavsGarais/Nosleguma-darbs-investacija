@@ -8,6 +8,20 @@ function asNumber(value, fallback = 0) {
     return Number.isFinite(num) ? num : fallback;
 }
 
+/** Stable fingerprint when simulation settings change (invalidates saved runner state). */
+function runnerSettingsFingerprint(settingsObj) {
+    const r = (x) => Math.round(Number(x) * 1e9) / 1e9;
+    const s = settingsObj;
+    return [
+        r(s.initialInvestment),
+        r(s.monthlyContribution),
+        r(s.growthRate),
+        r(s.inflationRate),
+        r(s.riskAppetite),
+        r(s.marketInfluence),
+    ].join('|');
+}
+
 function gaussianRandom() {
     let u = 0;
     let v = 0;
@@ -26,6 +40,21 @@ function realisticReturn(monthlyBase, volatility) {
         return 0.08 + Math.random() * 0.1;
     }
     return monthlyBase + gaussianRandom() * volatility;
+}
+
+/**
+ * Other market participants: AR(1) sentiment plus random waves of buying/selling.
+ * Feeds into monthly returns so the path is not a one-way grind upward.
+ */
+function evolveCrowdSentiment(prev) {
+    let s = 0.87 * prev + gaussianRandom() * 0.005;
+    if (Math.random() < 0.092) {
+        s -= 0.014 + Math.random() * 0.038;
+    }
+    if (Math.random() < 0.064) {
+        s += 0.007 + Math.random() * 0.019;
+    }
+    return Math.max(-0.12, Math.min(0.09, s));
 }
 
 const overlayPlugin = {
@@ -69,7 +98,7 @@ const overlayPlugin = {
 Chart.register(overlayPlugin);
 
 function initFromConfig(config) {
-    const { snapshotUrl, csrfToken, settings: rawSettings, i18n } = config;
+    const { snapshotUrl, runnerStateUrl, csrfToken, settings: rawSettings, i18n, savedRunner } = config;
 
     const chartCanvas = document.getElementById('sim-chart');
     const btnRun = document.getElementById('btn-run');
@@ -83,6 +112,11 @@ function initFromConfig(config) {
     const secondarySelect = document.getElementById('secondary-scenario');
     const compareExtraWrap = document.getElementById('compare-extra-wrap');
     const compareExtraInput = document.getElementById('compare-extra-monthly');
+    const classicSecondaryWrap = document.getElementById('classic-secondary-wrap');
+    const playgroundPanel = document.getElementById('playground-panel');
+    const playgroundHelpEl = document.getElementById('playground-help');
+    const modeClassicRadio = document.getElementById('mode-classic');
+    const modePlaygroundRadio = document.getElementById('mode-playground');
     const statusDisplay = document.getElementById('status-display');
     const currentValueEl = document.getElementById('current-value');
     const totalContributedEl = document.getElementById('total-contributed');
@@ -205,7 +239,7 @@ function initFromConfig(config) {
             monthlyVolatility: 0.02,
             shockChance: 0,
             shockImpact: () => 0,
-            recoveryBias: 0.003,
+            recoveryBias: 0.0008,
             lesson: i18n.balancedLesson,
         },
         growth: {
@@ -214,7 +248,7 @@ function initFromConfig(config) {
             monthlyVolatility: 0.03,
             shockChance: 0,
             shockImpact: () => 0,
-            recoveryBias: 0.006,
+            recoveryBias: 0.0025,
             lesson: i18n.growthLesson,
         },
         defensive: {
@@ -223,7 +257,7 @@ function initFromConfig(config) {
             monthlyVolatility: 0.012,
             shockChance: 0,
             shockImpact: () => 0,
-            recoveryBias: 0.002,
+            recoveryBias: 0.0004,
             lesson: i18n.defensiveLesson,
         },
         volatile: {
@@ -232,7 +266,7 @@ function initFromConfig(config) {
             monthlyVolatility: 0.045,
             shockChance: 0,
             shockImpact: () => 0,
-            recoveryBias: 0.004,
+            recoveryBias: 0.0012,
             lesson: i18n.volatileLesson,
         },
         shock: {
@@ -269,6 +303,38 @@ function initFromConfig(config) {
     let sharedSmoothedReturnsReversed = null;
 
     let secondaryScenario = secondarySelect?.value || 'none';
+    let isPlaygroundMode = false;
+    let crowdSentiment = 0;
+
+    function readPlaygroundModeFromUi() {
+        return Boolean(modePlaygroundRadio?.checked);
+    }
+
+    function syncModeUi() {
+        isPlaygroundMode = readPlaygroundModeFromUi();
+        if (classicSecondaryWrap) {
+            classicSecondaryWrap.style.display = isPlaygroundMode ? 'none' : '';
+        }
+        if (playgroundPanel) {
+            playgroundPanel.hidden = !isPlaygroundMode;
+            playgroundPanel.setAttribute('aria-hidden', isPlaygroundMode ? 'false' : 'true');
+        }
+        if (playgroundHelpEl) {
+            playgroundHelpEl.textContent = i18n.playgroundHelp || '';
+        }
+        const playgroundNextStepEl = document.getElementById('playground-next-step');
+        if (playgroundNextStepEl) {
+            playgroundNextStepEl.textContent = i18n.playgroundNextStep || '';
+        }
+        if (isPlaygroundMode && secondarySelect && secondarySelect.value !== 'none') {
+            secondarySelect.value = 'none';
+            secondaryScenario = 'none';
+            invalidatePath();
+        }
+        chart.data.datasets[5].hidden = !isPlaygroundMode;
+        syncSecondaryUi();
+        chart.update('none');
+    }
 
     const primaryColor =
         getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() || '#07a05a';
@@ -343,6 +409,18 @@ function initFromConfig(config) {
                     hidden: true,
                     order: 0,
                 },
+                {
+                    label: i18n.chartTotalPL,
+                    data: [],
+                    borderColor: '#f97316',
+                    borderWidth: 2,
+                    borderDash: [4, 3],
+                    fill: false,
+                    tension: 0.35,
+                    pointRadius: 0,
+                    hidden: true,
+                    order: 0,
+                },
             ],
         },
         options: {
@@ -360,6 +438,18 @@ function initFromConfig(config) {
                         usePointStyle: true,
                         padding: 14,
                         filter(legendItem) {
+                            if (isPlaygroundMode) {
+                                if (legendItem.datasetIndex === 3 || legendItem.datasetIndex === 4) {
+                                    return false;
+                                }
+                                if (legendItem.datasetIndex === 5) {
+                                    return true;
+                                }
+                                return legendItem.datasetIndex <= 2;
+                            }
+                            if (legendItem.datasetIndex === 5) {
+                                return false;
+                            }
                             if (legendItem.datasetIndex === 3 && secondaryScenario !== 'compare') {
                                 return false;
                             }
@@ -392,6 +482,7 @@ function initFromConfig(config) {
                     grid: { display: false },
                 },
                 y: {
+                    beginAtZero: false,
                     title: {
                         display: true,
                         text: `Value (${activeCurrency})`,
@@ -415,12 +506,44 @@ function initFromConfig(config) {
         resizeTimeout = setTimeout(() => chart.resize(), 100);
     });
 
+    const dashBody = document.querySelector('.sim-dash-body');
+    const dashLead = document.getElementById('sim-dash-lead');
+    const btnToggleControls = document.getElementById('btn-toggle-controls');
+    if (dashBody && typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(() => {
+            requestAnimationFrame(() => chart.resize());
+        });
+        ro.observe(dashBody);
+    }
+
+    btnToggleControls?.addEventListener('click', () => {
+        if (!dashBody || !dashLead) return;
+        dashBody.classList.toggle('sim-dash-body--controls-hidden');
+        const expanded = !dashBody.classList.contains('sim-dash-body--controls-hidden');
+        btnToggleControls.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        const titleHide = btnToggleControls.getAttribute('data-title-hide') || '';
+        const titleShow = btnToggleControls.getAttribute('data-title-show') || '';
+        btnToggleControls.title = expanded ? titleHide : titleShow;
+        if (expanded) {
+            dashLead.removeAttribute('inert');
+        } else {
+            dashLead.setAttribute('inert', '');
+        }
+        requestAnimationFrame(() => chart.resize());
+    });
+
     function syncSecondaryUi() {
         if (compareExtraWrap) {
-            compareExtraWrap.style.display = secondaryScenario === 'compare' ? 'grid' : 'none';
+            compareExtraWrap.style.display =
+                !isPlaygroundMode && secondaryScenario === 'compare' ? 'grid' : 'none';
         }
-        chart.data.datasets[3].hidden = secondaryScenario !== 'compare';
-        chart.data.datasets[4].hidden = secondaryScenario !== 'sor';
+        if (isPlaygroundMode) {
+            chart.data.datasets[3].hidden = true;
+            chart.data.datasets[4].hidden = true;
+        } else {
+            chart.data.datasets[3].hidden = secondaryScenario !== 'compare';
+            chart.data.datasets[4].hidden = secondaryScenario !== 'sor';
+        }
         chart.update('none');
     }
 
@@ -432,6 +555,7 @@ function initFromConfig(config) {
     function buildSmoothedPath(length) {
         const arr = [];
         let last = baseMonthlyReturnRate;
+        let pathCrowd = 0;
         const preset = presetConfigs[activePresetKey] ?? presetConfigs.balanced;
 
         for (let step = 1; step <= length; step++) {
@@ -439,7 +563,8 @@ function initFromConfig(config) {
             const cycleBias = Math.sin((step / 84) * Math.PI  * 2) * 0.003;
             const monthlyBase = targetMonthly + cycleBias + preset.recoveryBias;
             const vol = preset.monthlyVolatility * (1 + volatilityInfluence * 0.6);
-            let r = realisticReturn(monthlyBase, vol);
+            pathCrowd = evolveCrowdSentiment(pathCrowd);
+            let r = realisticReturn(monthlyBase, vol) + pathCrowd * 0.62;
             if (activePresetKey === 'shock' && Math.random() < preset.shockChance) {
                 const extra = preset.shockImpact();
                 r += extra;
@@ -470,9 +595,17 @@ function initFromConfig(config) {
         const cycleBias = Math.sin((stepMonth / 84) * Math.PI * 2) * 0.003;
         const monthlyBase = targetMonthly + cycleBias + preset.recoveryBias;
         const vol = preset.monthlyVolatility * (1 + volatilityInfluence * 0.6);
-        let r = realisticReturn(monthlyBase, vol);
+        crowdSentiment = evolveCrowdSentiment(crowdSentiment);
+        let r = realisticReturn(monthlyBase, vol) + crowdSentiment * 0.62;
         if (r <= -0.12 || r >= 0.15) {
             pushEvent(i18n.fatTailEvent.replace(':pct', (r * 100).toFixed(1)));
+        }
+        if (crowdSentiment < -0.055 && Math.random() < 0.22) {
+            pushEvent(
+                i18n.crowdSelling.replace(':pct', Math.abs(crowdSentiment * 100).toFixed(1)),
+            );
+        } else if (crowdSentiment > 0.045 && Math.random() < 0.18) {
+            pushEvent(i18n.crowdBuying.replace(':pct', (crowdSentiment * 100).toFixed(1)));
         }
         if (activePresetKey === 'shock' && Math.random() < preset.shockChance) {
             const extra = preset.shockImpact();
@@ -522,34 +655,222 @@ function initFromConfig(config) {
     function updateCurrencyLabels() {
         chart.data.datasets[0].label = `${i18n.chartContributed} (${activeCurrency})`;
         chart.data.datasets[1].label = `${i18n.chartReal} (${activeCurrency})`;
-        chart.data.datasets[2].label = `${i18n.chartNominal} (${activeCurrency})`;
+        chart.data.datasets[2].label = isPlaygroundMode
+            ? `${i18n.chartNetWorth} (${activeCurrency})`
+            : `${i18n.chartNominal} (${activeCurrency})`;
         chart.data.datasets[3].label = `${i18n.chartCompare} (${activeCurrency})`;
         chart.data.datasets[4].label = `${i18n.chartSor} (${activeCurrency})`;
+        chart.data.datasets[5].label = `${i18n.chartTotalPL} (${activeCurrency})`;
         if (chart.options?.scales?.y?.title) {
             chart.options.scales.y.title.text = `Value (${activeCurrency})`;
+        }
+    }
+
+    function lifetimeContributedOf(row) {
+        return row.lifetimeContributed ?? row.contributions;
+    }
+
+    function playgroundRow(
+        month,
+        price,
+        units,
+        walletCash,
+        costBasis,
+        lifetimeContributed,
+        realizedGainTotal,
+    ) {
+        const marketValue = units * price;
+        const netWorth = walletCash + marketValue;
+        const inflationAdjusted = netWorth / Math.pow(1 + monthlyInflationRate, month);
+        return {
+            month,
+            price,
+            units,
+            walletCash,
+            costBasis,
+            lifetimeContributed,
+            realizedGainTotal,
+            marketValue,
+            value: netWorth,
+            contributions: lifetimeContributed,
+            inflationAdjusted,
+            interestEarned: 0,
+        };
+    }
+
+    function replaceLastPlaygroundRow(row) {
+        if (!simulationData.length) return;
+        simulationData[simulationData.length - 1] = row;
+    }
+
+    function playgroundBuy(amount) {
+        const B = Number(amount);
+        if (!Number.isFinite(B) || B <= 0) return;
+        const last = simulationData[simulationData.length - 1];
+        const P = last.price;
+        const addUnits = B / P;
+        const newUnits = last.units + addUnits;
+        const newCost = last.costBasis + B;
+        const newLifetime = last.lifetimeContributed + B;
+        const row = playgroundRow(
+            last.month,
+            P,
+            newUnits,
+            last.walletCash,
+            newCost,
+            newLifetime,
+            last.realizedGainTotal,
+        );
+        replaceLastPlaygroundRow(row);
+        peakValue = Math.max(peakValue, row.value);
+        const msg = (i18n.playgroundBought || 'Added :amount').replace(':amount', formatCurrency(B));
+        pushEvent(msg);
+        rebuildChartData('none');
+        updateSummary();
+    }
+
+    function playgroundSell(fraction) {
+        const f = Math.min(1, Math.max(0, fraction));
+        const last = simulationData[simulationData.length - 1];
+        if (!last.units || last.units <= 0 || f <= 0) return;
+        const sellUnits = last.units * f;
+        const P = last.price;
+        const proceeds = sellUnits * P;
+        const costRemoved = last.costBasis * f;
+        const tradeGain = proceeds - costRemoved;
+        const newUnits = last.units - sellUnits;
+        const newCost = last.costBasis - costRemoved;
+        const newWallet = last.walletCash + proceeds;
+        const newRealized = last.realizedGainTotal + tradeGain;
+        const row = playgroundRow(
+            last.month,
+            P,
+            newUnits,
+            newWallet,
+            newCost,
+            last.lifetimeContributed,
+            newRealized,
+        );
+        replaceLastPlaygroundRow(row);
+        const drawdown = (row.value - peakValue) / (peakValue || 1);
+        maxDrawdown = Math.min(maxDrawdown, drawdown);
+        const pct = Math.round(f * 100);
+        const msg = (i18n.playgroundSold || '')
+            .replace(':pct', String(pct))
+            .replace(':gain', formatCurrency(tradeGain));
+        pushEvent(msg);
+        rebuildChartData('none');
+        updateSummary();
+    }
+
+    function playgroundAdvanceMonth() {
+        const last = simulationData[simulationData.length - 1];
+        const stepMonth = last.month + 1;
+        const marketReturn = marketReturnForStep(stepMonth);
+        if (marketReturn < -0.12) {
+            crashMonths.add(stepMonth);
+        }
+        const newPrice = last.price * (1 + marketReturn) * (1 - monthlyFeeRate);
+        const marketValue = last.units * newPrice;
+        const netWorth = last.walletCash + marketValue;
+        simulationData.push(
+            playgroundRow(
+                stepMonth,
+                newPrice,
+                last.units,
+                last.walletCash,
+                last.costBasis,
+                last.lifetimeContributed,
+                last.realizedGainTotal,
+            ),
+        );
+        const next = simulationData[simulationData.length - 1];
+        next.interestEarned = marketValue - last.units * last.price;
+        currentMonth = stepMonth;
+
+        if (next.value > peakValue) {
+            peakValue = next.value;
+            pushEvent(i18n.newHigh.replace(':month', String(next.month)));
+        }
+        const dd = (next.value - peakValue) / (peakValue || 1);
+        maxDrawdown = Math.min(maxDrawdown, dd);
+        if (dd < -0.1 && dd.toFixed(2) === maxDrawdown.toFixed(2)) {
+            pushEvent(i18n.drawdownCoaching.replace(':pct', Math.abs(dd * 100).toFixed(1)));
+        }
+    }
+
+    function updatePlaygroundTradingDesk() {
+        const cashEl = document.getElementById('playground-hud-cash');
+        const investedEl = document.getElementById('playground-hud-invested');
+        const unrealEl = document.getElementById('playground-hud-unrealized');
+        const realizedEl = document.getElementById('playground-realized');
+
+        if (!isPlaygroundMode) {
+            if (cashEl) cashEl.textContent = '—';
+            if (investedEl) investedEl.textContent = '—';
+            if (unrealEl) {
+                unrealEl.textContent = '—';
+                unrealEl.classList.remove(
+                    'sim-playground-hud__value--up',
+                    'sim-playground-hud__value--down',
+                );
+            }
+            if (realizedEl) realizedEl.textContent = '';
+            return;
+        }
+
+        const last = simulationData[simulationData.length - 1];
+        if (!last || typeof last.walletCash !== 'number') return;
+
+        const marketVal = last.units * last.price;
+        const unreal = marketVal - last.costBasis;
+
+        if (cashEl) cashEl.textContent = formatCurrency(last.walletCash);
+        if (investedEl) investedEl.textContent = formatCurrency(marketVal);
+        if (unrealEl) {
+            unrealEl.textContent = formatCurrency(unreal);
+            unrealEl.classList.toggle('sim-playground-hud__value--up', unreal > 0);
+            unrealEl.classList.toggle('sim-playground-hud__value--down', unreal < 0);
+        }
+        if (realizedEl) {
+            const label = i18n.playgroundRealizedLabel || 'Realized P/L';
+            realizedEl.textContent = `${label}: ${formatCurrency(last.realizedGainTotal)}`;
         }
     }
 
     let crashMonths = new Set();
 
     function seedInitialState() {
+        crowdSentiment = 0;
         lastMonthlyReturn = baseMonthlyReturnRate;
         currentMonth = 0;
         peakValue = settings.initialInvestment;
         maxDrawdown = 0;
         eventLog = [];
         crashMonths = new Set();
-        simulationData = [
-            {
-                month: 0,
-                value: settings.initialInvestment,
-                inflationAdjusted: settings.initialInvestment,
-                contributions: settings.initialInvestment,
-                interestEarned: 0,
-            },
-        ];
-        simulationDataCompare = [{ ...simulationData[0] }];
-        simulationDataSor = [{ ...simulationData[0] }];
+        isPlaygroundMode = readPlaygroundModeFromUi();
+        if (isPlaygroundMode) {
+            const p0 = 100;
+            const inv = settings.initialInvestment;
+            const u0 = inv / p0;
+            simulationData = [
+                playgroundRow(0, p0, u0, 0, inv, inv, 0),
+            ];
+            simulationDataCompare = [];
+            simulationDataSor = [];
+        } else {
+            simulationData = [
+                {
+                    month: 0,
+                    value: settings.initialInvestment,
+                    inflationAdjusted: settings.initialInvestment,
+                    contributions: settings.initialInvestment,
+                    interestEarned: 0,
+                },
+            ];
+            simulationDataCompare = [{ ...simulationData[0] }];
+            simulationDataSor = [{ ...simulationData[0] }];
+        }
         invalidatePath();
 
         rebuildChartData('resize');
@@ -559,9 +880,161 @@ function initFromConfig(config) {
         renderEvents();
         chart.$pauseMonth = null;
         chart.$crashMonths = [];
+        syncModeUi();
         statusDisplay.textContent = i18n.ready;
         statusDisplay.style.background =
             'color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%)';
+        schedulePersistRunnerState();
+    }
+
+    const cloneStateRows = (arr) => (Array.isArray(arr) ? arr.map((r) => ({ ...r })) : []);
+
+    let runnerPersistTimer = null;
+    let suppressRunnerPersistUntil = 0;
+
+    function buildRunnerPayload() {
+        const pgc = document.getElementById('playground-custom-amount');
+        return {
+            v: 1,
+            settingsFingerprint: runnerSettingsFingerprint(settings),
+            mode: isPlaygroundMode ? 'playground' : 'classic',
+            months: parseInt(monthsInput.value, 10) || 120,
+            speed: parseFloat(speedInput.value) || 0.25,
+            activePresetKey,
+            secondaryScenario,
+            compareExtra: Math.max(0, parseFloat(compareExtraInput?.value) || 0),
+            playgroundCustomAmount: Math.max(0, parseFloat(pgc?.value) || 0),
+            simulationData: cloneStateRows(simulationData),
+            simulationDataCompare: cloneStateRows(simulationDataCompare),
+            simulationDataSor: cloneStateRows(simulationDataSor),
+            sharedSmoothedReturns: sharedSmoothedReturns ? [...sharedSmoothedReturns] : null,
+            sharedSmoothedReturnsReversed: sharedSmoothedReturnsReversed
+                ? [...sharedSmoothedReturnsReversed]
+                : null,
+            crashMonths: Array.from(crashMonths),
+            peakValue,
+            maxDrawdown,
+            lastMonthlyReturn,
+            crowdSentiment,
+            currentMonth,
+        };
+    }
+
+    function schedulePersistRunnerState() {
+        if (!runnerStateUrl || !csrfToken || typeof window.fetch !== 'function') return;
+        if (Date.now() < suppressRunnerPersistUntil) return;
+        clearTimeout(runnerPersistTimer);
+        runnerPersistTimer = setTimeout(() => {
+            runnerPersistTimer = null;
+            const body = buildRunnerPayload();
+            fetch(runnerStateUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify(body),
+            }).catch(() => {});
+        }, 700);
+    }
+
+    function validateSavedRunner(saved) {
+        if (!saved || saved.v !== 1) return false;
+        if (saved.settingsFingerprint !== runnerSettingsFingerprint(settings)) return false;
+        const wantPlay = saved.mode === 'playground';
+        const rows = saved.simulationData;
+        if (!Array.isArray(rows) || rows.length === 0) return false;
+        const first = rows[0];
+        if (wantPlay) {
+            if (typeof first.units !== 'number' || typeof first.price !== 'number') return false;
+        } else if (first.units != null) {
+            return false;
+        }
+        if (wantPlay && saved.secondaryScenario !== 'none') return false;
+        if (!wantPlay && saved.secondaryScenario === 'compare') {
+            const c = saved.simulationDataCompare;
+            if (!Array.isArray(c) || c.length !== rows.length) return false;
+        }
+        if (!wantPlay && saved.secondaryScenario === 'sor') {
+            const sor = saved.simulationDataSor;
+            if (!Array.isArray(sor) || sor.length !== rows.length) return false;
+        }
+        const last = rows[rows.length - 1];
+        if (typeof last?.month !== 'number') return false;
+        if (typeof saved.currentMonth === 'number' && saved.currentMonth !== last.month) return false;
+        if (!presetConfigs[saved.activePresetKey]) return false;
+        return true;
+    }
+
+    function applySavedRunner(saved) {
+        suppressRunnerPersistUntil = Date.now() + 1000;
+        const wantPlay = saved.mode === 'playground';
+        if (wantPlay) {
+            if (modePlaygroundRadio) modePlaygroundRadio.checked = true;
+            if (modeClassicRadio) modeClassicRadio.checked = false;
+        } else {
+            if (modeClassicRadio) modeClassicRadio.checked = true;
+            if (modePlaygroundRadio) modePlaygroundRadio.checked = false;
+        }
+        isPlaygroundMode = wantPlay;
+        monthsInput.value = String(Math.min(600, Math.max(1, saved.months)));
+        speedInput.value = String(Math.max(0.1, Math.min(10, saved.speed)));
+        if (presetSelect && presetConfigs[saved.activePresetKey]) {
+            presetSelect.value = saved.activePresetKey;
+            activePresetKey = saved.activePresetKey;
+        }
+        if (secondarySelect) {
+            secondarySelect.value = saved.secondaryScenario;
+            secondaryScenario = saved.secondaryScenario;
+        }
+        if (compareExtraInput != null) {
+            compareExtraInput.value = String(Math.max(0, parseFloat(saved.compareExtra) || 0));
+        }
+        const pgc = document.getElementById('playground-custom-amount');
+        if (pgc != null && saved.playgroundCustomAmount != null) {
+            pgc.value = String(Math.max(0, saved.playgroundCustomAmount));
+        }
+        simulationData = cloneStateRows(saved.simulationData);
+        simulationDataCompare = cloneStateRows(saved.simulationDataCompare);
+        simulationDataSor = cloneStateRows(saved.simulationDataSor);
+        sharedSmoothedReturns = Array.isArray(saved.sharedSmoothedReturns)
+            ? [...saved.sharedSmoothedReturns]
+            : null;
+        sharedSmoothedReturnsReversed = Array.isArray(saved.sharedSmoothedReturnsReversed)
+            ? [...saved.sharedSmoothedReturnsReversed]
+            : null;
+        crashMonths = new Set(Array.isArray(saved.crashMonths) ? saved.crashMonths : []);
+        peakValue = asNumber(saved.peakValue, settings.initialInvestment);
+        maxDrawdown = asNumber(saved.maxDrawdown, 0);
+        lastMonthlyReturn = asNumber(saved.lastMonthlyReturn, baseMonthlyReturnRate);
+        crowdSentiment = asNumber(saved.crowdSentiment, 0);
+        currentMonth = simulationData[simulationData.length - 1].month;
+        syncModeUi();
+        syncSecondaryUi();
+        rebuildChartData('resize');
+        updateSummary();
+        updateLearningNote();
+        updateRiskTip();
+        renderEvents();
+        chart.$pauseMonth = currentMonth > 0 ? currentMonth : null;
+        chart.$crashMonths = Array.from(crashMonths).sort((a, b) => a - b);
+        const maxM = parseInt(monthsInput.value, 10) || 120;
+        if (currentMonth >= maxM) {
+            statusDisplay.textContent = i18n.complete;
+            statusDisplay.style.background =
+                'color-mix(in srgb, var(--c-primary) 30%, var(--c-surface))';
+        } else if (currentMonth > 0) {
+            statusDisplay.textContent = i18n.paused;
+            statusDisplay.style.background =
+                'color-mix(in srgb, var(--c-secondary) 20%, var(--c-surface))';
+        } else {
+            statusDisplay.textContent = i18n.ready;
+            statusDisplay.style.background =
+                'color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%)';
+        }
+        return true;
     }
 
     function calculateNextMonth() {
@@ -606,20 +1079,36 @@ function initFromConfig(config) {
 
     function rebuildChartData(animation = 'none') {
         chart.data.labels = simulationData.map((entry) => entry.month);
-        chart.data.datasets[0].data = simulationData.map((entry) => convertAmount(entry.contributions));
-        chart.data.datasets[1].data = simulationData.map((entry) => convertAmount(entry.inflationAdjusted));
-        chart.data.datasets[2].data = simulationData.map((entry) => convertAmount(entry.value));
-
-        if (secondaryScenario === 'compare' && simulationDataCompare.length === simulationData.length) {
-            chart.data.datasets[3].data = simulationDataCompare.map((entry) => convertAmount(entry.value));
-        } else {
+        if (isPlaygroundMode) {
+            chart.data.datasets[0].data = simulationData.map((entry) =>
+                convertAmount(lifetimeContributedOf(entry)),
+            );
+            chart.data.datasets[1].data = simulationData.map((entry) =>
+                convertAmount(entry.inflationAdjusted),
+            );
+            chart.data.datasets[2].data = simulationData.map((entry) => convertAmount(entry.value));
             chart.data.datasets[3].data = [];
-        }
-
-        if (secondaryScenario === 'sor' && simulationDataSor.length === simulationData.length) {
-            chart.data.datasets[4].data = simulationDataSor.map((entry) => convertAmount(entry.value));
-        } else {
             chart.data.datasets[4].data = [];
+            chart.data.datasets[5].data = simulationData.map((entry) =>
+                convertAmount(entry.value - lifetimeContributedOf(entry)),
+            );
+        } else {
+            chart.data.datasets[0].data = simulationData.map((entry) => convertAmount(entry.contributions));
+            chart.data.datasets[1].data = simulationData.map((entry) => convertAmount(entry.inflationAdjusted));
+            chart.data.datasets[2].data = simulationData.map((entry) => convertAmount(entry.value));
+            chart.data.datasets[5].data = [];
+
+            if (secondaryScenario === 'compare' && simulationDataCompare.length === simulationData.length) {
+                chart.data.datasets[3].data = simulationDataCompare.map((entry) => convertAmount(entry.value));
+            } else {
+                chart.data.datasets[3].data = [];
+            }
+
+            if (secondaryScenario === 'sor' && simulationDataSor.length === simulationData.length) {
+                chart.data.datasets[4].data = simulationDataSor.map((entry) => convertAmount(entry.value));
+            } else {
+                chart.data.datasets[4].data = [];
+            }
         }
 
         chart.$crashMonths = Array.from(crashMonths).sort((a, b) => a - b);
@@ -644,9 +1133,10 @@ function initFromConfig(config) {
     function updateSummary() {
         const data = simulationData[simulationData.length - 1] || simulationData[0];
         const prev = simulationData.length > 1 ? simulationData[simulationData.length - 2] : null;
-        const totalGain = data.value - data.contributions;
+        const contribBase = lifetimeContributedOf(data);
+        const totalGain = data.value - contribBase;
         const years = Math.max(data.month, 1) / 12;
-        const cagr = Math.pow(data.value / Math.max(data.contributions, 1e-6), 1 / years) - 1;
+        const cagr = Math.pow(data.value / Math.max(contribBase, 1e-6), 1 / years) - 1;
 
         currentValueEl.textContent = formatCurrency(data.value);
         totalContributedEl.textContent = formatCurrency(data.contributions);
@@ -669,9 +1159,9 @@ function initFromConfig(config) {
         } else if (meta.contributed) meta.contributed.textContent = '';
 
         if (meta.gain) {
-            const gainPctVsContrib = data.contributions > 0 ? (totalGain / data.contributions) * 100 : 0;
+            const gainPctVsContrib = contribBase > 0 ? (totalGain / contribBase) * 100 : 0;
             meta.gain.textContent =
-                data.contributions > 0
+                contribBase > 0
                     ? `${totalGain >= 0 ? '+' : '-'}${formatConverted(Math.abs(convertAmount(totalGain)))} (${gainPctVsContrib >= 0 ? '+' : ''}${gainPctVsContrib.toFixed(1)}% ${i18n.vsContributed})`
                     : '';
             meta.gain.className = 'sim-kpiMeta' + (totalGain >= 0 ? ' sim-kpiMeta--up' : ' sim-kpiMeta--down');
@@ -696,12 +1186,19 @@ function initFromConfig(config) {
         if (meta.cagr) {
             meta.cagr.textContent = `${i18n.onContributed} \u00B7 ${(cagr * 100).toFixed(2)}% ${i18n.cagr}`;
         }
+
+        updatePlaygroundTradingDesk();
+        schedulePersistRunnerState();
     }
 
     function updateLearningNote() {
-        const preset = presetConfigs[activePresetKey] ?? presetConfigs.balanced;
         if (learningNoteEl) {
-            learningNoteEl.textContent = preset.lesson || i18n.stayInvested;
+            if (isPlaygroundMode) {
+                learningNoteEl.textContent = i18n.playgroundLesson || i18n.stayInvested;
+            } else {
+                const preset = presetConfigs[activePresetKey] ?? presetConfigs.balanced;
+                learningNoteEl.textContent = preset.lesson || i18n.stayInvested;
+            }
         }
     }
 
@@ -742,6 +1239,7 @@ function initFromConfig(config) {
     function startSimulation() {
         if (isRunning) return;
 
+        isPlaygroundMode = readPlaygroundModeFromUi();
         const maxMonths = parseInt(monthsInput.value, 10);
         ensureSharedPath(maxMonths);
 
@@ -765,7 +1263,11 @@ function initFromConfig(config) {
                 return;
             }
 
-            calculateNextMonth();
+            if (isPlaygroundMode) {
+                playgroundAdvanceMonth();
+            } else {
+                calculateNextMonth();
+            }
             rebuildChartData('none');
             updateSummary();
             statusDisplay.textContent = i18n.month
@@ -776,6 +1278,7 @@ function initFromConfig(config) {
 
     function stepOnce() {
         pauseSimulation();
+        isPlaygroundMode = readPlaygroundModeFromUi();
         const maxMonths = parseInt(monthsInput.value, 10) || 120;
         ensureSharedPath(maxMonths);
         if (currentMonth >= maxMonths) {
@@ -784,7 +1287,11 @@ function initFromConfig(config) {
                 'color-mix(in srgb, var(--c-primary) 30%, var(--c-surface))';
             return;
         }
-        calculateNextMonth();
+        if (isPlaygroundMode) {
+            playgroundAdvanceMonth();
+        } else {
+            calculateNextMonth();
+        }
         rebuildChartData('none');
         updateSummary();
         statusDisplay.textContent = i18n.month
@@ -821,14 +1328,15 @@ function initFromConfig(config) {
         }
         const latestEntry = simulationData[simulationData.length - 1];
         if (!latestEntry) return;
-        const totalGain = latestEntry.value - latestEntry.contributions;
+        const contrib = lifetimeContributedOf(latestEntry);
+        const totalGain = latestEntry.value - contrib;
         updateSaveStatus(i18n.saving, 'var(--c-on-surface)');
 
         const history = simulationData.map((row) => ({
             month: row.month,
             value: row.value,
             inflationAdjusted: row.inflationAdjusted,
-            contributions: row.contributions,
+            contributions: lifetimeContributedOf(row),
         }));
 
         fetch(snapshotUrl, {
@@ -842,7 +1350,7 @@ function initFromConfig(config) {
                 month: latestEntry.month,
                 value: latestEntry.value,
                 real_value: latestEntry.inflationAdjusted,
-                contributions: latestEntry.contributions,
+                contributions: contrib,
                 total_gain: totalGain,
                 currency: activeCurrency,
                 history,
@@ -874,7 +1382,10 @@ function initFromConfig(config) {
         }
     }
 
-    seedInitialState();
+    const restored = savedRunner && validateSavedRunner(savedRunner) && applySavedRunner(savedRunner);
+    if (!restored) {
+        seedInitialState();
+    }
     syncSecondaryUi();
 
     btnRun.addEventListener('click', startSimulation);
@@ -887,6 +1398,7 @@ function initFromConfig(config) {
 
     presetSelect.addEventListener('change', (e) => {
         activePresetKey = e.target.value;
+        crowdSentiment = 0;
         invalidatePath();
         updateLearningNote();
         updateRiskTip();
@@ -894,6 +1406,7 @@ function initFromConfig(config) {
             const label = presetConfigs[activePresetKey]?.label ?? i18n.balancedLabel;
             statusDisplay.textContent = i18n.presetLabel.replace(':label', label);
         }
+        schedulePersistRunnerState();
     });
 
     secondarySelect?.addEventListener('change', () => {
@@ -911,8 +1424,51 @@ function initFromConfig(config) {
         }
     });
 
+    modeClassicRadio?.addEventListener('change', () => {
+        if (modeClassicRadio.checked) {
+            pauseSimulation();
+            seedInitialState();
+        }
+    });
+    modePlaygroundRadio?.addEventListener('change', () => {
+        if (modePlaygroundRadio.checked) {
+            pauseSimulation();
+            seedInitialState();
+        }
+    });
+
+    document.querySelectorAll('.pg-buy').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            if (!readPlaygroundModeFromUi()) return;
+            isPlaygroundMode = true;
+            playgroundBuy(btn.getAttribute('data-amount'));
+        });
+    });
+    document.getElementById('playground-custom-buy')?.addEventListener('click', () => {
+        if (!readPlaygroundModeFromUi()) return;
+        isPlaygroundMode = true;
+        const inp = document.getElementById('playground-custom-amount');
+        playgroundBuy(inp?.value);
+    });
+    document.querySelectorAll('.pg-sell').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            if (!readPlaygroundModeFromUi()) return;
+            isPlaygroundMode = true;
+            playgroundSell(parseFloat(btn.getAttribute('data-fraction') || '0'));
+        });
+    });
+
     monthsInput?.addEventListener('change', () => {
         invalidatePath();
+        schedulePersistRunnerState();
+    });
+
+    speedInput?.addEventListener('change', () => {
+        schedulePersistRunnerState();
+    });
+
+    document.getElementById('playground-custom-amount')?.addEventListener('change', () => {
+        schedulePersistRunnerState();
     });
 
     window.addEventListener('storage', (event) => {

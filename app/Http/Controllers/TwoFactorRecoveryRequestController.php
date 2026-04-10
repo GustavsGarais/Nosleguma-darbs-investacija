@@ -6,20 +6,14 @@ use App\Models\SupportTicket;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 
 class TwoFactorRecoveryRequestController extends Controller
 {
     private const SUPPORT_SUBJECT = 'Lost 2FA / Account Recovery';
 
-    public function create(): View
-    {
-        return view('support.two-factor-recovery');
-    }
-
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validateWithBag('recovery', [
             'contact_email' => 'required|email|max:255',
             'description' => 'required|string|max:2000',
         ], [
@@ -32,13 +26,16 @@ class TwoFactorRecoveryRequestController extends Controller
         // Keep descriptions readable in admin UI (similar to the existing reports page).
         $text = trim($validated['description']);
         $words = preg_split('/\s+/', $text);
-        $words = array_filter($words, fn ($word) => !empty(trim($word)));
+        $words = array_filter($words, fn ($word) => ! empty(trim($word)));
         $wordCount = count($words);
 
         if ($wordCount > 400) {
             return back()
                 ->withInput()
-                ->withErrors(['description' => 'The description must not exceed 400 words. You have ' . $wordCount . ' words.']);
+                ->withErrors(
+                    ['description' => 'The description must not exceed 400 words. You have '.$wordCount.' words.'],
+                    'recovery',
+                );
         }
 
         $contactEmail = $validated['contact_email'];
@@ -60,4 +57,3 @@ class TwoFactorRecoveryRequestController extends Controller
             ->with('success', 'Your account recovery request was submitted. Our team will review it soon.');
     }
 }
-

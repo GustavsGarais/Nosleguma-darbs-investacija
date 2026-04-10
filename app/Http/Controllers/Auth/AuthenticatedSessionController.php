@@ -14,8 +14,16 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        $redirect = $request->query('redirect');
+        if (is_string($redirect) && $redirect !== '') {
+            $base = rtrim((string) config('app.url'), '/');
+            if (str_starts_with($redirect, $base.'/') || $redirect === $base) {
+                $request->session()->put('url.intended', $redirect);
+            }
+        }
+
         return view('auth.login');
     }
 
@@ -27,14 +35,14 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $user = Auth::user();
-        
+
         // Check if 2FA is enabled
         if ($user->hasTwoFactorEnabled()) {
             // Store user ID and remember flag in session for 2FA verification
             $request->session()->put('login.id', $user->id);
             $request->session()->put('login.remember', $request->boolean('remember'));
             Auth::logout();
-            
+
             return redirect()->route('two-factor.login');
         }
 

@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-Bb95wpt5.css",
+    "file": "assets/app-BX2jXXS3.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -14,7 +14,7 @@
     "isEntry": true
   },
   "resources/js/simulation-runner.js": {
-    "file": "assets/simulation-runner-DwNXS94H.js",
+    "file": "assets/simulation-runner-CDq03ICD.js",
     "name": "simulation-runner",
     "src": "resources/js/simulation-runner.js",
     "isEntry": true

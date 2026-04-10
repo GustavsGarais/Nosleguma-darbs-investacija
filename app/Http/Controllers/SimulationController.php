@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Simulation;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class SimulationController extends Controller
 {
@@ -19,6 +19,7 @@ class SimulationController extends Controller
         }
         $num = is_numeric($value) ? (float) $value : $fallback;
         $num = max(0.0, min(100.0, $num));
+
         return $num / 100.0;
     }
 
@@ -45,7 +46,7 @@ class SimulationController extends Controller
             'risk_appetite' => 'required|numeric|min:0|max:100',
             'market_influence' => 'required|numeric|min:0|max:100',
             'inflation_rate' => 'required|numeric|min:0|max:100',
-            'investors' => 'required|integer|min:1'
+            'investors' => 'required|integer|min:1',
         ]);
 
         auth()->user()->simulations()->create([
@@ -57,8 +58,8 @@ class SimulationController extends Controller
                 'riskAppetite' => $this->percentToDecimal($validated['risk_appetite'], 50.0),
                 'marketInfluence' => $this->percentToDecimal($validated['market_influence'], 50.0),
                 'inflationRate' => $this->percentToDecimal($validated['inflation_rate'], 2.0),
-                'investors' => $validated['investors']
-            ]
+                'investors' => $validated['investors'],
+            ],
         ]);
 
         return redirect()->route('simulations.index')
@@ -68,12 +69,14 @@ class SimulationController extends Controller
     public function show(Simulation $simulation): View
     {
         $this->authorize('view', $simulation);
+
         return view('simulations.show', compact('simulation'));
     }
 
     public function edit(Simulation $simulation): View
     {
         $this->authorize('update', $simulation);
+
         return view('simulations.edit', compact('simulation'));
     }
 
@@ -90,7 +93,7 @@ class SimulationController extends Controller
             'risk_appetite' => 'required|numeric|min:0|max:100',
             'market_influence' => 'required|numeric|min:0|max:100',
             'inflation_rate' => 'required|numeric|min:0|max:100',
-            'investors' => 'required|integer|min:1'
+            'investors' => 'required|integer|min:1',
         ]);
 
         $simulation->update([
@@ -102,8 +105,8 @@ class SimulationController extends Controller
                 'riskAppetite' => $this->percentToDecimal($validated['risk_appetite'], 50.0),
                 'marketInfluence' => $this->percentToDecimal($validated['market_influence'], 50.0),
                 'inflationRate' => $this->percentToDecimal($validated['inflation_rate'], 2.0),
-                'investors' => $validated['investors']
-            ]
+                'investors' => $validated['investors'],
+            ],
         ]);
 
         return redirect()->route('simulations.show', $simulation)
@@ -113,7 +116,7 @@ class SimulationController extends Controller
     public function destroy(Simulation $simulation): RedirectResponse
     {
         $this->authorize('delete', $simulation);
-        
+
         $simulation->delete();
 
         return redirect()->route('simulations.index')
@@ -167,5 +170,48 @@ class SimulationController extends Controller
             'success' => true,
             'snapshot' => $data['snapshot'],
         ]);
+    }
+
+    /**
+     * Persist interactive runner UI state (mode, control values, simulation path) per simulation.
+     */
+    public function runnerState(Request $request, Simulation $simulation)
+    {
+        $this->authorize('update', $simulation);
+
+        $validated = $request->validate([
+            'v' => 'required|integer|in:1',
+            'settingsFingerprint' => 'required|string|max:512',
+            'mode' => 'required|string|in:classic,playground',
+            'months' => 'required|integer|min:1|max:600',
+            'speed' => 'required|numeric|min:0.1|max:10',
+            'activePresetKey' => 'required|string|max:32',
+            'secondaryScenario' => 'required|string|in:none,compare,sor',
+            'compareExtra' => 'nullable|numeric|min:0|max:1000000',
+            'playgroundCustomAmount' => 'nullable|numeric|min:0|max:1000000',
+            'simulationData' => 'required|array|min:1|max:602',
+            'simulationData.*' => 'array',
+            'simulationDataCompare' => 'nullable|array|max:602',
+            'simulationDataCompare.*' => 'array',
+            'simulationDataSor' => 'nullable|array|max:602',
+            'simulationDataSor.*' => 'array',
+            'sharedSmoothedReturns' => 'nullable|array|max:600',
+            'sharedSmoothedReturns.*' => 'numeric',
+            'sharedSmoothedReturnsReversed' => 'nullable|array|max:600',
+            'sharedSmoothedReturnsReversed.*' => 'numeric',
+            'crashMonths' => 'nullable|array|max:200',
+            'crashMonths.*' => 'integer|min:0|max:600',
+            'peakValue' => 'required|numeric',
+            'maxDrawdown' => 'required|numeric',
+            'lastMonthlyReturn' => 'required|numeric',
+            'crowdSentiment' => 'required|numeric',
+            'currentMonth' => 'required|integer|min:0|max:600',
+        ]);
+
+        $data = $simulation->data ?? [];
+        $data['runner'] = $validated;
+        $simulation->update(['data' => $data]);
+
+        return response()->json(['success' => true]);
     }
 }

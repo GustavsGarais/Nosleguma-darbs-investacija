@@ -3,19 +3,25 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PasswordResetInitiatedMail;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\View\View;
+use Throwable;
 
 class PasswordResetLinkController extends Controller
 {
     /**
      * Display the password reset link request view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.forgot-password');
+        return view('auth.forgot-password', [
+            'fromSupport' => $request->query('from') === 'support',
+        ]);
     }
 
     /**
@@ -25,20 +31,51 @@ class PasswordResetLinkController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $rules = [
             'email' => ['required', 'email'],
-        ]);
+        ];
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
+        if ($request->boolean('from_support')) {
+            $rules['support_message'] = ['nullable', 'string', 'max:2000'];
+        }
+
+        $validated = $request->validate($rules);
+
         $status = Password::sendResetLink(
             $request->only('email')
         );
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        if ($status !== Password::RESET_LINK_SENT) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => __($status)]);
+        }
+
+        $user = User::where('email', $validated['email'])->first();
+
+        if ($user !== null) {
+            $note = $request->boolean('from_support')
+                ? (isset($validated['support_message']) ? trim((string) $validated['support_message']) : '')
+                : null;
+            if ($note === '') {
+                $note = null;
+            }
+
+            try {
+                Mail::to($user->email)->send(new PasswordResetInitiatedMail($user, $note));
+            } catch (Throwable $e) {
+                report($e);
+            }
+        }
+
+        $input = $request->only('email');
+        if ($request->boolean('from_support')) {
+            $input['from_support'] = '1';
+            if ($request->filled('support_message')) {
+                $input['support_message'] = $request->input('support_message');
+            }
+        }
+
+        return back()->with('status', __($status))->withInput($input);
     }
 }
