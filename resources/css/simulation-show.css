@@ -129,7 +129,6 @@
 	align-self: flex-start;
 	width: var(--sim-flyout-rail);
 	transition:
-		width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
 		box-shadow 0.28s ease,
 		border-color 0.2s ease,
 		background 0.2s ease;
@@ -146,11 +145,19 @@
 .sim-controls-flyout:hover,
 .sim-controls-flyout:focus-within {
 	align-items: stretch;
-	width: calc(var(--sim-flyout-rail) + var(--sim-flyout-panel));
 	border-color: var(--c-border);
 	background: var(--c-surface);
 	box-shadow: var(--shadow-1, 0 8px 28px rgba(0, 0, 0, 0.1));
 	/* Keep visible so <select> dropdowns are not clipped by the flyout */
+	overflow: visible;
+}
+
+/* Tutorial: force-open flyouts when a step targets controls inside the panel. */
+.sim-controls-flyout[data-tutorial-open="true"] {
+	align-items: stretch;
+	border-color: var(--c-border);
+	background: var(--c-surface);
+	box-shadow: var(--shadow-1, 0 8px 28px rgba(0, 0, 0, 0.1));
 	overflow: visible;
 }
 
@@ -190,6 +197,16 @@
 	max-height: none;
 }
 
+.sim-controls-flyout[data-tutorial-open="true"] .sim-controls-flyout__rail {
+	align-self: stretch;
+	border: none;
+	border-right: 1px solid var(--c-border);
+	border-radius: 14px 0 0 14px;
+	box-shadow: none;
+	background: color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 5%);
+	max-height: none;
+}
+
 .sim-controls-flyout__icon {
 	font-size: 18px;
 	line-height: 1;
@@ -217,6 +234,10 @@
 	background: color-mix(in srgb, var(--c-surface) 92%, var(--c-secondary) 10%);
 }
 
+.sim-playground-flyout .sim-controls-flyout__panel {
+	background: color-mix(in srgb, var(--c-surface) 96%, var(--c-secondary) 4%);
+}
+
 .sim-playground-flyout:hover .sim-controls-flyout__rail,
 .sim-playground-flyout:focus-within .sim-controls-flyout__rail {
 	background: color-mix(in srgb, var(--c-surface) 96%, var(--c-secondary) 6%);
@@ -236,11 +257,12 @@
 	}
 
 	.sim-dash-flyout-stack {
-		flex: 1 1 auto;
+		flex: 0 0 auto;
 		min-height: 0;
-		align-self: stretch;
-		width: 100%;
+		align-self: flex-start;
+		width: max-content;
 		height: 100%;
+		position: relative;
 	}
 
 	.sim-dash-work {
@@ -253,9 +275,9 @@
 	}
 
 	.sim-dash-deskSlot:has(#playground-panel:not([hidden])) {
-		flex: 1 1 auto;
+		flex: 0 0 auto;
 		min-height: 0;
-		align-self: stretch;
+		align-self: flex-start;
 		display: flex;
 		flex-direction: column;
 	}
@@ -275,12 +297,13 @@
 	}
 
 	.sim-dash-deskSlot:has(#playground-panel:not([hidden])) #playground-panel.sim-playground-flyout {
-		flex: 1 1 auto;
+		flex: 0 0 auto;
 		min-height: 0;
 		max-height: none;
-		overflow: hidden;
+		overflow: visible;
+		/* Make the Trading desk panel align with Controls (top of the stack), while keeping the rail in-flow. */
 		position: static;
-		align-self: stretch;
+		align-self: flex-start;
 	}
 
 	.sim-dash-chartCol .sim-run-chartWrap {
@@ -298,34 +321,8 @@
 		max-height: min(calc(100vh - var(--nav-h, 64px) - 48px), 900px);
 	}
 
-	/*
-	 * Hands-on: hovering or focusing the trading desk hides the Controls flyout (unless Controls is in use).
-	 * Avoids two side-by-side expanded columns; Controls returns when you move back or focus it.
-	 */
-	.sim-dash-flyout-stack:has(#playground-panel:not([hidden])):is(
-			:has(.sim-playground-flyout:hover),
-			:has(#playground-panel:focus-within)
-		)
-		> .sim-controls-flyout--lead:not(:hover):not(:focus-within) {
-		visibility: hidden;
-		width: 0 !important;
-		min-width: 0 !important;
-		max-width: 0 !important;
-		max-height: 0 !important;
-		margin: 0 !important;
-		padding: 0 !important;
-		border: none !important;
-		overflow: hidden !important;
-		opacity: 0 !important;
-		pointer-events: none !important;
-		flex: 0 0 0 !important;
-		box-shadow: none !important;
-		transition:
-			opacity 0.18s ease,
-			max-height 0.22s ease,
-			max-width 0.22s ease,
-			visibility 0.2s linear;
-	}
+	/* NOTE: previously we hid Controls when hovering Trading desk. With overlay panels this causes hover/flex feedback
+	 * (flicker), so we keep Controls visible for stable interactions. */
 }
 
 .sim-dash-chartCard {
@@ -350,6 +347,12 @@
 	min-height: 380px;
 }
 
+.sim-run-chartWrap > canvas {
+	display: block;
+	width: 100% !important;
+	height: 100% !important;
+}
+
 .sim-dash-controls {
 	position: sticky;
 	top: calc(var(--nav-h, 64px) + 12px);
@@ -362,47 +365,43 @@
 
 .sim-dash-controls.sim-controls-flyout__panel,
 .sim-playground-panel.sim-controls-flyout__panel {
-	position: relative;
-	top: auto;
-	flex: 0 0 0;
-	width: 0;
-	min-width: 0;
-	max-width: 0;
-	max-height: 0;
-	opacity: 0;
-	overflow: hidden;
-	padding: 0 !important;
-	margin: 0;
-	border: none;
-	gap: 0 !important;
-	pointer-events: none;
-	align-self: flex-start;
-	transition:
-		flex-basis 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-		min-width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-		max-width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-		max-height 0.24s ease,
-		opacity 0.22s ease;
-	box-shadow: none;
-	background: transparent;
-}
-
-.sim-controls-flyout:hover .sim-controls-flyout__panel,
-.sim-controls-flyout:focus-within .sim-controls-flyout__panel {
-	flex: 0 0 var(--sim-flyout-panel);
+	position: absolute;
+	left: var(--sim-flyout-rail);
+	top: 0;
 	width: var(--sim-flyout-panel);
 	min-width: var(--sim-flyout-panel);
 	max-width: var(--sim-flyout-panel);
 	max-height: min(calc(100vh - 96px), 900px);
-	opacity: 1;
+	opacity: 0;
+	transform: translateX(-10px);
 	overflow-x: visible;
 	overflow-y: auto;
-	overscroll-behavior: contain;
 	padding: 12px 14px 14px !important;
-	border: none;
-	border-radius: 0;
-	background: transparent;
+	margin: 0;
+	border: 1px solid var(--c-border);
+	border-left: none;
+	border-radius: 0 14px 14px 0;
 	gap: 12px !important;
+	pointer-events: none;
+	box-shadow: var(--shadow-1, 0 8px 28px rgba(0, 0, 0, 0.1));
+	background: color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%);
+	transition:
+		opacity 0.16s ease,
+		transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sim-controls-flyout:hover .sim-controls-flyout__panel,
+.sim-controls-flyout:focus-within .sim-controls-flyout__panel {
+	opacity: 1;
+	transform: translateX(0);
+	pointer-events: auto;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-gutter: stable;
+}
+
+.sim-controls-flyout[data-tutorial-open="true"] .sim-controls-flyout__panel {
+	opacity: 1;
+	transform: translateX(0);
 	pointer-events: auto;
 	-webkit-overflow-scrolling: touch;
 	scrollbar-gutter: stable;
@@ -759,12 +758,29 @@ details.sim-kpi-panel.auth-card {
 	font-variant-numeric: tabular-nums;
 }
 
-.sim-kpiMeta--up {
-	color: var(--c-primary);
+/* MoM / gain hint: only the arrow is tinted (numbers stay readable on --c-on-surface-2). */
+.sim-deltaArrow {
+	display: inline-block;
+	font-weight: 800;
+	line-height: 1;
+	margin-left: 0.12em;
+	vertical-align: baseline;
 }
 
-.sim-kpiMeta--down {
-	color: #ef4444;
+.sim-deltaArrow--up {
+	color: #16a34a;
+}
+
+.sim-deltaArrow--down {
+	color: #dc2626;
+}
+
+html[data-theme="dark"] .sim-deltaArrow--up {
+	color: #4ade80;
+}
+
+html[data-theme="dark"] .sim-deltaArrow--down {
+	color: #f87171;
 }
 
 .sim-accordion {
@@ -922,7 +938,7 @@ details.sim-kpi-panel.auth-card {
 
 /* Edit simulation (dashboard) — denser layout, uses horizontal space */
 .sim-edit-card {
-	max-width: 1100px;
+	max-width: 980px;
 	margin-inline: auto;
 	width: 100%;
 }
@@ -997,9 +1013,24 @@ details.sim-kpi-panel.auth-card {
 
 .sim-edit-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 14px 18px;
 	align-items: start;
+}
+
+/* If there's an odd number of fields, let the last one span full width. */
+.sim-edit-grid > label:last-child {
+	grid-column: 1 / -1;
+}
+
+@media (max-width: 820px) {
+	.sim-edit-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.sim-edit-grid > label:last-child {
+		grid-column: auto;
+	}
 }
 
 .sim-edit-grid > label {

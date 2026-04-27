@@ -6,7 +6,7 @@
         'axisY' => __('qt_chart_axis_value'),
         'nominal' => __('qt_chart_nominal'),
         'real' => __('qt_chart_real'),
-        'contrib' => __('qt_chart_contrib'),
+        'contrib' => __('Total you put in'),
     ];
 @endphp
 
@@ -49,7 +49,7 @@
 
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
                 <label style="display:grid; gap:6px;">
-                    <span>{{ __('Duration (months)') }}</span>
+                    <span>{{ __('Duration (days)') }}</span>
                     <input id="qt-months" type="number" min="12" max="600" step="12" value="120" class="footer-email-input" />
                 </label>
                 <label style="display:grid; gap:6px;">
@@ -57,28 +57,86 @@
                     <input id="qt-speed" type="number" value="0.50" class="footer-email-input" disabled />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>{{ __('Initial Investment (€)') }}</span>
+                    <span style="display:flex; align-items:center; gap:6px;">
+                        <span>{{ __('Initial Investment (€)') }}</span>
+                        <span class="info-bubble" data-tooltip="{{ __('The starting amount you invest in euros. This is your initial capital before any growth or contributions.') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                <path d="M12 17h.01"></path>
+                            </svg>
+                        </span>
+                    </span>
                     <input id="qt-initial" type="number" step="0.01" value="5000" class="footer-email-input" />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>{{ __('Monthly Contribution (€)') }}</span>
+                    <span style="display:flex; align-items:center; gap:6px;">
+                        <span>{{ __('Monthly Contribution (€)') }}</span>
+                        <span class="info-bubble" data-tooltip="{{ __('The amount you add to your investment each month. Regular contributions help your portfolio grow through compound interest.') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                <path d="M12 17h.01"></path>
+                            </svg>
+                        </span>
+                    </span>
                     <input id="qt-monthly" type="number" step="0.01" value="250" class="footer-email-input" />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>{{ __('Growth Rate (annual, 0-1)') }}</span>
-                    <input id="qt-growth" type="number" step="0.001" min="0" max="1" value="0.07" class="footer-email-input" />
+                    <span style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                        <span>{{ __('Growth Rate (annual, % )') }}</span>
+                        <span style="font-size:12px; color:var(--c-on-surface-2);">0–100%</span>
+                        <span class="info-bubble" data-tooltip="{{ __('Expected annual return in percent (0-100). Example: 7% annual growth. Higher rates mean more potential gains but also more risk.') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                <path d="M12 17h.01"></path>
+                            </svg>
+                        </span>
+                    </span>
+                    <input id="qt-growth" type="number" step="0.01" min="0" max="100" value="7" class="footer-email-input" />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>{{ __('Risk Appetite (0-1)') }}</span>
-                    <input id="qt-risk" type="number" step="0.01" min="0" max="1" value="0.5" class="footer-email-input" />
+                    <span style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                        <span>{{ __('Risk Appetite (%)') }}</span>
+                        <span style="font-size:12px; color:var(--c-on-surface-2);">0–100%</span>
+                        <span class="info-bubble" data-tooltip="{{ __('How much volatility you are comfortable with (0-100%). Higher values mean your investment will have bigger swings up and down, simulating a more aggressive strategy.') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                <path d="M12 17h.01"></path>
+                            </svg>
+                        </span>
+                    </span>
+                    <input id="qt-risk" type="number" step="0.01" min="0" max="100" value="50" class="footer-email-input" />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>{{ __('Market Influence (0-1)') }}</span>
-                    <input id="qt-market" type="number" step="0.01" min="0" max="1" value="0.5" class="footer-email-input" />
+                    <span style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                        <span>{{ __('Market Influence (%)') }}</span>
+                        <span style="font-size:12px; color:var(--c-on-surface-2);">0–100%</span>
+                        <span class="info-bubble" data-tooltip="{{ __('How much external market factors affect your simulation (0-100%). Higher values add more realistic market fluctuations, making the simulation more dynamic and unpredictable.') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                <path d="M12 17h.01"></path>
+                            </svg>
+                        </span>
+                    </span>
+                    <input id="qt-market" type="number" step="0.01" min="0" max="100" value="50" class="footer-email-input" />
                 </label>
                 <label style="display:grid; gap:6px;">
-                    <span>{{ __('Inflation Rate (annual, 0-1)') }}</span>
-                    <input id="qt-inflation" type="number" step="0.001" min="0" max="1" value="0.02" class="footer-email-input" />
+                    <span style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                        <span>{{ __('Inflation Rate (annual, % )') }}</span>
+                        <span style="font-size:12px; color:var(--c-on-surface-2);">0–100%</span>
+                        <span class="info-bubble" data-tooltip="{{ __('The annual inflation percentage (0-100). Example: 2% inflation. This helps you see the real purchasing power of your investment over time, accounting for price increases.') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                <path d="M12 17h.01"></path>
+                            </svg>
+                        </span>
+                    </span>
+                    <input id="qt-inflation" type="number" step="0.01" min="0" max="100" value="2" class="footer-email-input" />
                 </label>
             </div>
 
@@ -88,7 +146,7 @@
                     <p id="qt-current" style="margin:4px 0 0; font-size:22px; font-weight:700; color:var(--c-primary);">€0.00</p>
                 </div>
                 <div class="auth-card" style="padding:14px;">
-                    <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">{{ __('Contributed') }}</p>
+                    <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">{{ __('Total you put in') }}</p>
                     <p id="qt-contrib" style="margin:4px 0 0; font-size:22px; font-weight:700;">€0.00</p>
                 </div>
                 <div class="auth-card" style="padding:14px;">
@@ -165,6 +223,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() || '#07a05a';
     const secondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--c-secondary').trim() || '#d98e12';
 
+    const themeColors = () => {
+        const cs = getComputedStyle(document.documentElement);
+        return {
+            on: cs.getPropertyValue('--c-on-surface').trim() || '#0f172a',
+            on2: cs.getPropertyValue('--c-on-surface-2').trim() || '#374151',
+            surface: cs.getPropertyValue('--c-surface').trim() || '#ffffff',
+        };
+    };
+
     const contribColor = getComputedStyle(document.documentElement).getPropertyValue('--c-on-surface-2').trim() || '#94a3b8';
 
     const chart = new Chart(chartCanvas.getContext('2d'), {
@@ -179,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
             maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
             scales: {
-                x: { title: { display: true, text: qtChart.month }, grid: { display: false } },
+                x: { title: { display: true, text: qtChart.month }, grid: { display: false }, ticks: {} },
                 y: { title: { display: true, text: qtChart.axisY },
                     ticks: { callback: (v) => '\u20AC' + Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) }
                 }
@@ -188,16 +255,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function applyChartTheme() {
+        const c = themeColors();
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const tickColor = c.on;
+        const titleColor = c.on2;
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(15, 23, 42, 0.08)';
+        chart.options.scales.x.ticks.color = tickColor;
+        chart.options.scales.y.ticks.color = tickColor;
+        chart.options.scales.x.title.color = titleColor;
+        chart.options.scales.y.title.color = titleColor;
+        chart.options.scales.y.grid.color = gridColor;
+        chart.update('none');
+    }
+
+    applyChartTheme();
+
+    if (typeof MutationObserver !== 'undefined') {
+        const mo = new MutationObserver((mutations) => {
+            for (const m of mutations) {
+                if (m.type === 'attributes' && m.attributeName === 'data-theme') {
+                    applyChartTheme();
+                }
+            }
+        });
+        mo.observe(document.documentElement, { attributes: true });
+    }
+
     function loadSettings() {
         return {
             months: Math.max(12, asNumber(monthsInput.value, 120)),
             speedMs: 500, // fixed 0.50s
             initialInvestment: asNumber(initialInput.value, 5000),
             monthlyContribution: asNumber(monthlyInput.value, 250),
-            growthRate: Math.min(1, Math.max(0, asNumber(growthInput.value, 0.07))),
-            riskAppetite: Math.min(1, Math.max(0, asNumber(riskInput.value, 0.5))),
-            marketInfluence: Math.min(1, Math.max(0, asNumber(marketInput.value, 0.5))),
-            inflationRate: Math.min(1, Math.max(0, asNumber(inflationInput.value, 0.02))),
+            growthRate: Math.min(1, Math.max(0, asNumber(growthInput.value, 7) / 100)),
+            riskAppetite: Math.min(1, Math.max(0, asNumber(riskInput.value, 50) / 100)),
+            marketInfluence: Math.min(1, Math.max(0, asNumber(marketInput.value, 50) / 100)),
+            inflationRate: Math.min(1, Math.max(0, asNumber(inflationInput.value, 2) / 100)),
         };
     }
 

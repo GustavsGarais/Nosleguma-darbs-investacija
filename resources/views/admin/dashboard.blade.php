@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Admin Dashboard')
+@section('title', __('Admin dashboard'))
 
 @section('content')
 <div class="admin-header">
@@ -65,13 +65,13 @@
                 @foreach($latestTickets as $ticket)
                     <div style="padding: 12px; background: var(--admin-surface-light); border-radius: 8px;">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                            <a href="{{ route('admin.tickets.show', $ticket) }}" style="color: var(--admin-text); text-decoration: none; font-weight: 500; flex: 1;">{{ $ticket->subject }}</a>
+                            <a href="{{ route('admin.tickets.show', $ticket) }}" style="color: var(--admin-text); text-decoration: none; font-weight: 500; flex: 1;">{{ $ticket->getDisplaySubject() }}</a>
                             <span class="admin-badge" style="background: {{ $ticket->getStatusColor() }}20; color: {{ $ticket->getStatusColor() }};">
-                                {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
+                                {{ $ticket->getStatusLabel() }}
                             </span>
                         </div>
                         <p style="margin: 0; font-size: 12px; color: var(--admin-text-muted);">
-                            {{ $ticket->user->name ?? 'Anonymous' }} • {{ $ticket->created_at->diffForHumans() }}
+                            {{ $ticket->user->name ?? __('Anonymous') }} • {{ $ticket->created_at->diffForHumans() }}
                         </p>
                     </div>
                 @endforeach

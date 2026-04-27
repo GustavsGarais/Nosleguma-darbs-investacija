@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\TwoFactorDisabledMail;
+use App\Models\AdminAuditLog;
 use App\Models\SupportTicket;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,8 +15,6 @@ use Illuminate\Support\Facades\Log;
 
 class SupportTicketController extends Controller
 {
-    private const SUPPORT_SUBJECT = 'Lost 2FA / Account Recovery';
-
     /**
      * Display all support tickets
      */
@@ -101,8 +100,15 @@ class SupportTicketController extends Controller
 
         $ticket->save();
 
+        AdminAuditLog::record('ticket.updated', [
+            'ticket_id' => $ticket->id,
+            'status' => $ticket->status,
+            'priority' => $ticket->priority,
+            'assigned_to' => $ticket->assigned_to,
+        ]);
+
         return redirect()->route('admin.tickets.show', $ticket)
-            ->with('success', 'Ticket updated successfully!');
+            ->with('success', __('Ticket updated successfully.'));
     }
 
     /**
@@ -110,10 +116,16 @@ class SupportTicketController extends Controller
      */
     public function destroy(SupportTicket $ticket): RedirectResponse
     {
+        AdminAuditLog::record('ticket.deleted', [
+            'ticket_id' => $ticket->id,
+            'subject' => $ticket->subject,
+            'user_id' => $ticket->user_id,
+        ]);
+
         $ticket->delete();
 
         return redirect()->route('admin.tickets.index')
-            ->with('success', 'Ticket deleted successfully!');
+            ->with('success', __('Ticket deleted successfully.'));
     }
 
     /**
@@ -125,7 +137,7 @@ class SupportTicketController extends Controller
             'admin_response' => 'nullable|string|max:5000',
         ]);
 
-        if ($ticket->subject !== self::SUPPORT_SUBJECT) {
+        if (! $ticket->isTwoFactorRecoveryTicket()) {
             abort(404);
         }
 
@@ -141,12 +153,18 @@ class SupportTicketController extends Controller
         $ticket->priority = 'urgent';
         $ticket->resolved_at = now();
         $ticket->admin_response = $validated['admin_response']
-            ?? '2FA was disabled by an admin after an account recovery request.';
+            ?? __('2FA was disabled by an admin after an account recovery request.');
         $ticket->save();
 
         if (!$user) {
+            AdminAuditLog::record('ticket.two_factor_disabled', [
+                'ticket_id' => $ticket->id,
+                'user_found' => false,
+                'contact_email' => $ticket->contact_email,
+            ]);
+
             return redirect()->route('admin.tickets.show', $ticket)
-                ->with('success', 'Ticket resolved, but no matching user was found for the provided email.');
+                ->with('success', __('Ticket resolved, but no matching user was found for the provided email.'));
         }
 
         // Disable 2FA so the user can log in again.
@@ -154,6 +172,12 @@ class SupportTicketController extends Controller
         $user->two_factor_recovery_codes = null;
         $user->two_factor_confirmed_at = null;
         $user->save();
+
+        AdminAuditLog::record('ticket.two_factor_disabled', [
+            'ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'email' => $user->email,
+        ]);
 
         // Send email (depends on your MAIL_* configuration; default is MAIL_MAILER=log).
         try {
@@ -169,6 +193,6 @@ class SupportTicketController extends Controller
         }
 
         return redirect()->route('admin.tickets.show', $ticket)
-            ->with('success', '2FA disabled and user notified (if mail is configured).');
+            ->with('success', __('2FA disabled and user notified (if mail is configured).'));
     }
 }

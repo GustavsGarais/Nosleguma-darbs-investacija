@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('mail:test {email}', function (string $email) {
     $from = config('mail.from.address');
@@ -24,3 +25,5 @@ Artisan::command('mail:test {email}', function (string $email) {
         $this->warn(__('mail.test_warn_log'));
     }
 })->purpose('Send a test email to verify mail configuration (check MAIL_* in .env)');
+
+// (Market feature removed)

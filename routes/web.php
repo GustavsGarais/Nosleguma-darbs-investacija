@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminAuditLogController;
+use App\Http\Controllers\Admin\BlockedEmailController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Auth\ReportUnauthorizedPasswordResetController;
 use App\Http\Controllers\DashboardController;
@@ -69,11 +71,14 @@ Route::middleware(['auth'])->group(function () {
 
     // Tutorial route
     Route::post('/tutorial/complete', [DashboardController::class, 'completeTutorial'])->name('tutorial.complete');
+
+    // (Market feature removed)
 });
 
 // Admin routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/audit-log', [AdminAuditLogController::class, 'index'])->name('audit.index');
 
     // User management
     Route::get('/users', [AdminController::class, 'users'])->name('users.index');
@@ -82,6 +87,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
     Route::post('/users/{user}/disable-2fa', [AdminController::class, 'disableTwoFactor'])->name('users.disableTwoFactor');
+
+    // Email blocking
+    Route::get('/blocked-emails', [BlockedEmailController::class, 'index'])->name('blocked-emails.index');
+    Route::post('/blocked-emails', [BlockedEmailController::class, 'store'])->name('blocked-emails.store');
+    Route::delete('/blocked-emails/{blockedEmail}', [BlockedEmailController::class, 'destroy'])->name('blocked-emails.delete');
 
     // Support tickets management
     Route::get('/tickets', [AdminSupportTicketController::class, 'index'])->name('tickets.index');

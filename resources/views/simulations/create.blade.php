@@ -1,12 +1,21 @@
 @extends('layouts.dashboard')
 
-@section('title', 'New Simulation')
+@section('title', __('New simulation'))
 
 @section('dashboard_content')
-<section class="auth-card" aria-label="Create Simulation">
+<section class="auth-card sim-create-card" aria-label="{{ __('Create Simulation') }}">
     <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
         <h1 style="margin:0;">{{ __('Create Simulation') }}</h1>
-        <a href="{{ route('simulations.index') }}" class="btn btn-secondary">← {{ __('Back') }}</a>
+        <div style="display:flex; gap:8px; align-items:center;">
+            <x-help-sheet id="sim-create-help" :title="__('Simulation help')" :button-label="__('Open help')">
+                <h3>{{ __('What you are setting up') }}</h3>
+                <p>{{ __('This page creates a saved scenario. You can always tweak behavior later on the run page.') }}</p>
+
+                <h3>{{ __('Market Regime') }}</h3>
+                <p>{{ __('Market Regime is the market “mood”: it changes drift, volatility, and shock behavior. Try the same inputs under different regimes to see drawdowns and recovery differences.') }}</p>
+            </x-help-sheet>
+            <a href="{{ route('simulations.index') }}" class="btn btn-secondary">← {{ __('Back') }}</a>
+        </div>
     </div>
 
     @if ($errors->any())
@@ -30,11 +39,26 @@
             <input type="text" name="name" value="{{ old('name') }}" required maxlength="30" class="footer-email-input" />
         </label>
 
+        <fieldset style="border:1px solid var(--c-border); border-radius:12px; padding:14px 16px; margin:0;">
+            <legend style="font-weight:700; padding:0 6px;">{{ __('Simulation mode') }}</legend>
+            <p style="margin:0 0 10px; font-size:13px; color:var(--c-on-surface-2); line-height:1.5;">{{ __('Choose the default mode when you open this simulation. You can switch modes anytime on the run page.') }}</p>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <input type="radio" name="simulation_mode" value="classic" @checked(old('simulation_mode', 'classic') === 'classic') />
+                    <span>{{ __('Classic (auto monthly)') }}</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <input type="radio" name="simulation_mode" value="playground" @checked(old('simulation_mode') === 'playground') />
+                    <span>{{ __('Hands-on portfolio lab') }}</span>
+                </label>
+            </div>
+        </fieldset>
+
         <div class="create-sim-grid" style="display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:16px;">
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">
-                    <span>Initial Investment</span>
-                    <div class="info-bubble" data-tooltip="The starting amount you invest in euros. This is your initial capital before any growth or contributions.">
+                    <span>{{ __('Initial Investment') }}</span>
+                    <div class="info-bubble" data-tooltip="{{ __('The starting amount you invest in euros. This is your initial capital before any growth or contributions.') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -50,8 +74,8 @@
             </label>
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">
-                    <span>Monthly Contribution</span>
-                    <div class="info-bubble" data-tooltip="The amount you add to your investment each month. Regular contributions help your portfolio grow faster through compound interest.">
+                    <span>{{ __('Monthly Contribution') }}</span>
+                    <div class="info-bubble" data-tooltip="{{ __('The amount you add to your investment each month. Regular contributions help your portfolio grow through compound interest.') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -135,8 +159,8 @@
             </label>
             <label style="display:grid; gap:6px;">
                 <div style="display:flex; align-items:center; gap:6px;">
-                    <span>Investors (count)</span>
-                    <div class="info-bubble" data-tooltip="The number of investors participating in this simulation. Useful for tracking group investments or comparing different scenarios.">
+                    <span>{{ __('Investors (count)') }}</span>
+                    <div class="info-bubble" data-tooltip="{{ __('Number of investors in this scenario. More investors can amplify crowd behavior (profit-taking and panic waves), especially with high Market Influence.') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
