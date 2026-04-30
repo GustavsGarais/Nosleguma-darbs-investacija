@@ -50,7 +50,11 @@
 
 2. **Vide**
 
-   Nokopējiet `.env.example` uz `.env`. Iestatiet:
+   Nokopējiet `.env.example` uz `.env`.
+
+   **Svarīgi:** `.env` satur slepenas vērtības (atslēgas, paroles) un **nedrīkst būt Git/GitHub**. Repozitorijā glabā tikai `.env.example`.
+
+   Iestatiet:
 
    - `APP_NAME`, `APP_URL` (svarīgi saitēm e-pastos)
    - `APP_KEY` — `php artisan key:generate`

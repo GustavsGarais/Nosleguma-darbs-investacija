@@ -48,7 +48,7 @@ class TwoFactorRecoveryRequestController extends Controller
         SupportTicket::create([
             'user_id' => $user?->id,
             'contact_email' => $contactEmail,
-            'subject' => self::SUPPORT_SUBJECT,
+            'subject' => SupportTicket::INTERNAL_TWO_FACTOR_RECOVERY_SUBJECT,
             'description' => $validated['description'],
             // Keep within existing enum while still distinguishing by subject for the admin action.
             'error_type' => 'personal_error',

@@ -1,0 +1,24 @@
+.git
+.github
+.idea
+.vscode
+.zed
+.fleet
+
+# Local env / secrets
+.env
+.env.*
+
+# Build outputs / caches
+node_modules
+vendor
+public/build
+public/hot
+storage
+bootstrap/cache
+.phpunit.result.cache
+.phpunit.cache
+
+# Project-local scratch/work files (not needed to deploy)
+TEMPORARY
+
