@@ -19,11 +19,11 @@ class SupportTicketController extends Controller
             'description' => 'required|string|max:2000',
             'error_type' => 'required|in:simulation_error,visual_error,personal_error,translation_error,performance_issue,bug_report,feature_request,other',
         ], [
-            'subject.required' => 'Please provide a title for your report.',
-            'subject.max' => 'The title must not exceed 255 characters.',
-            'description.required' => 'Please describe the issue you are experiencing.',
-            'description.max' => 'The description must not exceed 2000 characters (approximately 400 words).',
-            'error_type.required' => 'Please select the type of error you are reporting.',
+            'subject.required' => __('Please provide a title for your report.'),
+            'subject.max' => __('The title must not exceed 255 characters.'),
+            'description.required' => __('Please describe the issue you are experiencing.'),
+            'description.max' => __('The description must not exceed 2000 characters (approximately 400 words).'),
+            'error_type.required' => __('Please select the type of error you are reporting.'),
         ]);
 
         // Count words in description (handles multiple languages better)
@@ -38,7 +38,7 @@ class SupportTicketController extends Controller
             return back()
                 ->withInput()
                 ->withErrors(
-                    ['description' => 'The description must not exceed 400 words. You have '.$wordCount.' words.'],
+                    ['description' => __('The description must not exceed 400 words. You have :count words.', ['count' => $wordCount])],
                     'ticket',
                 );
         }
@@ -53,7 +53,7 @@ class SupportTicketController extends Controller
         ]);
 
         return redirect()->route('tickets.show', $ticket)
-            ->with('success', 'Your support ticket has been submitted successfully! We will review it and get back to you soon.');
+            ->with('success', __('Your support ticket has been submitted successfully! We will review it and get back to you soon.'));
     }
 
     /**
@@ -63,7 +63,7 @@ class SupportTicketController extends Controller
     {
         // Ensure user can only view their own tickets
         if ($ticket->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access.');
+            abort(403, __('Unauthorized access.'));
         }
 
         return view('tickets.show', compact('ticket'));
@@ -102,15 +102,15 @@ class SupportTicketController extends Controller
     public static function getErrorTypeLabel(string $type): string
     {
         return match ($type) {
-            'simulation_error' => 'Simulation Error',
-            'visual_error' => 'Visual/UI Error',
-            'personal_error' => 'Account/Personal Error',
-            'translation_error' => 'Translation Error',
-            'performance_issue' => 'Performance Issue',
-            'bug_report' => 'Bug Report',
-            'feature_request' => 'Feature Request',
-            'other' => 'Other',
-            default => 'Unknown',
+            'simulation_error' => __('ticket_type.simulation_error'),
+            'visual_error' => __('ticket_type.visual_error'),
+            'personal_error' => __('ticket_type.personal_error'),
+            'translation_error' => __('ticket_type.translation_error'),
+            'performance_issue' => __('ticket_type.performance_issue'),
+            'bug_report' => __('ticket_type.bug_report'),
+            'feature_request' => __('ticket_type.feature_request'),
+            'other' => __('ticket_type.other'),
+            default => __('ticket_type.unknown'),
         };
     }
 }

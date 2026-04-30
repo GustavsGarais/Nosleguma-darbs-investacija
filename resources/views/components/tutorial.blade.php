@@ -1,5 +1,6 @@
 @php
-    $isFirstTime = !auth()->user()->tutorial_completed;
+    $tutorialUser = auth()->user();
+    $isFirstTime = $tutorialUser ? !$tutorialUser->tutorial_completed : false;
     $tutorialId = 'simulation-tutorial';
 
     // All tutorial text is generated in PHP so it can be translated via JSON lang files.
@@ -35,6 +36,7 @@
                 'position' => 'bottom',
                 'heading' => __('tutorial.dashboard.h5'),
                 'content' => __('tutorial.dashboard.4'),
+                'fallbackTarget' => 'a[href*="simulations.create"], .auth-card a[href*="simulations.create"]',
             ],
         ],
         'create' => [
@@ -227,7 +229,7 @@
     <div class="tutorial-popup" style="position:absolute; background:var(--c-surface); border:3px solid var(--c-primary); border-radius:16px; padding:24px; max-width:420px; box-shadow:0 12px 48px rgba(0,0,0,0.6); z-index:12001; pointer-events:auto;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
             <h3 style="margin:0; font-size:22px; font-weight:700; color:var(--c-primary);">{{ __('tutorial.title') }}</h3>
-            <button type="button" class="tutorial-close" aria-label="{{ __('tutorial.close') }}" style="background:none; border:none; cursor:pointer; padding:4px 8px; color:var(--c-on-surface-2); font-size:24px; line-height:1; border-radius:4px; transition:background 0.2s;">&times;</button>
+            <button type="button" class="tutorial-close" aria-label="{{ __('tutorial.close') }}">&times;</button>
         </div>
         <div class="tutorial-content" style="margin-bottom:20px; min-height:80px;">
             <h4 class="tutorial-step-title" style="margin:0 0 10px; font-size:16px; font-weight:900; color:var(--c-on-surface);"></h4>
@@ -372,6 +374,28 @@
             setBackdropSpotlightMode(true);
         }
 
+        function clearForcedFlyouts() {
+            document.querySelectorAll('.sim-controls-flyout[data-tutorial-open="true"]').forEach((el) => {
+                el.removeAttribute('data-tutorial-open');
+            });
+        }
+
+        function forceOpenFlyoutForTarget(targetEl) {
+            if (!targetEl) return;
+            const flyout = targetEl.closest('.sim-controls-flyout');
+            if (!flyout) return;
+            flyout.setAttribute('data-tutorial-open', 'true');
+        }
+
+        function forceOpenDetailsForTarget(targetEl) {
+            if (!targetEl) return;
+            const details = targetEl.closest('details');
+            if (!details) return;
+            try {
+                details.open = true;
+            } catch (e) {}
+        }
+
         function showStep(stepIndex) {
             if (stepIndex < 0 || stepIndex >= steps.length) {
                 hideTutorial();
@@ -391,19 +415,38 @@
             popup.style.left = '0px';
             popup.style.transform = 'none';
 
-            // Find target element
+            // Find target element (and force-open flyouts/details when needed).
+            clearForcedFlyouts();
             let targetEl = null;
-            if (step.target) {
-                targetEl = document.querySelector(step.target);
+            if (step.target) targetEl = document.querySelector(step.target);
+            if (!targetEl && step.fallbackTarget) targetEl = document.querySelector(step.fallbackTarget);
+
+            // If the target lives inside a flyout panel, force it open before measuring/highlighting.
+            if (targetEl) {
+                forceOpenFlyoutForTarget(targetEl);
+                forceOpenDetailsForTarget(targetEl);
             }
 
-            if (targetEl) {
-                highlightElement(targetEl);
-            } else {
-                clearHighlight();
-                if (spotlightEl) spotlightEl.style.opacity = '0';
-                setBackdropSpotlightMode(false);
-            }
+            const applyHighlight = () => {
+                // Re-query after CSS changes (forced flyout open) so rects are correct.
+                let resolved = null;
+                if (step.target) resolved = document.querySelector(step.target);
+                if (!resolved && step.fallbackTarget) resolved = document.querySelector(step.fallbackTarget);
+
+                if (resolved) {
+                    forceOpenDetailsForTarget(resolved);
+                }
+
+                if (resolved) {
+                    highlightElement(resolved);
+                } else {
+                    clearHighlight();
+                    if (spotlightEl) spotlightEl.style.opacity = '0';
+                    setBackdropSpotlightMode(false);
+                }
+            };
+
+            requestAnimationFrame(applyHighlight);
 
             // Update content
             if (titleEl) {
@@ -431,6 +474,11 @@
             const popupRect = popup.getBoundingClientRect();
             let top = (window.innerHeight / 2) - (popupRect.height / 2);
             let left = (window.innerWidth / 2) - (popupRect.width / 2);
+            const padding = 18;
+
+            // If highlighting something inside the flyout panel, avoid covering the whole panel.
+            const flyoutPanel = targetEl ? targetEl.closest('.sim-controls-flyout__panel') : null;
+            const flyoutRect = flyoutPanel ? flyoutPanel.getBoundingClientRect() : null;
 
             if (targetEl) {
                 const rect = targetEl.getBoundingClientRect();
@@ -459,9 +507,18 @@
                 }
             }
 
-            const padding = 18;
             top = Math.max(padding, Math.min(top, window.innerHeight - popupRect.height - padding));
             left = Math.max(padding, Math.min(left, window.innerWidth - popupRect.width - padding));
+
+            // Prefer the opposite side when a flyout panel is open (keep help box away from it).
+            if (flyoutRect) {
+                // If the flyout is on the left half, push popup to the right; if on the right, push left.
+                const flyoutCenter = flyoutRect.left + flyoutRect.width / 2;
+                const wantRight = flyoutCenter < window.innerWidth / 2;
+                left = wantRight
+                    ? Math.max(padding, window.innerWidth - popupRect.width - padding)
+                    : padding;
+            }
 
             popup.style.top = top + 'px';
             popup.style.left = left + 'px';
@@ -474,7 +531,7 @@
                 const sides = ['bottom', 'top', 'right', 'left'];
                 let idx = Math.max(0, sides.indexOf(step.position || 'bottom'));
                 let attempts = 0;
-                while (attempts < 4 && rectsOverlap(pr, tr, 20)) {
+                while (attempts < 4 && (rectsOverlap(pr, tr, 20) || (flyoutRect && rectsOverlap(pr, flyoutRect, 12)))) {
                     attempts++;
                     idx = (idx + 1) % 4;
                     const pos = sides[idx];
@@ -520,6 +577,7 @@
 
         function hideTutorial() {
             clearHighlight();
+            clearForcedFlyouts();
             unlockTutorialScroll();
             if (backdropEl) {
                 backdropEl.style.opacity = '0';

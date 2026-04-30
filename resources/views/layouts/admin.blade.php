@@ -486,6 +486,14 @@
                         </a>
                     </li>
                     <li class="admin-nav-item">
+                        <a href="{{ route('admin.audit.index') }}" class="admin-nav-link {{ request()->routeIs('admin.audit.*') ? 'active' : '' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            {{ __('Audit log') }}
+                        </a>
+                    </li>
+                    <li class="admin-nav-item">
                         <a href="{{ route('admin.tickets.index') }}" class="admin-nav-link {{ request()->routeIs('admin.tickets.*') ? 'active' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -499,6 +507,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
                             {{ __('Users') }}
+                        </a>
+                    </li>
+                    <li class="admin-nav-item">
+                        <a href="{{ route('admin.blocked-emails.index') }}" class="admin-nav-link {{ request()->routeIs('admin.blocked-emails.*') ? 'active' : '' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                            </svg>
+                            {{ __('Blocked Emails') }}
                         </a>
                     </li>
                     <li class="admin-nav-item" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--admin-border);">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BlockedEmail;
 use App\Models\SupportTicket;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -9,18 +10,16 @@ use Illuminate\Http\Request;
 
 class TwoFactorRecoveryRequestController extends Controller
 {
-    private const SUPPORT_SUBJECT = 'Lost 2FA / Account Recovery';
-
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validateWithBag('recovery', [
             'contact_email' => 'required|email|max:255',
             'description' => 'required|string|max:2000',
         ], [
-            'contact_email.required' => 'Please provide your email address.',
-            'contact_email.email' => 'Please enter a valid email address.',
-            'description.required' => 'Please describe your situation.',
-            'description.max' => 'The description must not exceed 2000 characters.',
+            'contact_email.required' => __('Please provide your email address.'),
+            'contact_email.email' => __('Please enter a valid email address.'),
+            'description.required' => __('Please describe your situation.'),
+            'description.max' => __('The description must not exceed 2000 characters.'),
         ]);
 
         // Keep descriptions readable in admin UI (similar to the existing reports page).
@@ -33,12 +32,17 @@ class TwoFactorRecoveryRequestController extends Controller
             return back()
                 ->withInput()
                 ->withErrors(
-                    ['description' => 'The description must not exceed 400 words. You have '.$wordCount.' words.'],
+                    ['description' => __('The description must not exceed 400 words. You have :count words.', ['count' => $wordCount])],
                     'recovery',
                 );
         }
 
         $contactEmail = $validated['contact_email'];
+        if (BlockedEmail::isBlocked($contactEmail)) {
+            return back()
+                ->withInput()
+                ->withErrors(['contact_email' => __('This email address is blocked.')], 'recovery');
+        }
         $user = User::where('email', $contactEmail)->first();
 
         SupportTicket::create([
@@ -54,6 +58,6 @@ class TwoFactorRecoveryRequestController extends Controller
 
         return redirect()
             ->route('support.thanks')
-            ->with('success', 'Your account recovery request was submitted. Our team will review it soon.');
+            ->with('success', __('Your account recovery request was submitted. Our team will review it soon.'));
     }
 }

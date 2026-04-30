@@ -19,6 +19,7 @@ function runnerSettingsFingerprint(settingsObj) {
         r(s.inflationRate),
         r(s.riskAppetite),
         r(s.marketInfluence),
+        Math.round(Number(s.investors) || 1),
     ].join('|');
 }
 
@@ -46,15 +47,36 @@ function realisticReturn(monthlyBase, volatility) {
  * Other market participants: AR(1) sentiment plus random waves of buying/selling.
  * Feeds into monthly returns so the path is not a one-way grind upward.
  */
-function evolveCrowdSentiment(prev) {
-    let s = 0.87 * prev + gaussianRandom() * 0.005;
-    if (Math.random() < 0.092) {
-        s -= 0.014 + Math.random() * 0.038;
+function evolveCrowdSentiment(prev, settings, lastMonthlyReturn) {
+    const investors = Math.max(1, Math.floor(Number(settings?.investors) || 1));
+    // 1 investor => ~0, 100 investors => ~1 (log-scaled so 10->0.5, 100->1)
+    const investorFactor = Math.max(0, Math.min(1, Math.log10(investors) / 2));
+    const market = Math.max(0, Math.min(1, Number(settings?.marketInfluence) || 0));
+    const risk = Math.max(0, Math.min(1, Number(settings?.riskAppetite) || 0));
+
+    // With more investors + higher market influence, sentiment moves are larger and more frequent.
+    const amp = 0.004 + investorFactor * market * (0.006 + 0.006 * risk);
+    const persistence = 0.9 - investorFactor * market * 0.12;
+
+    let s = persistence * prev + gaussianRandom() * amp;
+
+    // Occasional waves (panic / euphoria), scaled by market influence.
+    const waveBase = 0.055 + market * 0.08;
+    if (Math.random() < waveBase) {
+        const panic = 0.008 + Math.random() * (0.025 + 0.03 * market);
+        s -= panic * (0.6 + 0.8 * investorFactor);
     }
-    if (Math.random() < 0.064) {
-        s += 0.007 + Math.random() * 0.019;
+    if (Math.random() < waveBase * 0.75) {
+        const hype = 0.005 + Math.random() * (0.014 + 0.018 * market);
+        s += hype * (0.6 + 0.8 * investorFactor);
     }
-    return Math.max(-0.12, Math.min(0.09, s));
+
+    // Mean reversion pressure that strengthens with more participants:
+    // after a strong up month -> profit taking, after a strong down month -> dip buying.
+    const mr = Math.tanh((Number(lastMonthlyReturn) || 0) * 18);
+    s -= mr * (0.002 + 0.006 * investorFactor) * (0.35 + 0.65 * market);
+
+    return Math.max(-0.18, Math.min(0.14, s));
 }
 
 const overlayPlugin = {
@@ -103,7 +125,6 @@ function initFromConfig(config) {
     const chartCanvas = document.getElementById('sim-chart');
     const btnRun = document.getElementById('btn-run');
     const btnStep = document.getElementById('btn-step');
-    const btnPause = document.getElementById('btn-pause');
     const btnReset = document.getElementById('btn-reset');
     const btnSave = document.getElementById('btn-save');
     const monthsInput = document.getElementById('months-input');
@@ -138,7 +159,7 @@ function initFromConfig(config) {
         cagr: document.getElementById('cagr-meta'),
     };
 
-    if (!chartCanvas || !btnRun || !btnPause || !btnReset || !monthsInput || !speedInput || !presetSelect) {
+    if (!chartCanvas || !btnRun || !btnReset || !monthsInput || !speedInput || !presetSelect) {
         console.warn('Simulation controls are missing from the DOM. Skipping initialization.');
         return;
     }
@@ -149,6 +170,23 @@ function initFromConfig(config) {
         return;
     }
 
+    // Keep canvas CSS size tied to wrapper; avoids “zoom/crop” when the drawing buffer resizes
+    // but the element's CSS box doesn't (common with flex + animated side panels).
+    chartCanvas.style.display = 'block';
+    chartCanvas.style.width = '100%';
+    chartCanvas.style.height = '100%';
+
+    function setRunPauseButtonState(running) {
+        const runLabel = btnRun.getAttribute('data-label-run') || i18n.run || 'Run';
+        const pauseLabel = btnRun.getAttribute('data-label-pause') || i18n.pause || 'Pause';
+        const runIcon = btnRun.getAttribute('data-icon-run') || '▶';
+        const pauseIcon = btnRun.getAttribute('data-icon-pause') || '⏸';
+        btnRun.setAttribute('aria-pressed', running ? 'true' : 'false');
+        btnRun.classList.toggle('btn-primary', !running);
+        btnRun.classList.toggle('btn-secondary', running);
+        btnRun.innerHTML = `${running ? pauseIcon : runIcon} ${running ? pauseLabel : runLabel}`;
+    }
+
     const settings = {
         initialInvestment: asNumber(rawSettings.initialInvestment, 0),
         monthlyContribution: asNumber(rawSettings.monthlyContribution, 0),
@@ -156,6 +194,7 @@ function initFromConfig(config) {
         inflationRate: asNumber(rawSettings.inflationRate, 0.02),
         riskAppetite: Math.min(1, Math.max(0, asNumber(rawSettings.riskAppetite, 0.5))),
         marketInfluence: Math.min(1, Math.max(0, asNumber(rawSettings.marketInfluence, 0.5))),
+        investors: Math.max(1, Math.floor(asNumber(rawSettings.investors, 1))),
     };
 
     const defaultRates = {
@@ -280,15 +319,21 @@ function initFromConfig(config) {
         },
     };
 
-    const baseMonthlyReturnRate = Math.pow(1 + settings.growthRate, 1 / 12) - 1;
-    const monthlyInflationRate = Math.pow(1 + settings.inflationRate, 1 / 12) - 1;
+    // Daily timestep: annual rates -> daily rates (365-day year).
+    const baseDailyReturnRate = Math.pow(1 + settings.growthRate, 1 / 365) - 1;
+    const dailyInflationRate = Math.pow(1 + settings.inflationRate, 1 / 365) - 1;
     const volatilityInfluence = (settings.riskAppetite + settings.marketInfluence) / 2;
+    const investorFactor = Math.max(0, Math.min(1, Math.log10(settings.investors) / 2));
 
     const annualFeeRate = 0.002;
-    const monthlyFeeRate = annualFeeRate / 12;
+    const dailyFeeRate = annualFeeRate / 365;
+
+    // User input is "monthly contribution". With a daily timestep, we spread it across days.
+    // This keeps yearly contribution roughly consistent without adding the full amount every day.
+    const dailyContribution = settings.monthlyContribution / 30;
 
     let isRunning = false;
-    let currentMonth = 0;
+    let currentMonth = 0; // now interpreted as "day"
     let simulationData = [];
     let simulationDataCompare = [];
     let simulationDataSor = [];
@@ -297,7 +342,7 @@ function initFromConfig(config) {
     let maxDrawdown = 0;
     let activePresetKey = 'balanced';
     let eventLog = [];
-    let lastMonthlyReturn = baseMonthlyReturnRate;
+    let lastMonthlyReturn = baseDailyReturnRate;
 
     let sharedSmoothedReturns = null;
     let sharedSmoothedReturnsReversed = null;
@@ -308,6 +353,43 @@ function initFromConfig(config) {
 
     function readPlaygroundModeFromUi() {
         return Boolean(modePlaygroundRadio?.checked);
+    }
+
+    let chartResizeSettleGen = 0;
+
+    /** Re-run resize on every animation frame until the host width is stable (covers ~280ms flyout transitions). */
+    function runChartResizeSettlingLoop(durationMs = 540) {
+        chartResizeSettleGen += 1;
+        const gen = chartResizeSettleGen;
+        const start = performance.now();
+        let lastW = -1;
+        let stableFrames = 0;
+        const tick = () => {
+            if (gen !== chartResizeSettleGen) return;
+            forceChartResize();
+            const sz = readChartHostSize();
+            const w = sz ? sz.width : 0;
+            if (w > 0 && w === lastW) {
+                stableFrames += 1;
+            } else {
+                stableFrames = 0;
+                lastW = w;
+            }
+            const elapsed = performance.now() - start;
+            if (elapsed < durationMs || stableFrames < 3) {
+                requestAnimationFrame(tick);
+            }
+        };
+        requestAnimationFrame(tick);
+    }
+
+    /** Flyouts + flex use CSS width transitions; one-shot resize often reads a stale box — settle until layout stops moving. */
+    function scheduleChartResizeAfterLayout() {
+        runChartResizeSettlingLoop(540);
+    }
+
+    function scheduleChartSyncAfterFlyoutLayout() {
+        scheduleChartResizeAfterLayout();
     }
 
     function syncModeUi() {
@@ -334,12 +416,23 @@ function initFromConfig(config) {
         chart.data.datasets[5].hidden = !isPlaygroundMode;
         syncSecondaryUi();
         chart.update('none');
+        scheduleChartResizeAfterLayout();
     }
 
     const primaryColor =
         getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() || '#07a05a';
     const secondaryColor =
         getComputedStyle(document.documentElement).getPropertyValue('--c-secondary').trim() || '#d98e12';
+    const themeColors = () => {
+        const cs = getComputedStyle(document.documentElement);
+        return {
+            on: cs.getPropertyValue('--c-on-surface').trim() || '#0f172a',
+            on2: cs.getPropertyValue('--c-on-surface-2').trim() || '#374151',
+            border: cs.getPropertyValue('--c-border').trim() || '#e5e7eb',
+            surface: cs.getPropertyValue('--c-surface').trim() || '#ffffff',
+            primary: cs.getPropertyValue('--c-primary').trim() || '#07a05a',
+        };
+    };
     const contribColor = '#94a3b8';
     const compareColor = '#6366f1';
 
@@ -384,6 +477,26 @@ function initFromConfig(config) {
                     pointRadius: 0,
                     pointHoverRadius: 6,
                     order: 1,
+                    segment: {
+                        borderColor: (ctx) => {
+                            if (ctx.p0.skip || ctx.p1.skip) {
+                                return undefined;
+                            }
+                            const y0 = ctx.p0.parsed.y;
+                            const y1 = ctx.p1.parsed.y;
+                            if (y0 == null || y1 == null) {
+                                return undefined;
+                            }
+                            const root = document.documentElement;
+                            const cs = getComputedStyle(root);
+                            const up =
+                                cs.getPropertyValue('--sim-chart-trend-up').trim() ||
+                                cs.getPropertyValue('--c-primary').trim() ||
+                                '#07a05a';
+                            const down = cs.getPropertyValue('--sim-chart-trend-down').trim() || '#dc2626';
+                            return y1 >= y0 ? up : down;
+                        },
+                    },
                 },
                 {
                     label: i18n.chartCompare,
@@ -424,7 +537,8 @@ function initFromConfig(config) {
             ],
         },
         options: {
-            responsive: true,
+            // Manual sizing only: Chart's built-in ResizeObserver on the canvas parent races with flex + CSS transitions.
+            responsive: false,
             maintainAspectRatio: false,
             interaction: {
                 mode: 'index',
@@ -476,16 +590,17 @@ function initFromConfig(config) {
                 x: {
                     title: {
                         display: true,
-                        text: 'Month',
+                        text: i18n.xAxisDay || 'Day',
                         font: { size: 13, weight: '600' },
                     },
                     grid: { display: false },
+                    ticks: {},
                 },
                 y: {
                     beginAtZero: false,
                     title: {
                         display: true,
-                        text: `Value (${activeCurrency})`,
+                        text: (i18n.yAxisValue || 'Value (:currency)').replaceAll(':currency', activeCurrency),
                         font: { size: 13, weight: '600' },
                     },
                     ticks: {
@@ -500,21 +615,130 @@ function initFromConfig(config) {
         },
     });
 
+    function readChartHostSize() {
+        const wrap = document.querySelector('.sim-run-chartWrap');
+        if (!wrap) return null;
+        let width = Math.max(0, Math.floor(wrap.clientWidth));
+        let height = Math.max(0, Math.floor(wrap.clientHeight));
+        if (height < 2) {
+            height = Math.max(0, Math.floor(wrap.getBoundingClientRect().height));
+        }
+        if (width < 2 || height < 2) return null;
+        return { width, height };
+    }
+
+    /** Pin chart pixel size to `.sim-run-chartWrap` (required while `responsive: false`). */
+    function forceChartResize() {
+        chart.stop();
+        const size = readChartHostSize();
+        if (size) {
+            chart.resize(size.width, size.height);
+        } else {
+            chart.resize();
+        }
+        chart.update('none');
+    }
+
+    function applyChartTheme() {
+        const c = themeColors();
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const tickColor = c.on;
+        const titleColor = c.on2;
+        const gridColor = isDark
+            ? 'rgba(255, 255, 255, 0.08)'
+            : 'rgba(15, 23, 42, 0.08)';
+
+        chart.options.plugins.legend.labels.color = titleColor;
+        chart.options.scales.x.ticks.color = tickColor;
+        chart.options.scales.y.ticks.color = tickColor;
+        chart.options.scales.x.title.color = titleColor;
+        chart.options.scales.y.title.color = titleColor;
+        chart.options.scales.y.grid.color = gridColor;
+
+        // Tooltip: keep readable on both themes.
+        chart.options.plugins.tooltip.backgroundColor = isDark
+            ? 'rgba(17, 24, 39, 0.92)'
+            : 'rgba(15, 23, 42, 0.92)';
+
+        const p = c.primary;
+        chart.data.datasets[2].borderColor = p;
+        chart.data.datasets[2].backgroundColor = `${p}2a`;
+
+        chart.update('none');
+    }
+
+    forceChartResize();
+    applyChartTheme();
+
+    // React to theme changes (light/dark toggle).
+    if (typeof MutationObserver !== 'undefined') {
+        const mo = new MutationObserver((mutations) => {
+            for (const m of mutations) {
+                if (m.type === 'attributes' && m.attributeName === 'data-theme') {
+                    applyChartTheme();
+                }
+            }
+        });
+        mo.observe(document.documentElement, { attributes: true });
+    }
+
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => chart.resize(), 100);
+        resizeTimeout = setTimeout(() => forceChartResize(), 100);
     });
 
     const dashBody = document.querySelector('.sim-dash-body');
     const dashLead = document.getElementById('sim-dash-lead');
     const btnToggleControls = document.getElementById('btn-toggle-controls');
+    const leadFlyoutEl = document.querySelector('.sim-controls-flyout--lead');
+    const chartColEl = document.querySelector('.sim-dash-chartCol');
+
+    const roDebounce = (fn) => {
+        let t = null;
+        return () => {
+            if (t) clearTimeout(t);
+            t = window.setTimeout(() => {
+                t = null;
+                fn();
+            }, 32);
+        };
+    };
+
+    /** Coalesce ResizeObserver storms during CSS width transitions; flyouts need the trailing sync too. */
+    const roOnFlexLayout = roDebounce(scheduleChartSyncAfterFlyoutLayout);
+
     if (dashBody && typeof ResizeObserver !== 'undefined') {
-        const ro = new ResizeObserver(() => {
-            requestAnimationFrame(() => chart.resize());
-        });
+        const ro = new ResizeObserver(roOnFlexLayout);
         ro.observe(dashBody);
     }
+
+    const dashWork = document.querySelector('.sim-dash-work');
+    if (dashWork && typeof ResizeObserver !== 'undefined') {
+        const roWork = new ResizeObserver(roOnFlexLayout);
+        roWork.observe(dashWork);
+    }
+
+    // Flyouts animate width; lead vs chart column split can change without the viewport changing.
+    if (dashLead && typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(roOnFlexLayout).observe(dashLead);
+    }
+    if (chartColEl && typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(roOnFlexLayout).observe(chartColEl);
+    }
+    for (const el of [leadFlyoutEl, playgroundPanel].filter(Boolean)) {
+        if (typeof ResizeObserver === 'undefined') break;
+        new ResizeObserver(roOnFlexLayout).observe(el);
+    }
+
+    const chartWrap = document.querySelector('.sim-run-chartWrap');
+    if (chartWrap && typeof ResizeObserver !== 'undefined') {
+        const chartRo = new ResizeObserver(roOnFlexLayout);
+        chartRo.observe(chartWrap);
+    }
+
+    // Moving the pointer onto the chart usually means a flyout just collapsed — settle size immediately.
+    dashWork?.addEventListener('pointerenter', () => scheduleChartResizeAfterLayout());
 
     btnToggleControls?.addEventListener('click', () => {
         if (!dashBody || !dashLead) return;
@@ -529,8 +753,39 @@ function initFromConfig(config) {
         } else {
             dashLead.setAttribute('inert', '');
         }
-        requestAnimationFrame(() => chart.resize());
+        scheduleChartResizeAfterLayout();
     });
+
+    /** Flyouts open/close in CSS — transitionend / leaving focus catches collapse after width animation. */
+    (function bindChartSyncToFlyoutLayout() {
+        const layoutRoots = [dashLead, leadFlyoutEl, playgroundPanel].filter(Boolean);
+        const flyoutSurfaces = [leadFlyoutEl, playgroundPanel].filter(Boolean);
+        const chartAffectingTransition = (prop) =>
+            prop === 'width' ||
+            prop === 'min-width' ||
+            prop === 'max-width' ||
+            prop === 'flex-basis';
+
+        const onTransitionEnd = (ev) => {
+            if (!chartAffectingTransition(ev.propertyName)) return;
+            scheduleChartSyncAfterFlyoutLayout();
+        };
+        const onPointerLeaveFlyout = () => scheduleChartSyncAfterFlyoutLayout();
+        const onFocusOut = (ev) => {
+            const root = ev.currentTarget;
+            const next = ev.relatedTarget;
+            if (next && root.contains(next)) return;
+            scheduleChartSyncAfterFlyoutLayout();
+        };
+
+        for (const el of layoutRoots) {
+            el.addEventListener('transitionend', onTransitionEnd);
+            el.addEventListener('focusout', onFocusOut);
+        }
+        for (const el of flyoutSurfaces) {
+            el.addEventListener('mouseleave', onPointerLeaveFlyout);
+        }
+    })();
 
     function syncSecondaryUi() {
         if (compareExtraWrap) {
@@ -554,17 +809,17 @@ function initFromConfig(config) {
 
     function buildSmoothedPath(length) {
         const arr = [];
-        let last = baseMonthlyReturnRate;
+        let last = baseDailyReturnRate;
         let pathCrowd = 0;
         const preset = presetConfigs[activePresetKey] ?? presetConfigs.balanced;
 
         for (let step = 1; step <= length; step++) {
-            const targetMonthly = Math.pow(1 + preset.expectedAnnual, 1 / 12) - 1;
-            const cycleBias = Math.sin((step / 84) * Math.PI  * 2) * 0.003;
-            const monthlyBase = targetMonthly + cycleBias + preset.recoveryBias;
-            const vol = preset.monthlyVolatility * (1 + volatilityInfluence * 0.6);
-            pathCrowd = evolveCrowdSentiment(pathCrowd);
-            let r = realisticReturn(monthlyBase, vol) + pathCrowd * 0.62;
+            const targetDaily = Math.pow(1 + preset.expectedAnnual, 1 / 365) - 1;
+            const cycleBias = Math.sin((step / 365) * Math.PI * 2) * 0.0006;
+            const dailyBase = targetDaily + cycleBias + preset.recoveryBias / 30;
+            const vol = preset.monthlyVolatility * (1 + volatilityInfluence * 0.6 + investorFactor * 0.25);
+            pathCrowd = evolveCrowdSentiment(pathCrowd, settings, last);
+            let r = realisticReturn(dailyBase, vol) + pathCrowd * (0.55 + settings.marketInfluence * 0.35);
             if (activePresetKey === 'shock' && Math.random() < preset.shockChance) {
                 const extra = preset.shockImpact();
                 r += extra;
@@ -591,12 +846,14 @@ function initFromConfig(config) {
 
     function computeMonthlyReturnSmoothed(stepMonth) {
         const preset = presetConfigs[activePresetKey] ?? presetConfigs.balanced;
-        const targetMonthly = Math.pow(1 + preset.expectedAnnual, 1 / 12) - 1;
-        const cycleBias = Math.sin((stepMonth / 84) * Math.PI * 2) * 0.003;
-        const monthlyBase = targetMonthly + cycleBias + preset.recoveryBias;
-        const vol = preset.monthlyVolatility * (1 + volatilityInfluence * 0.6);
-        crowdSentiment = evolveCrowdSentiment(crowdSentiment);
-        let r = realisticReturn(monthlyBase, vol) + crowdSentiment * 0.62;
+        const targetDaily = Math.pow(1 + preset.expectedAnnual, 1 / 365) - 1;
+        const cycleBias = Math.sin((stepMonth / 365) * Math.PI * 2) * 0.0006;
+        const dailyBase = targetDaily + cycleBias + preset.recoveryBias / 30;
+        const vol = preset.monthlyVolatility * (1 + volatilityInfluence * 0.6 + investorFactor * 0.25);
+        crowdSentiment = evolveCrowdSentiment(crowdSentiment, settings, lastMonthlyReturn);
+        let r =
+            realisticReturn(dailyBase, vol) +
+            crowdSentiment * (0.55 + settings.marketInfluence * 0.35);
         if (r <= -0.12 || r >= 0.15) {
             pushEvent(i18n.fatTailEvent.replace(':pct', (r * 100).toFixed(1)));
         }
@@ -609,7 +866,7 @@ function initFromConfig(config) {
         }
         if (activePresetKey === 'shock' && Math.random() < preset.shockChance) {
             const extra = preset.shockImpact();
-            r += extra;
+            r += extra * (0.65 + settings.marketInfluence * 0.7);
             pushEvent(
                 i18n.marketShock.replace(':pct', (extra * 100).toFixed(1)).replace(':label', preset.label),
             );
@@ -637,12 +894,12 @@ function initFromConfig(config) {
     }
 
     function applyPortfolioStep(lastEntry, marketReturn, monthlyContribution) {
-        const nextMonth = lastEntry.month + 1;
+        const nextMonth = lastEntry.month + 1; // "day"
         const valueAfterGrowth = lastEntry.value * (1 + marketReturn);
-        const valueAfterFees = valueAfterGrowth * (1 - monthlyFeeRate);
+        const valueAfterFees = valueAfterGrowth * (1 - dailyFeeRate);
         const contributions = lastEntry.contributions + monthlyContribution;
         const newValue = Math.max(0, valueAfterFees + monthlyContribution);
-        const inflationAdjusted = newValue / Math.pow(1 + monthlyInflationRate, nextMonth);
+        const inflationAdjusted = newValue / Math.pow(1 + dailyInflationRate, nextMonth);
         return {
             month: nextMonth,
             value: newValue,
@@ -662,7 +919,10 @@ function initFromConfig(config) {
         chart.data.datasets[4].label = `${i18n.chartSor} (${activeCurrency})`;
         chart.data.datasets[5].label = `${i18n.chartTotalPL} (${activeCurrency})`;
         if (chart.options?.scales?.y?.title) {
-            chart.options.scales.y.title.text = `Value (${activeCurrency})`;
+            chart.options.scales.y.title.text = (i18n.yAxisValue || 'Value (:currency)').replaceAll(
+                ':currency',
+                activeCurrency,
+            );
         }
     }
 
@@ -681,7 +941,7 @@ function initFromConfig(config) {
     ) {
         const marketValue = units * price;
         const netWorth = walletCash + marketValue;
-        const inflationAdjusted = netWorth / Math.pow(1 + monthlyInflationRate, month);
+        const inflationAdjusted = netWorth / Math.pow(1 + dailyInflationRate, month);
         return {
             month,
             price,
@@ -770,7 +1030,7 @@ function initFromConfig(config) {
         if (marketReturn < -0.12) {
             crashMonths.add(stepMonth);
         }
-        const newPrice = last.price * (1 + marketReturn) * (1 - monthlyFeeRate);
+        const newPrice = last.price * (1 + marketReturn) * (1 - dailyFeeRate);
         const marketValue = last.units * newPrice;
         const netWorth = last.walletCash + marketValue;
         simulationData.push(
@@ -842,7 +1102,7 @@ function initFromConfig(config) {
 
     function seedInitialState() {
         crowdSentiment = 0;
-        lastMonthlyReturn = baseMonthlyReturnRate;
+        lastMonthlyReturn = baseDailyReturnRate;
         currentMonth = 0;
         peakValue = settings.initialInvestment;
         maxDrawdown = 0;
@@ -1008,7 +1268,7 @@ function initFromConfig(config) {
         crashMonths = new Set(Array.isArray(saved.crashMonths) ? saved.crashMonths : []);
         peakValue = asNumber(saved.peakValue, settings.initialInvestment);
         maxDrawdown = asNumber(saved.maxDrawdown, 0);
-        lastMonthlyReturn = asNumber(saved.lastMonthlyReturn, baseMonthlyReturnRate);
+        lastMonthlyReturn = asNumber(saved.lastMonthlyReturn, baseDailyReturnRate);
         crowdSentiment = asNumber(saved.crowdSentiment, 0);
         currentMonth = simulationData[simulationData.length - 1].month;
         syncModeUi();
@@ -1048,21 +1308,21 @@ function initFromConfig(config) {
             crashMonths.add(stepMonth);
         }
 
-        const nextEntry = applyPortfolioStep(lastEntry, marketReturn, settings.monthlyContribution);
+        const nextEntry = applyPortfolioStep(lastEntry, marketReturn, dailyContribution);
         simulationData.push(nextEntry);
         currentMonth = nextEntry.month;
 
         if (secondaryScenario === 'compare') {
             const lastC = simulationDataCompare[simulationDataCompare.length - 1];
             const extra = Math.max(0, parseFloat(compareExtraInput?.value) || 0);
-            const mc = settings.monthlyContribution + extra;
+            const mc = dailyContribution + extra / 30;
             simulationDataCompare.push(applyPortfolioStep(lastC, marketReturn, mc));
         }
 
         if (secondaryScenario === 'sor') {
             const lastS = simulationDataSor[simulationDataSor.length - 1];
             const mrSor = marketReturnForStepSor(stepMonth);
-            simulationDataSor.push(applyPortfolioStep(lastS, mrSor, settings.monthlyContribution));
+            simulationDataSor.push(applyPortfolioStep(lastS, mrSor, dailyContribution));
         }
 
         if (nextEntry.value > peakValue) {
@@ -1116,18 +1376,25 @@ function initFromConfig(config) {
         chart.update(animation);
     }
 
+    function deltaArrowMarkup(diff) {
+        const isUp = diff >= 0;
+        const arrow = isUp ? '\u2191' : '\u2193';
+        const cls = isUp ? 'sim-deltaArrow sim-deltaArrow--up' : 'sim-deltaArrow sim-deltaArrow--down';
+        return `<span class="${cls}" aria-hidden="true">${arrow}</span>`;
+    }
+
     function formatDeltaLine(cur, prev, vsBase) {
         if (prev == null || prev === cur) return '';
         const diff = cur - prev;
         const pct = prev !== 0 ? (diff / Math.abs(prev)) * 100 : 0;
-        const arrow = diff >= 0 ? '\u2191' : '\u2193';
         const sign = diff >= 0 ? '+' : '-';
-        const main = `${sign}${formatConverted(convertAmount(Math.abs(diff)))} ${i18n.mom} (${sign}${Math.abs(pct).toFixed(1)}%) ${arrow}`;
+        const main = `${sign}${formatConverted(convertAmount(Math.abs(diff)))} ${i18n.mom} (${sign}${Math.abs(pct).toFixed(1)}%)`;
+        let html = `${main} ${deltaArrowMarkup(diff)}`;
         if (vsBase != null && vsBase !== 0) {
             const vsPct = ((cur - vsBase) / vsBase) * 100;
-            return `${main} \u00B7 ${i18n.vsContributed} ${vsPct >= 0 ? '+' : ''}${vsPct.toFixed(1)}%`;
+            html += ` \u00B7 ${i18n.vsContributed} ${vsPct >= 0 ? '+' : ''}${vsPct.toFixed(1)}%`;
         }
-        return main;
+        return html;
     }
 
     function updateSummary() {
@@ -1135,7 +1402,7 @@ function initFromConfig(config) {
         const prev = simulationData.length > 1 ? simulationData[simulationData.length - 2] : null;
         const contribBase = lifetimeContributedOf(data);
         const totalGain = data.value - contribBase;
-        const years = Math.max(data.month, 1) / 12;
+        const years = Math.max(data.month, 1) / 365;
         const cagr = Math.pow(data.value / Math.max(contribBase, 1e-6), 1 / years) - 1;
 
         currentValueEl.textContent = formatCurrency(data.value);
@@ -1147,10 +1414,11 @@ function initFromConfig(config) {
         cagrEl.textContent = `${(cagr * 100).toFixed(2)}%`;
 
         if (meta.current && prev) {
-            meta.current.textContent = formatDeltaLine(data.value, prev.value, null);
-            meta.current.className =
-                'sim-kpiMeta' + (data.value >= prev.value ? ' sim-kpiMeta--up' : ' sim-kpiMeta--down');
-        } else if (meta.current) meta.current.textContent = '';
+            meta.current.innerHTML = formatDeltaLine(data.value, prev.value, null);
+            meta.current.className = 'sim-kpiMeta';
+        } else if (meta.current) {
+            meta.current.textContent = '';
+        }
 
         if (meta.contributed && prev) {
             const d = data.contributions - prev.contributions;
@@ -1160,21 +1428,21 @@ function initFromConfig(config) {
 
         if (meta.gain) {
             const gainPctVsContrib = contribBase > 0 ? (totalGain / contribBase) * 100 : 0;
-            meta.gain.textContent =
-                contribBase > 0
-                    ? `${totalGain >= 0 ? '+' : '-'}${formatConverted(Math.abs(convertAmount(totalGain)))} (${gainPctVsContrib >= 0 ? '+' : ''}${gainPctVsContrib.toFixed(1)}% ${i18n.vsContributed})`
-                    : '';
-            meta.gain.className = 'sim-kpiMeta' + (totalGain >= 0 ? ' sim-kpiMeta--up' : ' sim-kpiMeta--down');
+            if (contribBase > 0) {
+                const body = `${totalGain >= 0 ? '+' : '-'}${formatConverted(Math.abs(convertAmount(totalGain)))} (${gainPctVsContrib >= 0 ? '+' : ''}${gainPctVsContrib.toFixed(1)}% ${i18n.vsContributed})`;
+                meta.gain.innerHTML = `${body} ${deltaArrowMarkup(totalGain)}`;
+            } else {
+                meta.gain.textContent = '';
+            }
+            meta.gain.className = 'sim-kpiMeta';
         }
 
         if (meta.real && prev) {
-            meta.real.textContent = formatDeltaLine(data.inflationAdjusted, prev.inflationAdjusted, null);
-            meta.real.className =
-                'sim-kpiMeta' +
-                (data.inflationAdjusted >= prev.inflationAdjusted
-                    ? ' sim-kpiMeta--up'
-                    : ' sim-kpiMeta--down');
-        } else if (meta.real) meta.real.textContent = '';
+            meta.real.innerHTML = formatDeltaLine(data.inflationAdjusted, prev.inflationAdjusted, null);
+            meta.real.className = 'sim-kpiMeta';
+        } else if (meta.real) {
+            meta.real.textContent = '';
+        }
 
         if (meta.drawdown) {
             meta.drawdown.textContent =
@@ -1207,9 +1475,11 @@ function initFromConfig(config) {
         const risk = settings.riskAppetite;
         const market = settings.marketInfluence;
         const inflation = settings.inflationRate;
+        const investors = settings.investors;
         const tips = [
             risk > 0.6 ? i18n.riskHigh : null,
             market > 0.6 ? i18n.riskMarket : null,
+            investors >= 25 ? (i18n.investorsHigh || null) : null,
             inflation > 0.03 ? i18n.inflHigh : i18n.inflMod,
         ].filter(Boolean);
         let extra = '';
@@ -1237,15 +1507,18 @@ function initFromConfig(config) {
     }
 
     function startSimulation() {
-        if (isRunning) return;
+        // Single button toggles run/pause.
+        if (isRunning) {
+            pauseSimulation();
+            return;
+        }
 
         isPlaygroundMode = readPlaygroundModeFromUi();
         const maxMonths = parseInt(monthsInput.value, 10);
         ensureSharedPath(maxMonths);
 
         isRunning = true;
-        btnRun.disabled = true;
-        btnPause.disabled = false;
+        setRunPauseButtonState(true);
 
         const stepSeconds = Math.max(0.1, parseFloat(speedInput.value) || 0.25);
         const speed = stepSeconds * 1000;
@@ -1270,7 +1543,7 @@ function initFromConfig(config) {
             }
             rebuildChartData('none');
             updateSummary();
-            statusDisplay.textContent = i18n.month
+        statusDisplay.textContent = i18n.month
                 .replace(':current', String(currentMonth))
                 .replace(':total', String(maxMonths));
         }, speed);
@@ -1301,8 +1574,7 @@ function initFromConfig(config) {
 
     function pauseSimulation() {
         isRunning = false;
-        btnRun.disabled = false;
-        btnPause.disabled = true;
+        setRunPauseButtonState(false);
 
         if (intervalId) {
             clearInterval(intervalId);
@@ -1387,10 +1659,10 @@ function initFromConfig(config) {
         seedInitialState();
     }
     syncSecondaryUi();
+    setRunPauseButtonState(Boolean(isRunning));
 
     btnRun.addEventListener('click', startSimulation);
     btnStep.addEventListener('click', stepOnce);
-    btnPause.addEventListener('click', pauseSimulation);
     btnReset.addEventListener('click', resetSimulation);
     btnSave?.addEventListener('click', () => {
         sendSnapshot();

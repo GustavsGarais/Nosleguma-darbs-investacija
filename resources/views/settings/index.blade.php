@@ -1,9 +1,9 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Settings')
+@section('title', __('Settings'))
 
 @section('dashboard_content')
-<section class="auth-card" aria-label="Settings overview" style="padding:32px; display:flex; flex-direction:column; gap:24px;">
+<section class="auth-card" aria-label="{{ __('Settings overview') }}" style="padding:32px; display:flex; flex-direction:column; gap:24px;">
     <header style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
         <div>
             <h1 style="margin:0;">{{ __('Account') }}</h1>

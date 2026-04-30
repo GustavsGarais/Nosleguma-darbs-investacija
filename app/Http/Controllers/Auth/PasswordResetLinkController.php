@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\PasswordResetInitiatedMail;
+use App\Models\BlockedEmail;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -40,6 +41,12 @@ class PasswordResetLinkController extends Controller
         }
 
         $validated = $request->validate($rules);
+
+        if (BlockedEmail::isBlocked($validated['email'])) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => __('This email address is blocked.')]);
+        }
 
         $status = Password::sendResetLink(
             $request->only('email')

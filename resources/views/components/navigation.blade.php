@@ -45,7 +45,6 @@
                     </a>
                 @endauth
             </div>
-            </div>
             <div class="navigation__item navigation__item--dropdown" style="position:relative;">
                 <button type="button" class="navigation__link navigation__link--dropdown" aria-expanded="false" aria-haspopup="true" style="display:flex; align-items:center; gap:6px; background:none; border:none; cursor:pointer; padding:8px;">
                     <span class="navigation__link-icon">
@@ -71,6 +70,8 @@
                             <span>{{ __('Simulations') }}</span>
                         </a>
                     </li>
+                    @auth
+                    @endauth
                     <li>
                         <a href="{{ route('support.index') }}" class="navigation__dropdown-link @if($navSupportCurrent) navigation__dropdown-link--current @endif" style="display:flex; align-items:center; gap:10px; padding:12px 16px; color:var(--c-on-surface); text-decoration:none; transition:background 0.2s;" @if($navSupportCurrent) aria-current="page" @endif>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -115,7 +116,7 @@
                     </li>
                     @if ($showThemeToggle)
                     <li style="border-top:1px solid color-mix(in srgb, var(--c-border) 70%, transparent);">
-                        <button type="button" class="navigation__dropdown-link theme-toggle theme-toggle--combined" aria-pressed="false" title="Toggle light or dark mode" style="width:100%; text-align:left; background:none; border:none; display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer;">
+                        <button type="button" class="navigation__dropdown-link theme-toggle theme-toggle--combined" aria-pressed="false" title="{{ __('Toggle light or dark mode') }}" style="width:100%; text-align:left; background:none; border:none; display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer;">
                             <span aria-hidden="true" style="display:flex; align-items:center;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="4"></circle>

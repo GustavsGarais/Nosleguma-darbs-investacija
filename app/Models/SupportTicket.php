@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SupportTicket extends Model
 {
+    /** Stored verbatim for admin automation (2FA recovery flow); use {@see getDisplaySubject()} in UI. */
+    public const INTERNAL_TWO_FACTOR_RECOVERY_SUBJECT = 'Lost 2FA / Account Recovery';
+
     protected $fillable = [
         'user_id',
         'subject',
@@ -69,15 +72,51 @@ class SupportTicket extends Model
     public function getErrorTypeLabel(): string
     {
         return match($this->error_type) {
-            'simulation_error' => 'Simulation Error',
-            'visual_error' => 'Visual/UI Error',
-            'personal_error' => 'Account/Personal Error',
-            'translation_error' => 'Translation Error',
-            'performance_issue' => 'Performance Issue',
-            'bug_report' => 'Bug Report',
-            'feature_request' => 'Feature Request',
-            'other' => 'Other',
-            default => 'Unknown',
+            'simulation_error' => __('ticket_type.simulation_error'),
+            'visual_error' => __('ticket_type.visual_error'),
+            'personal_error' => __('ticket_type.personal_error'),
+            'translation_error' => __('ticket_type.translation_error'),
+            'performance_issue' => __('ticket_type.performance_issue'),
+            'bug_report' => __('ticket_type.bug_report'),
+            'feature_request' => __('ticket_type.feature_request'),
+            'other' => __('ticket_type.other'),
+            default => __('ticket_type.unknown'),
+        };
+    }
+
+    public function isTwoFactorRecoveryTicket(): bool
+    {
+        return $this->subject === self::INTERNAL_TWO_FACTOR_RECOVERY_SUBJECT;
+    }
+
+    public function getDisplaySubject(): string
+    {
+        if ($this->isTwoFactorRecoveryTicket()) {
+            return __('support.two_factor_recovery_subject');
+        }
+
+        return $this->subject;
+    }
+
+    public function getStatusLabel(): string
+    {
+        return match ($this->status) {
+            'open' => __('ticket.status.open'),
+            'in_progress' => __('ticket.status.in_progress'),
+            'resolved' => __('ticket.status.resolved'),
+            'closed' => __('ticket.status.closed'),
+            default => $this->status,
+        };
+    }
+
+    public function getPriorityLabel(): string
+    {
+        return match ($this->priority) {
+            'low' => __('ticket.priority.low'),
+            'medium' => __('ticket.priority.medium'),
+            'high' => __('ticket.priority.high'),
+            'urgent' => __('ticket.priority.urgent'),
+            default => $this->priority,
         };
     }
 }

@@ -76,7 +76,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function hasTwoFactorEnabled(): bool
     {
-        return !is_null($this->two_factor_secret) && !is_null($this->two_factor_confirmed_at);
+        return ! is_null($this->two_factor_secret) && ! is_null($this->two_factor_confirmed_at);
     }
 
     /**
@@ -94,14 +94,15 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $codes = $this->getRecoveryCodes();
         $index = array_search($code, $codes);
-        
+
         if ($index !== false) {
             unset($codes[$index]);
             $this->two_factor_recovery_codes = array_values($codes);
             $this->save();
+
             return true;
         }
-        
+
         return false;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminAuditLog;
 use App\Models\User;
 use App\Models\SupportTicket;
 use Illuminate\Http\Request;
@@ -122,13 +123,28 @@ class AdminController extends Controller
             'is_admin' => 'boolean',
         ]);
 
+        $wasAdmin = (bool) $user->is_admin;
+        $newAdmin = $request->has('is_admin') ? (bool) $request->is_admin : false;
+
+        if ($user->id === auth()->id() && $wasAdmin && ! $newAdmin) {
+            return redirect()->route('admin.users.edit', $user)
+                ->with('error', __('You cannot remove your own administrator privileges.'));
+        }
+
         $user->name = $validated['name'];
-        $user->is_admin = $request->has('is_admin') ? (bool)$request->is_admin : false;
+        $user->is_admin = $newAdmin;
 
         $user->save();
 
+        AdminAuditLog::record('user.updated', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'name' => $user->name,
+            'is_admin' => $user->is_admin,
+        ]);
+
         return redirect()->route('admin.users.show', $user)
-            ->with('success', 'User updated successfully!');
+            ->with('success', __('User updated successfully.'));
     }
 
     /**
@@ -138,7 +154,7 @@ class AdminController extends Controller
     {
         if ($user->id === auth()->id()) {
             return redirect()->route('admin.users.show', $user)
-                ->with('error', 'You cannot disable your own 2FA from here.');
+                ->with('error', __('You cannot disable your own 2FA from here.'));
         }
 
         $user->two_factor_secret = null;
@@ -146,8 +162,13 @@ class AdminController extends Controller
         $user->two_factor_confirmed_at = null;
         $user->save();
 
+        AdminAuditLog::record('user.two_factor_disabled', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+        ]);
+
         return redirect()->route('admin.users.show', $user)
-            ->with('success', '2FA disabled for this user.');
+            ->with('success', __('2FA disabled for this user.'));
     }
 
     /**
@@ -158,12 +179,19 @@ class AdminController extends Controller
         // Prevent deleting yourself
         if ($user->id === auth()->id()) {
             return redirect()->route('admin.users.index')
-                ->with('error', 'You cannot delete your own account!');
+                ->with('error', __('You cannot delete your own account!'));
         }
+
+        AdminAuditLog::record('user.deleted', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'name' => $user->name,
+            'was_admin' => (bool) $user->is_admin,
+        ]);
 
         $user->delete();
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User deleted successfully!');
+            ->with('success', __('User deleted successfully.'));
     }
 }

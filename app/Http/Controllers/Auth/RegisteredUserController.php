@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\BlockedEmail;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -34,6 +35,12 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        if (BlockedEmail::isBlocked($request->input('email'))) {
+            return back()
+                ->withInput($request->only('name', 'email'))
+                ->withErrors(['email' => __('This email address is blocked.')]);
+        }
 
         $user = User::create([
             'name' => $request->name,
