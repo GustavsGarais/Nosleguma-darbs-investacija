@@ -13,8 +13,8 @@
 @section('title', __('Quick Tour Simulation (read-only template)'))
 
 @section('content')
-<section class="hero" style="padding:48px 0; display:flex; justify-content:center;">
-    <div class="hero-content" style="width:min(1100px, 100% - 32px); margin:0 auto; display:grid; gap:24px;">
+<section class="quick-tour">
+    <div class="quick-tour__inner">
         <header style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
                 <p style="margin:0; text-transform:uppercase; letter-spacing:0.08em; font-size:12px; color:var(--c-on-surface-2);">{{ __('Guided demo') }}</p>
@@ -47,7 +47,7 @@
                 </div>
             </div>
 
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+            <div class="quick-tour__fields">
                 <label style="display:grid; gap:6px;">
                     <span>{{ __('Duration (days)') }}</span>
                     <input id="qt-months" type="number" min="12" max="600" step="12" value="120" class="footer-email-input" />
@@ -67,7 +67,7 @@
                             </svg>
                         </span>
                     </span>
-                    <input id="qt-initial" type="number" step="0.01" value="5000" class="footer-email-input" />
+                    <input id="qt-initial" type="number" min="0" max="250000" step="50" value="5000" class="footer-email-input" inputmode="numeric" />
                 </label>
                 <label style="display:grid; gap:6px;">
                     <span style="display:flex; align-items:center; gap:6px;">
@@ -80,7 +80,7 @@
                             </svg>
                         </span>
                     </span>
-                    <input id="qt-monthly" type="number" step="0.01" value="250" class="footer-email-input" />
+                    <input id="qt-monthly" type="number" min="0" max="25000" step="25" value="250" class="footer-email-input" inputmode="numeric" />
                 </label>
                 <label style="display:grid; gap:6px;">
                     <span style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
@@ -94,7 +94,7 @@
                             </svg>
                         </span>
                     </span>
-                    <input id="qt-growth" type="number" step="0.01" min="0" max="100" value="7" class="footer-email-input" />
+                    <input id="qt-growth" type="number" step="0.1" min="0" max="30" value="7" class="footer-email-input" inputmode="decimal" />
                 </label>
                 <label style="display:grid; gap:6px;">
                     <span style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
@@ -108,7 +108,7 @@
                             </svg>
                         </span>
                     </span>
-                    <input id="qt-risk" type="number" step="0.01" min="0" max="100" value="50" class="footer-email-input" />
+                    <input id="qt-risk" type="number" step="1" min="0" max="100" value="50" class="footer-email-input" inputmode="numeric" />
                 </label>
                 <label style="display:grid; gap:6px;">
                     <span style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
@@ -122,7 +122,7 @@
                             </svg>
                         </span>
                     </span>
-                    <input id="qt-market" type="number" step="0.01" min="0" max="100" value="50" class="footer-email-input" />
+                    <input id="qt-market" type="number" step="1" min="0" max="100" value="50" class="footer-email-input" inputmode="numeric" />
                 </label>
                 <label style="display:grid; gap:6px;">
                     <span style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
@@ -136,26 +136,26 @@
                             </svg>
                         </span>
                     </span>
-                    <input id="qt-inflation" type="number" step="0.01" min="0" max="100" value="2" class="footer-email-input" />
+                    <input id="qt-inflation" type="number" step="0.1" min="0" max="20" value="2" class="footer-email-input" inputmode="decimal" />
                 </label>
             </div>
 
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
-                <div class="auth-card" style="padding:14px;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:10px;">
+                <div class="auth-card" style="padding:12px;">
                     <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">{{ __('Current Value') }}</p>
-                    <p id="qt-current" style="margin:4px 0 0; font-size:22px; font-weight:700; color:var(--c-primary);">€0.00</p>
+                    <p id="qt-current" style="margin:3px 0 0; font-size:18px; font-weight:800; color:var(--c-primary);">€0.00</p>
                 </div>
-                <div class="auth-card" style="padding:14px;">
+                <div class="auth-card" style="padding:12px;">
                     <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">{{ __('Total you put in') }}</p>
-                    <p id="qt-contrib" style="margin:4px 0 0; font-size:22px; font-weight:700;">€0.00</p>
+                    <p id="qt-contrib" style="margin:3px 0 0; font-size:18px; font-weight:800;">€0.00</p>
                 </div>
-                <div class="auth-card" style="padding:14px;">
+                <div class="auth-card" style="padding:12px;">
                     <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">{{ __('Gain') }}</p>
-                    <p id="qt-gain" style="margin:4px 0 0; font-size:22px; font-weight:700;">€0.00</p>
+                    <p id="qt-gain" style="margin:3px 0 0; font-size:18px; font-weight:800;">€0.00</p>
                 </div>
-                <div class="auth-card" style="padding:14px;">
+                <div class="auth-card" style="padding:12px;">
                     <p style="margin:0; font-size:12px; color:var(--c-on-surface-2); text-transform:uppercase;">{{ __('Real (inflation adj.)') }}</p>
-                    <p id="qt-real" style="margin:4px 0 0; font-size:22px; font-weight:700;">€0.00</p>
+                    <p id="qt-real" style="margin:3px 0 0; font-size:18px; font-weight:800;">€0.00</p>
                 </div>
             </div>
 
@@ -164,7 +164,7 @@
                     <h3 style="margin:0;">{{ __('Simulation preview') }}</h3>
                     <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">{{ __('Speed is fixed to 0.50s per step. Names are locked for this demo.') }}</p>
                 </div>
-                <div style="position:relative; height:380px; margin-top:12px;">
+                <div style="position:relative; height:420px; margin-top:12px;">
                     <canvas id="qt-chart"></canvas>
                 </div>
             </div>
@@ -212,6 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const asNumber = (val, fallback = 0) => {
         const num = Number(val);
         return Number.isFinite(num) ? num : fallback;
+    };
+    const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+    const clampFromInput = (inputEl, fallback) => {
+        const raw = asNumber(inputEl.value, fallback);
+        const min = inputEl.min !== '' ? Number(inputEl.min) : -Infinity;
+        const max = inputEl.max !== '' ? Number(inputEl.max) : Infinity;
+        const v = clamp(raw, Number.isFinite(min) ? min : -Infinity, Number.isFinite(max) ? max : Infinity);
+        if (String(inputEl.value) !== String(v)) inputEl.value = String(v);
+        return v;
     };
 
     let isRunning = false;
@@ -284,14 +293,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadSettings() {
         return {
-            months: Math.max(12, asNumber(monthsInput.value, 120)),
+            months: clampFromInput(monthsInput, 120),
             speedMs: 500, // fixed 0.50s
-            initialInvestment: asNumber(initialInput.value, 5000),
-            monthlyContribution: asNumber(monthlyInput.value, 250),
-            growthRate: Math.min(1, Math.max(0, asNumber(growthInput.value, 7) / 100)),
-            riskAppetite: Math.min(1, Math.max(0, asNumber(riskInput.value, 50) / 100)),
-            marketInfluence: Math.min(1, Math.max(0, asNumber(marketInput.value, 50) / 100)),
-            inflationRate: Math.min(1, Math.max(0, asNumber(inflationInput.value, 2) / 100)),
+            initialInvestment: clampFromInput(initialInput, 5000),
+            monthlyContribution: clampFromInput(monthlyInput, 250),
+            growthRate: clamp(clampFromInput(growthInput, 7) / 100, 0, 1),
+            riskAppetite: clamp(clampFromInput(riskInput, 50) / 100, 0, 1),
+            marketInfluence: clamp(clampFromInput(marketInput, 50) / 100, 0, 1),
+            inflationRate: clamp(clampFromInput(inflationInput, 2) / 100, 0, 1),
         };
     }
 
@@ -429,10 +438,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     [initialInput, monthlyInput, growthInput, riskInput, marketInput, inflationInput, monthsInput].forEach(inp => {
-        inp.addEventListener('change', () => {
+        const handler = () => {
             settings = loadSettings();
             seedInitial();
-        });
+        };
+        inp.addEventListener('change', handler);
+        inp.addEventListener('blur', handler);
     });
 
     btnRun.addEventListener('click', startRun);

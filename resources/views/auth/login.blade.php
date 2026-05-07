@@ -31,14 +31,16 @@
 				<input type="password" name="password" required autocomplete="current-password" class="footer-email-input" />
 			</label>
 
-			<label style="display:flex; align-items:center; gap:8px; color: var(--c-on-surface-2);">
-				<input type="checkbox" name="remember" style="width:16px; height:16px;" />
-				<span>{{ __('Remember me') }}</span>
-			</label>
+			<div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:-2px;">
+				<label style="display:flex; align-items:center; gap:8px; color: var(--c-on-surface-2);">
+					<input type="checkbox" name="remember" style="width:16px; height:16px;" />
+					<span>{{ __('Remember me') }}</span>
+				</label>
+				<a href="{{ route('password.request') }}" class="btn btn-link" style="padding:0; font-size:14px; font-weight:600;">{{ __('Forgot password?') }}</a>
+			</div>
 
 			<div class="auth-actions">
 				<button type="submit" class="btn btn-primary">{{ __('Sign In') }}</button>
-				<a href="{{ route('password.request') }}" class="btn btn-outline">{{ __('Forgot password?') }}</a>
 			</div>
 
 			<div style="margin-top:6px; color: var(--c-on-surface-2);">

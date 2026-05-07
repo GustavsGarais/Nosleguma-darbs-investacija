@@ -13,13 +13,13 @@
             'running' => __('Running...'),
             'paused' => __('Paused'),
             'complete' => __('Complete'),
-            'month' => __('Day :current / :total'),
+            'month' => __('Month :current / :total'),
             'saving' => __('Saving…'),
             'savedAt' => __('Saved :time'),
             'saveFailed' => __('Save failed. Try again.'),
             'noEvents' => __('No notable events yet. Run or step the simulation.'),
-            'marketShock' => __('Market shock: :pct% day (:label)'),
-            'newHigh' => __('New portfolio high reached on day :month.'),
+            'marketShock' => __('Market shock: :pct% month (:label)'),
+            'newHigh' => __('New portfolio high reached in month :month.'),
             'drawdownCoaching' => __('Drawdown :pct% — keep contributions consistent.'),
             'presetLabel' => __('Preset: :label'),
             'balancedLabel' => __('Balanced (default)'),
@@ -38,7 +38,7 @@
             'investorsHigh' => __('Many investors (crowd) are active: profit-taking and panic waves can amplify swings.'),
             'inflHigh' => __('Inflation is elevated; compare nominal vs real value to see purchasing power.'),
             'inflMod' => __('Inflation is moderate; compounding still beats it over time.'),
-            'riskDefault' => __('Use Step mode to see how each day contributes to long-term results.'),
+            'riskDefault' => __('Use Step mode to see how each month contributes to long-term results.'),
             'chartNominal' => __('Portfolio value'),
             'chartReal' => __('Real value (inflation-adjusted)'),
             'chartContributed' => __('Total you put in'),
@@ -64,7 +64,7 @@
             'simModePlayground' => __('Hands-on portfolio lab'),
             'simulationMode' => __('Simulation mode'),
             'playgroundHelp' => __('Buy adds money into the investment. Sell moves part of the investment back to your cash wallet. The orange line is profit/loss compared to how much you put in (it can go below 0 = loss).'),
-            'playgroundNextStep' => __('Use Step or Run in the bar above: each day reprices your holdings and redraws the chart.'),
+            'playgroundNextStep' => __('Use Step or Run in the bar above: each month reprices your holdings and redraws the chart.'),
             'playgroundBuyHint' => __('Add to position'),
             'playgroundCustomAdd' => __('Custom amount'),
             'playgroundSellHint' => __('Sell part of holdings (priced at current month)'),
@@ -75,7 +75,7 @@
             'playgroundLesson' => __('Try selling after a peak versus after a dip to see how timing changes locked-in gains. This is a teaching model, not live trading.'),
             'playgroundRealizedLabel' => __('Realized P/L (closed trades)'),
             'modeLabel' => __('Mode'),
-            'xAxisDay' => __('Day'),
+            'xAxisDay' => __('Month'),
             'yAxisValue' => __('Value (:currency)'),
         ],
     ];
@@ -144,7 +144,7 @@
                 data-icon-pause="⏸"
                 aria-pressed="false"
             >▶ {{ __('Run') }}</button>
-            <button id="btn-step" class="btn btn-secondary" type="button" title="{{ __('Advance by one day') }}">➜ {{ __('Step') }}</button>
+            <button id="btn-step" class="btn btn-secondary" type="button" title="{{ __('Advance by one month') }}">➜ {{ __('Step') }}</button>
             <button id="btn-reset" class="btn btn-outline" type="button">🔄 {{ __('Reset') }}</button>
             <button id="btn-save" class="btn btn-outline" type="button" title="{{ __('Save results and full monthly history to the server') }}">💾 {{ __('Save') }}</button>
             <button
@@ -175,7 +175,7 @@
                 <span class="sim-controls-flyout__label">{{ __('Controls') }}</span>
             </div>
             <aside class="sim-dash-controls sim-controls-flyout__panel" aria-label="{{ __('Simulation Controls') }}">
-            <div class="sim-dash-controlsBlock auth-card" style="padding:16px; box-shadow:none;">
+            <div class="sim-dash-controlsBlock auth-card auth-card--inset" style="padding:16px;">
                 <h3>{{ __('Simulation Controls') }}</h3>
                 <fieldset style="border:none; padding:0; margin:0 0 12px;">
                     <legend class="sr-only">{{ __('Simulation mode') }}</legend>
@@ -193,8 +193,8 @@
                 </fieldset>
                 <div style="display:grid; gap:10px;">
                     <label style="display:grid; gap:6px;">
-                        <span style="font-weight:700;">{{ __('Duration (days)') }}</span>
-                        <input id="months-input" type="number" min="365" max="7300" step="365" value="3650" class="footer-email-input" />
+                        <span style="font-weight:700;">{{ __('Duration (months)') }}</span>
+                        <input id="months-input" type="number" min="12" max="600" step="12" value="360" class="footer-email-input" />
                     </label>
                     <label style="display:grid; gap:6px;">
                         <span style="font-weight:700;">{{ __('Speed (seconds/step)') }}</span>
@@ -227,7 +227,7 @@
                 </div>
             </div>
 
-            <div class="sim-dash-controlsBlock auth-card" style="padding:16px; box-shadow:none;">
+            <div class="sim-dash-controlsBlock auth-card auth-card--inset" style="padding:16px;">
                 <div style="display:grid; gap:10px;">
                     <div id="learning-note" style="padding:12px; border-radius:12px; border:1px solid var(--c-border); background:color-mix(in srgb, var(--c-surface) 90%, var(--c-primary) 10%); font-size:14px; line-height:1.6;"></div>
                     <div id="risk-tip" style="padding:12px; border-radius:12px; border:1px solid var(--c-border); background:color-mix(in srgb, var(--c-surface) 94%, var(--c-secondary) 6%); font-size:14px; line-height:1.6;"></div>
@@ -301,7 +301,12 @@
         <div class="sim-dash-work">
         <div class="sim-dash-chartCol">
             <div class="sim-dash-chartCard" aria-label="Chart">
-                <h2 class="sim-dash-chartTitle">{{ __('Investment growth over time') }}</h2>
+                <div class="sim-dash-chartHead">
+                    <h2 class="sim-dash-chartTitle">{{ __('Investment growth over time') }}</h2>
+                    <button type="button" class="btn btn-outline btn-sm sim-dash-chartReset" id="sim-chart-reset-zoom">
+                        {{ __('Reset zoom') }}
+                    </button>
+                </div>
                 <div class="sim-run-chartWrap">
                     <canvas id="sim-chart" aria-label="Simulation chart"></canvas>
                 </div>
@@ -354,51 +359,45 @@
     </details>
 
     <details class="sim-accordion" open>
-        <summary aria-label="Market Events & Teaching Moments">
-            <span>{{ __('Market Events & Teaching Moments') }}</span>
-            <span style="color:var(--c-on-surface-2); font-size:13px;">{{ __('Highlights as you run') }}</span>
+        <summary aria-label="{{ __('Market Events & Teaching Moments') }}">
+            <span class="sim-accordion__title">{{ __('Market Events & Teaching Moments') }}</span>
+            <span class="sim-accordion__sub">{{ __('Highlights as you run') }}</span>
         </summary>
         <div class="sim-accordionBody">
-            <ul id="event-log" style="margin:0; padding-left:18px; display:grid; gap:8px; font-size:14px; color:var(--c-on-surface-2);"></ul>
+            <ul id="event-log" class="sim-event-log"></ul>
         </div>
     </details>
 
     <details class="sim-accordion">
-        <summary aria-label="Settings">
-            <span>{{ __('Simulation Parameters') }}</span>
-            <span style="color:var(--c-on-surface-2); font-size:13px;">{{ __('What you assumed') }}</span>
+        <summary aria-label="{{ __('Simulation Parameters') }}">
+            <span class="sim-accordion__title">{{ __('Simulation Parameters') }}</span>
+            <span class="sim-accordion__sub">{{ __('What you assumed') }}</span>
         </summary>
         <div class="sim-accordionBody">
-            <div
-                style="
-                    display:grid;
-                    grid-template-columns: repeat(6, minmax(0, 1fr));
-                    gap:10px;
-                "
-            >
-                <div style="padding:10px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                    <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Initial Investment') }}</span>
-                    <p style="margin:4px 0 0; font-size:16px; font-weight:800;">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+            <div class="sim-param-grid">
+                <div class="sim-param-tile">
+                    <span class="sim-param-tile__label">{{ __('Initial Investment') }}</span>
+                    <p class="sim-param-tile__value">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
                 </div>
-                <div style="padding:10px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                    <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Monthly Contribution') }}</span>
-                    <p style="margin:4px 0 0; font-size:16px; font-weight:800;">€{{ number_format($simulation->settings['monthlyContribution'], 2) }}</p>
+                <div class="sim-param-tile">
+                    <span class="sim-param-tile__label">{{ __('Monthly Contribution') }}</span>
+                    <p class="sim-param-tile__value">€{{ number_format($simulation->settings['monthlyContribution'], 2) }}</p>
                 </div>
-                <div style="padding:10px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                    <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Annual Growth Rate') }}</span>
-                    <p style="margin:4px 0 0; font-size:16px; font-weight:800;">{{ number_format($simulation->settings['growthRate'] * 100, 2) }}%</p>
+                <div class="sim-param-tile">
+                    <span class="sim-param-tile__label">{{ __('Annual Growth Rate') }}</span>
+                    <p class="sim-param-tile__value">{{ number_format($simulation->settings['growthRate'] * 100, 2) }}%</p>
                 </div>
-                <div style="padding:10px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                    <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Inflation Rate') }}</span>
-                    <p style="margin:4px 0 0; font-size:16px; font-weight:800;">{{ number_format($simulation->settings['inflationRate'] * 100, 2) }}%</p>
+                <div class="sim-param-tile">
+                    <span class="sim-param-tile__label">{{ __('Inflation Rate') }}</span>
+                    <p class="sim-param-tile__value">{{ number_format($simulation->settings['inflationRate'] * 100, 2) }}%</p>
                 </div>
-                <div style="padding:10px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                    <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Risk Appetite') }}</span>
-                    <p style="margin:4px 0 0; font-size:16px; font-weight:800;">{{ number_format($simulation->settings['riskAppetite'] * 100, 0) }}%</p>
+                <div class="sim-param-tile">
+                    <span class="sim-param-tile__label">{{ __('Risk Appetite') }}</span>
+                    <p class="sim-param-tile__value">{{ number_format($simulation->settings['riskAppetite'] * 100, 0) }}%</p>
                 </div>
-                <div style="padding:10px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
-                    <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Market Influence') }}</span>
-                    <p style="margin:4px 0 0; font-size:16px; font-weight:800;">{{ number_format($simulation->settings['marketInfluence'] * 100, 0) }}%</p>
+                <div class="sim-param-tile">
+                    <span class="sim-param-tile__label">{{ __('Market Influence') }}</span>
+                    <p class="sim-param-tile__value">{{ number_format($simulation->settings['marketInfluence'] * 100, 0) }}%</p>
                 </div>
             </div>
         </div>

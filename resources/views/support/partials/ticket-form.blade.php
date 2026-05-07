@@ -1,9 +1,4 @@
-<section class="auth-card" style="margin-top:24px;" aria-label="{{ __('Report an Issue') }}">
-    <h2 style="margin:0 0 8px; font-size:1.25rem;">{{ __('Report an Issue') }}</h2>
-    <p style="margin:0 0 16px; color:var(--c-on-surface-2); font-size:14px; line-height:1.5;">
-        {{ __('Submit a detailed report while signed in. We will link it to your account.') }}
-    </p>
-
+<div aria-label="{{ __('Report an Issue') }}">
     @if($errors->getBag('ticket')->isNotEmpty())
         <div role="alert" style="margin-bottom:16px; padding:10px 12px; border:1px solid var(--c-border); border-radius:10px; background: color-mix(in srgb, var(--c-surface) 92%, #ef4444 8%);">
             <ul style="margin:0; padding-left:20px;">
@@ -75,7 +70,7 @@
             </div>
         </div>
     </form>
-</section>
+</div>
 
 @push('scripts')
 <script>

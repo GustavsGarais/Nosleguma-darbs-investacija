@@ -1,6 +1,6 @@
-<section class="auth-card" aria-label="Simulations" style="margin-top:24px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
-        <h2 style="margin:0;">{{ __('Your Simulations') }}</h2>
+<section class="auth-card sim-dash-list" aria-label="{{ __('Simulations') }}">
+    <div class="sim-dash-list__toolbar" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+        <h2 class="sim-dash-list__title" style="margin:0;">{{ __('Your Simulations') }}</h2>
         <a href="{{ route('simulations.create') }}" class="btn btn-primary btn-lg">{{ __('New Simulation') }}</a>
     </div>
 
@@ -11,54 +11,77 @@
     @endif
 
     @if($simulations->count())
-        <div style="overflow:auto; margin-top:16px;">
-            <table style="width:100%; border-collapse:collapse;">
-                <thead>
-                    <tr>
-                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">{{ __('Name') }}</th>
-                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">{{ __('Latest Value') }}</th>
-                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">{{ __('Last Updated') }}</th>
-                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">{{ __('Created') }}</th>
-                        <th style="text-align:left; padding:8px; border-bottom:1px solid var(--c-border);">{{ __('Actions') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($simulations as $sim)
-                        @php
-                            $snapshot = $sim->data['snapshot'] ?? null;
-                            $lastValue = $snapshot['value'] ?? ($sim->settings['initialInvestment'] ?? 0);
-                            $capturedAt = $snapshot['captured_at'] ?? null;
-                            $updatedText = $capturedAt
-                                ? \Illuminate\Support\Carbon::parse($capturedAt)->diffForHumans()
-                                : 'Not saved yet';
-                        @endphp
-                        <tr>
-                            <td style="padding:8px; border-bottom:1px solid var(--c-border);">
-                                <a href="{{ route('simulations.show', $sim) }}" class="sim-name-link">{{ $sim->name }}</a>
-                            </td>
-                            <td style="padding:8px; border-bottom:1px solid var(--c-border);">
-                                <span class="currency-value" data-currency-value="{{ $lastValue }}">{{ '€'.number_format($lastValue, 2) }}</span>
-                            </td>
-                            <td style="padding:8px; border-bottom:1px solid var(--c-border);">{{ $updatedText }}</td>
-                            <td style="padding:8px; border-bottom:1px solid var(--c-border);">{{ $sim->created_at->diffForHumans() }}</td>
-                            <td style="padding:8px; border-bottom:1px solid var(--c-border); display:flex; gap:8px;">
-                                <a class="btn btn-primary btn-sm" href="{{ route('simulations.edit', $sim) }}">{{ __('Edit') }}</a>
-                                <form method="POST" action="{{ route('simulations.destroy', $sim) }}" onsubmit="return confirm('{{ __('Delete this simulation?') }}');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline btn-sm">{{ __('Delete') }}</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+        <div class="sim-cardGrid" role="list" aria-label="{{ __('Your Simulations') }}" style="margin-top:16px;">
+            @foreach($simulations as $sim)
+                @php
+                    $snapshot = $sim->data['snapshot'] ?? null;
+                    $runner = $sim->data['runner'] ?? null;
 
-        <div style="margin-top:12px;">
-            {{ $simulations->links() }}
+                    $initial = (float) ($sim->settings['initialInvestment'] ?? 0);
+                    $lastValue = (float) ($snapshot['value'] ?? $initial);
+                    $contrib = (float) ($snapshot['contributions'] ?? $initial);
+                    $gain = (float) ($snapshot['total_gain'] ?? ($lastValue - $contrib));
+
+                    // Runner stores progress as "month". Older saved runs used a daily timestep and
+                    // stored days in these fields; detect and convert for display.
+                    $currentMonth = (int) ($snapshot['month'] ?? 0);
+                    $totalMonths = (int) ($runner['months'] ?? 360);
+                    if ($totalMonths < 1) $totalMonths = 1;
+
+                    if ($totalMonths > 600 || $currentMonth > 600) {
+                        $currentMonth = (int) round($currentMonth / 30);
+                        $totalMonths = (int) max(1, round($totalMonths / 30));
+                    }
+
+                    if ($currentMonth < 0) $currentMonth = 0;
+                    if ($currentMonth > $totalMonths) $currentMonth = $totalMonths;
+
+                    $progress = $totalMonths > 0 ? ($currentMonth / $totalMonths) : 0;
+                    $progressPct = (int) round($progress * 100);
+
+                    $gainPct = $contrib > 0 ? ($gain / $contrib) * 100 : 0;
+                    $gainPctText = ($gainPct >= 0 ? '+' : '') . number_format($gainPct, 1) . '%';
+                @endphp
+
+                <article class="sim-card" role="listitem" aria-label="{{ $sim->name }}">
+                    <div class="sim-card__topbar" aria-hidden="true"></div>
+
+                    <div class="sim-card__body">
+                        <a href="{{ route('simulations.show', $sim) }}" class="sim-card__title">
+                            {{ $sim->name }}
+                        </a>
+
+                        <div class="sim-card__valueRow">
+                            <span class="currency-value sim-card__value" data-currency-value="{{ $lastValue }}">{{ number_format($lastValue, 2, '.', ' ') }}</span>
+                        </div>
+
+                        <div class="sim-card__gain {{ $gain >= 0 ? 'is-up' : 'is-down' }}">
+                            <span class="sim-card__gainSign" aria-hidden="true">{{ $gain >= 0 ? '+' : '−' }}</span>
+                            <span class="currency-value" data-currency-value="{{ abs($gain) }}">{{ number_format(abs($gain), 2, '.', ' ') }}</span>
+                        </div>
+
+                        <div class="sim-card__meta">
+                            <span class="sim-card__metaLabel">{{ __('Month') }}</span>
+                            <span class="sim-card__metaValue">{{ $currentMonth }} / {{ $totalMonths }}</span>
+                        </div>
+
+                        <div class="sim-card__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ $progressPct }}" aria-label="{{ __('Month') }}">
+                            <div class="sim-card__progressFill" style="width: {{ $progressPct }}%"></div>
+                        </div>
+
+                        <div class="sim-card__pct {{ $gainPct >= 0 ? 'is-up' : 'is-down' }}">
+                            {{ $gainPctText }}
+                        </div>
+                    </div>
+
+                    <div class="sim-card__actions">
+                        <a class="btn btn-primary btn-sm sim-card__btn" href="{{ route('simulations.show', $sim) }}">{{ __('Run') }}</a>
+                        <a class="btn btn-outline btn-sm sim-card__btn" href="{{ route('simulations.edit', $sim) }}">{{ __('Edit') }}</a>
+                    </div>
+                </article>
+            @endforeach
         </div>
     @else
-        <p style="margin-top:16px;">{{ __('No simulations yet.') }} <a href="{{ route('simulations.create') }}" class="sim-name-link">{{ __('Create your first simulation') }}</a>.</p>
+        <p class="sim-dash-empty">{{ __('No simulations yet.') }} <a href="{{ route('simulations.create') }}" class="sim-name-link">{{ __('Create your first simulation') }}</a>.</p>
     @endif
 </section>

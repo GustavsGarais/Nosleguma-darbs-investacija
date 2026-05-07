@@ -25,6 +25,20 @@
                 'content' => __('tutorial.dashboard.2'),
             ],
             [
+                'target' => '.sim-cardGrid, [role="list"][aria-label="Your Simulations"]',
+                'position' => 'bottom',
+                'heading' => __('tutorial.dashboard.h3b'),
+                'content' => __('tutorial.dashboard.2b'),
+                'fallbackTarget' => 'a[href*="simulations.create"], .auth-card a[href*="simulations.create"]',
+            ],
+            [
+                'target' => '.sim-cardGrid .sim-card__actions a.btn-primary, .sim-cardGrid a.sim-card__title',
+                'position' => 'bottom',
+                'heading' => __('tutorial.dashboard.h3c'),
+                'content' => __('tutorial.dashboard.2c'),
+                'fallbackTarget' => 'a[href*="simulations.create"], .auth-card a[href*="simulations.create"]',
+            ],
+            [
                 'target' => 'a[href*="simulations.create"], .auth-card a[href*="simulations.create"]',
                 'position' => 'bottom',
                 'heading' => __('tutorial.dashboard.h4'),
@@ -32,7 +46,7 @@
                 'navigate' => true,
             ],
             [
-                'target' => 'table tbody a[href*="simulations/"]:not([href*="edit"]):not([href*="create"])',
+                'target' => '.sim-cardGrid a.sim-card__title, .sim-cardGrid .sim-card__actions a.btn-primary',
                 'position' => 'bottom',
                 'heading' => __('tutorial.dashboard.h5'),
                 'content' => __('tutorial.dashboard.4'),
@@ -51,6 +65,12 @@
                 'position' => 'bottom',
                 'heading' => __('tutorial.create.h2'),
                 'content' => __('tutorial.create.1'),
+            ],
+            [
+                'target' => 'input[name="simulation_mode"][value="classic"]',
+                'position' => 'right',
+                'heading' => __('tutorial.create.h2b'),
+                'content' => __('tutorial.create.1b'),
             ],
             [
                 'target' => 'input[name="initial_investment"]',
@@ -93,6 +113,7 @@
                 'position' => 'top',
                 'heading' => __('tutorial.create.h9'),
                 'content' => __('tutorial.create.8'),
+                'navigate' => true,
             ],
         ],
         'show' => [
@@ -564,12 +585,25 @@
             }
 
             // Handle navigation
-            if (step.navigate && targetEl.tagName === 'A') {
-                targetEl.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    sessionStorage.setItem('continueTutorial', 'true');
-                    window.location.href = targetEl.getAttribute('href');
-                }, { once: true });
+            if (step.navigate && targetEl) {
+                // For links: intercept click and carry the tutorial to the next page.
+                if (targetEl.tagName === 'A') {
+                    targetEl.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        sessionStorage.setItem('continueTutorial', 'true');
+                        window.location.href = targetEl.getAttribute('href');
+                    }, { once: true });
+                }
+
+                // For submit buttons: allow the normal POST, but mark tutorial to continue.
+                const tag = targetEl.tagName;
+                const type = (targetEl.getAttribute('type') || '').toLowerCase();
+                const isSubmit = (tag === 'BUTTON' && (type === '' || type === 'submit')) || (tag === 'INPUT' && type === 'submit');
+                if (isSubmit) {
+                    targetEl.addEventListener('click', function() {
+                        sessionStorage.setItem('continueTutorial', 'true');
+                    }, { once: true });
+                }
             }
 
             // Overlay already shown above for measurements
@@ -587,11 +621,48 @@
         }
 
         function nextStep() {
+            const step = steps[currentStep];
+
+            // If this step is a "navigate" step, Next should take you there.
+            if (step && step.navigate) {
+                let targetEl = null;
+                if (step.target) targetEl = document.querySelector(step.target);
+                if (!targetEl && step.fallbackTarget) targetEl = document.querySelector(step.fallbackTarget);
+
+                if (targetEl) {
+                    if (targetEl.tagName === 'A') {
+                        sessionStorage.setItem('continueTutorial', 'true');
+                        window.location.href = targetEl.getAttribute('href');
+                        return;
+                    }
+
+                    const tag = targetEl.tagName;
+                    const type = (targetEl.getAttribute('type') || '').toLowerCase();
+                    const isSubmit = (tag === 'BUTTON' && (type === '' || type === 'submit')) || (tag === 'INPUT' && type === 'submit');
+                    if (isSubmit) {
+                        sessionStorage.setItem('continueTutorial', 'true');
+                        const form = targetEl.closest('form');
+                        if (form) {
+                            try {
+                                form.requestSubmit(targetEl);
+                            } catch (e) {
+                                // Fallback for older browsers
+                                form.submit();
+                            }
+                        } else {
+                            targetEl.click();
+                        }
+                        return;
+                    }
+                }
+            }
+
             if (currentStep < steps.length - 1) {
                 showStep(currentStep + 1);
-            } else {
-                completeTutorial();
+                return;
             }
+
+            completeTutorial();
         }
 
         function prevStep() {

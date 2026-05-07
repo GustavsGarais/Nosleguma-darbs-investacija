@@ -25,7 +25,7 @@
     <style>
         /* Use main app theme variables so admin matches the rest of the site */
         :root {
-            --admin-bg: var(--c-surface);
+            --admin-bg: var(--app-panel-gradient);
             --admin-surface: color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 6%);
             --admin-surface-light: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);
             --admin-border: var(--c-border);
@@ -42,6 +42,7 @@
             margin: 0;
             padding: 0;
             background: var(--admin-bg);
+            background-attachment: fixed;
             color: var(--admin-text);
             font-family: var(--font-family-body, 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif);
         }

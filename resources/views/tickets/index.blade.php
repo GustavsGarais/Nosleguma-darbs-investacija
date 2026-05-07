@@ -3,14 +3,14 @@
 @section('title', __('My Support Tickets'))
 
 @section('dashboard_content')
-<section class="auth-card" aria-label="{{ __('My Support Tickets') }}">
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+<section class="auth-card" aria-label="{{ __('My Support Tickets') }}" style="padding:32px; display:flex; flex-direction:column; gap:24px;">
+    <header style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
         <h1 style="margin:0;">{{ __('My Support Tickets') }}</h1>
         <a href="{{ route('support.index') }}" class="btn btn-primary">{{ __('Report New Issue') }}</a>
-    </div>
+    </header>
 
     @if($tickets->count())
-        <div style="overflow:auto; margin-top:16px;">
+        <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; background:color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%); overflow:auto;">
             <table style="width:100%; border-collapse:collapse;">
                 <thead>
                     <tr>
@@ -45,16 +45,16 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>
+        </article>
 
-        <div style="margin-top:16px;">
+        <div>
             {{ $tickets->links() }}
         </div>
     @else
-        <div style="margin-top:24px; text-align:center; padding:40px;">
+        <article style="border:1px solid var(--c-border); border-radius:16px; padding:40px 24px; background:color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%); text-align:center;">
             <p style="margin:0 0 16px; color:var(--c-on-surface-2);">{{ __("You haven't submitted any support tickets yet.") }}</p>
             <a href="{{ route('support.index') }}" class="btn btn-primary">{{ __('Report Your First Issue') }}</a>
-        </div>
+        </article>
     @endif
 </section>
 @endsection

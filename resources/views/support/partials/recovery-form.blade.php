@@ -1,9 +1,4 @@
-<section class="auth-card" style="margin-top:24px;" aria-label="{{ __('Account access & recovery') }}">
-    <h2 style="margin:0 0 8px; font-size:1.25rem;">{{ __('Account access & recovery') }}</h2>
-    <p style="margin:0 0 16px; color:var(--c-on-surface-2); font-size:14px; line-height:1.6;">
-        {{ __('Account recovery help text') }}
-    </p>
-
+<div aria-label="{{ __('Account access & recovery') }}">
     @if($errors->getBag('recovery')->isNotEmpty())
         <div role="alert" style="margin-bottom:16px; padding:10px 12px; border:1px solid var(--c-border); border-radius:10px; background: color-mix(in srgb, var(--c-surface) 92%, #ef4444 8%);">
             <ul style="margin:0; padding-left:20px;">
@@ -55,4 +50,4 @@
             </div>
         </div>
     </form>
-</section>
+</div>

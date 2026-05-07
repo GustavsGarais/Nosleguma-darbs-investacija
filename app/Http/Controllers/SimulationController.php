@@ -25,7 +25,7 @@ class SimulationController extends Controller
 
     public function index(): View
     {
-        $simulations = auth()->user()->simulations()->latest()->paginate(10);
+        $simulations = auth()->user()->simulations()->latest()->get();
 
         return view('simulations.index', compact('simulations'));
     }
@@ -52,7 +52,7 @@ class SimulationController extends Controller
 
         $mode = ($validated['simulation_mode'] ?? 'classic') === 'playground' ? 'playground' : 'classic';
 
-        auth()->user()->simulations()->create([
+        $simulation = auth()->user()->simulations()->create([
             'name' => $validated['name'],
             'settings' => [
                 'initialInvestment' => $validated['initial_investment'],
@@ -66,7 +66,8 @@ class SimulationController extends Controller
             ],
         ]);
 
-        return redirect()->route('simulations.index')
+        return redirect()
+            ->route('simulations.show', $simulation)
             ->with('success', __('Simulation created successfully!'));
     }
 
@@ -142,9 +143,9 @@ class SimulationController extends Controller
             'contributions' => 'required|numeric|min:0',
             'total_gain' => 'required|numeric',
             'currency' => 'nullable|string|in:EUR,USD,GBP,JPY',
-            // Client sends one entry per step. In the daily timestep build, a 20y max horizon is 7300 days.
-            'history' => 'nullable|array|max:7301',
-            'history.*.month' => 'required|integer|min:0|max:7300',
+            // Client sends one entry per step (month). Max duration is 600 months (50 years) + month 0.
+            'history' => 'nullable|array|max:601',
+            'history.*.month' => 'required|integer|min:0|max:600',
             'history.*.value' => 'required|numeric',
             'history.*.inflationAdjusted' => 'required|numeric',
             'history.*.contributions' => 'required|numeric',
@@ -189,32 +190,32 @@ class SimulationController extends Controller
         $this->authorize('update', $simulation);
 
         $validated = $request->validate([
-            'v' => 'required|integer|in:1',
+            'v' => 'required|integer|in:2',
             'settingsFingerprint' => 'required|string|max:512',
             'mode' => 'required|string|in:classic,playground',
-            'months' => 'required|integer|min:1|max:7300',
+            'months' => 'required|integer|min:1|max:600',
             'speed' => 'required|numeric|min:0.1|max:10',
             'activePresetKey' => 'required|string|max:32',
             'secondaryScenario' => 'required|string|in:none,compare,sor',
             'compareExtra' => 'nullable|numeric|min:0|max:1000000',
             'playgroundCustomAmount' => 'nullable|numeric|min:0|max:1000000',
-            'simulationData' => 'required|array|min:1|max:7302',
+            'simulationData' => 'required|array|min:1|max:602',
             'simulationData.*' => 'array',
-            'simulationDataCompare' => 'nullable|array|max:7302',
+            'simulationDataCompare' => 'nullable|array|max:602',
             'simulationDataCompare.*' => 'array',
-            'simulationDataSor' => 'nullable|array|max:7302',
+            'simulationDataSor' => 'nullable|array|max:602',
             'simulationDataSor.*' => 'array',
-            'sharedSmoothedReturns' => 'nullable|array|max:7300',
+            'sharedSmoothedReturns' => 'nullable|array|max:600',
             'sharedSmoothedReturns.*' => 'numeric',
-            'sharedSmoothedReturnsReversed' => 'nullable|array|max:7300',
+            'sharedSmoothedReturnsReversed' => 'nullable|array|max:600',
             'sharedSmoothedReturnsReversed.*' => 'numeric',
             'crashMonths' => 'nullable|array|max:200',
-            'crashMonths.*' => 'integer|min:0|max:7300',
+            'crashMonths.*' => 'integer|min:0|max:600',
             'peakValue' => 'required|numeric',
             'maxDrawdown' => 'required|numeric',
             'lastMonthlyReturn' => 'required|numeric',
             'crowdSentiment' => 'required|numeric',
-            'currentMonth' => 'required|integer|min:0|max:7300',
+            'currentMonth' => 'required|integer|min:0|max:600',
         ]);
 
         $data = $simulation->data ?? [];
