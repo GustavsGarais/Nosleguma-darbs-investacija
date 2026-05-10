@@ -2,4 +2,4 @@
 cmds = ['composer update --no-dev --optimize-autoloader', 'npm ci', 'npm run build']
 
 [start]
-cmd = 'mkdir -p /var/log/nginx && find /assets -type f && php artisan migrate --force && php-fpm -y /assets/php-fpm.conf -D && nginx -g "daemon off;"'
+cmd = 'php artisan migrate --force && node /assets/scripts/prestart.mjs'
