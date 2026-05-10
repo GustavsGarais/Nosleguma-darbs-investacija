@@ -1,21 +1,5 @@
 [phases.install]
 cmds = ['composer update --no-dev --optimize-autoloader', 'npm ci', 'npm run build']
 
-[phases.build]
-cmds = [
-  'mkdir -p /etc/php-fpm.d',
-  'echo "[global]" > /etc/php-fpm.conf',
-  'echo "error_log = /var/log/php-fpm.log" >> /etc/php-fpm.conf',
-  'echo "[www]" >> /etc/php-fpm.conf',
-  'echo "listen = 127.0.0.1:9000" >> /etc/php-fpm.conf',
-  'echo "user = root" >> /etc/php-fpm.conf',
-  'echo "group = root" >> /etc/php-fpm.conf',
-  'echo "pm = dynamic" >> /etc/php-fpm.conf',
-  'echo "pm.max_children = 5" >> /etc/php-fpm.conf',
-  'echo "pm.start_servers = 2" >> /etc/php-fpm.conf',
-  'echo "pm.min_spare_servers = 1" >> /etc/php-fpm.conf',
-  'echo "pm.max_spare_servers = 3" >> /etc/php-fpm.conf'
-]
-
-[start]
-cmd = 'php artisan migrate --force && /nix/store/nv7agllrn6xvfyxqjg55l2nj3n18sgqc-php-8.2.27/sbin/php-fpm -D -y /etc/php-fpm.conf && nginx -g "daemon off;"'
+[phases.deploy]
+cmds = ['php artisan migrate --force']
