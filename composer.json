@@ -76,7 +76,7 @@
                 "laravel/pail"
             ]
         }
-    }
+    },
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
