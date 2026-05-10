@@ -2,4 +2,4 @@
 cmds = ['composer update --no-dev --optimize-autoloader', 'npm ci', 'npm run build']
 
 [start]
-cmd = 'mkdir -p /var/log/nginx && cat /assets/php-fpm.conf && cat /assets/default.conf 2>/dev/null || cat /assets/nginx.conf 2>/dev/null && php artisan migrate --force && php-fpm -y /assets/php-fpm.conf -D && nginx -g "daemon off;"'
+cmd = 'mkdir -p /var/log/nginx && find /assets -type f && php artisan migrate --force && php-fpm -y /assets/php-fpm.conf -D && nginx -g "daemon off;"'
