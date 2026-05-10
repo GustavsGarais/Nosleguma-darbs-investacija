@@ -8,6 +8,8 @@ cmds = [
   'echo "error_log = /var/log/php-fpm.log" >> /etc/php-fpm.conf',
   'echo "[www]" >> /etc/php-fpm.conf',
   'echo "listen = 127.0.0.1:9000" >> /etc/php-fpm.conf',
+  'echo "user = root" >> /etc/php-fpm.conf',
+  'echo "group = root" >> /etc/php-fpm.conf',
   'echo "pm = dynamic" >> /etc/php-fpm.conf',
   'echo "pm.max_children = 5" >> /etc/php-fpm.conf',
   'echo "pm.start_servers = 2" >> /etc/php-fpm.conf',
