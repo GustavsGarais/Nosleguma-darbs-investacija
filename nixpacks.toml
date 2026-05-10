@@ -1,5 +1,5 @@
 [phases.install]
-cmds = ['composer update --no-dev --optimize-autoloader', 'npm ci', 'npm run build']
+cmds = ['composer install --no-dev --optimize-autoloader', 'npm ci', 'npm run build']
 
 [start]
 cmd = 'php artisan migrate --force && php-fpm -D && nginx -g "daemon off;"'
