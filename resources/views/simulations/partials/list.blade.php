@@ -18,7 +18,10 @@
                     $initial = (float) ($sim->settings['initialInvestment'] ?? 0);
                     $lastValue = (float) ($snapshot['value'] ?? $initial);
                     $capturedAt = $snapshot['captured_at'] ?? null;
-                    $updatedText = $capturedAt
+                    $hasSavedRun = is_array($snapshot)
+                        && filled($capturedAt)
+                        && array_key_exists('month', $snapshot);
+                    $updatedText = $hasSavedRun
                         ? \Illuminate\Support\Carbon::parse($capturedAt)->diffForHumans()
                         : __('Not saved yet');
                     $delta = $lastValue - $initial;
@@ -27,9 +30,11 @@
                     $gainUp = $pctChange >= 0;
                     $gainClass = $gainUp ? 'is-up' : 'is-down';
                     $gainSign = $gainUp ? '+' : '';
-                    $horizonMonths = $snapshot ? (int) ($snapshot['horizon_months'] ?? 120) : 120;
-                    $savedDay = $snapshot ? (int) ($snapshot['month'] ?? 0) : 0;
-                    $timeBarPct = ($snapshot && $horizonMonths > 0)
+                    $horizonMonths = $hasSavedRun
+                        ? max(1, (int) ($snapshot['horizon_months'] ?? 120))
+                        : 120;
+                    $savedDay = $hasSavedRun ? (int) $snapshot['month'] : 0;
+                    $timeBarPct = ($hasSavedRun && $horizonMonths > 0)
                         ? (int) max(0, min(100, (int) round(($savedDay / $horizonMonths) * 100)))
                         : 0;
                 @endphp
@@ -44,7 +49,7 @@
                         <div class="sim-card__meta">
                             <span>{{ __('Run progress') }}</span>
                             <span class="sim-card__metaValue">
-                                @if($snapshot && $capturedAt)
+                                @if($hasSavedRun)
                                     {{ __('Day :current / :total', ['current' => $savedDay, 'total' => $horizonMonths]) }}
                                 @else
                                     {{ __('Not saved yet') }}
