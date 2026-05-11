@@ -15,6 +15,7 @@
             @foreach($simulations as $sim)
                 @php
                     $snapshot = $sim->data['snapshot'] ?? null;
+                    $runner = $sim->data['runner'] ?? null;
                     $initial = (float) ($sim->settings['initialInvestment'] ?? 0);
                     $lastValue = (float) ($snapshot['value'] ?? $initial);
                     $capturedAt = $snapshot['captured_at'] ?? null;
@@ -30,12 +31,28 @@
                     $gainUp = $pctChange >= 0;
                     $gainClass = $gainUp ? 'is-up' : 'is-down';
                     $gainSign = $gainUp ? '+' : '';
-                    $horizonMonths = $hasSavedRun
-                        ? max(1, (int) ($snapshot['horizon_months'] ?? 120))
-                        : 120;
-                    $savedDay = $hasSavedRun ? (int) $snapshot['month'] : 0;
-                    $timeBarPct = ($hasSavedRun && $horizonMonths > 0)
-                        ? (int) max(0, min(100, (int) round(($savedDay / $horizonMonths) * 100)))
+                    /*
+                     * Progress bar: prefer autosaved runner (currentMonth / months) so it matches the
+                     * simulation page after reset. Snapshot alone can be stale (e.g. old month 60 while UI is day 0).
+                     */
+                    $runnerHasProgress = is_array($runner)
+                        && isset($runner['currentMonth'], $runner['months'])
+                        && (int) $runner['months'] >= 1;
+                    if ($runnerHasProgress) {
+                        $progressDay = (int) $runner['currentMonth'];
+                        $horizonMonths = max(1, min(7300, (int) $runner['months']));
+                        $hasProgressDisplay = true;
+                    } elseif ($hasSavedRun) {
+                        $progressDay = (int) $snapshot['month'];
+                        $horizonMonths = max(1, (int) ($snapshot['horizon_months'] ?? 120));
+                        $hasProgressDisplay = true;
+                    } else {
+                        $progressDay = 0;
+                        $horizonMonths = 120;
+                        $hasProgressDisplay = false;
+                    }
+                    $timeBarPct = $hasProgressDisplay
+                        ? (int) max(0, min(100, (int) round(($progressDay / $horizonMonths) * 100)))
                         : 0;
                 @endphp
                 <article class="sim-card">
@@ -49,8 +66,8 @@
                         <div class="sim-card__meta">
                             <span>{{ __('Run progress') }}</span>
                             <span class="sim-card__metaValue">
-                                @if($hasSavedRun)
-                                    {{ __('Day :current / :total', ['current' => $savedDay, 'total' => $horizonMonths]) }}
+                                @if($hasProgressDisplay)
+                                    {{ __('Day :current / :total', ['current' => $progressDay, 'total' => $horizonMonths]) }}
                                 @else
                                     {{ __('Not saved yet') }}
                                 @endif
