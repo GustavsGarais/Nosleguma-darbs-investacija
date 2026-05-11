@@ -28,7 +28,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('simulations.store') }}" style="display:grid; gap:16px;">
+    <form id="simulation-create-form" method="POST" action="{{ route('simulations.store') }}" style="display:grid; gap:16px;">
         @csrf
 
         <label style="display:grid; gap:6px;">
@@ -189,6 +189,23 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    const createForm = document.getElementById('simulation-create-form');
+    if (createForm) {
+        createForm.addEventListener('submit', (e) => {
+            if (createForm.dataset.submitLocked === '1') {
+                e.preventDefault();
+                return;
+            }
+            createForm.dataset.submitLocked = '1';
+            const submitBtn = createForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = submitBtn.dataset.labelBusy || '…';
+                submitBtn.setAttribute('aria-busy', 'true');
+            }
+        });
+    }
+
     const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
     const stepDecimals = (stepValue) => {

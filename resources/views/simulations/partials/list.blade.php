@@ -34,8 +34,8 @@
                     <div class="sim-card__body">
                         <a href="{{ route('simulations.show', $sim) }}" class="sim-card__title">{{ $sim->name }}</a>
                         <div class="sim-card__valueRow">
-                            <span class="sim-card__currency" aria-hidden="true">€</span>
-                            <span class="sim-card__value currency-value" data-currency-value="{{ $lastValue }}">{{ '€'.number_format($lastValue, 2) }}</span>
+                            {{-- currency-value: NosCurrencyFormatter adds the symbol; no separate € prefix --}}
+                            <span class="sim-card__value currency-value" data-currency-value="{{ $lastValue }}">{{ number_format($lastValue, 2) }}</span>
                         </div>
                         @if($initial > 0)
                             <div class="sim-card__gain {{ $gainClass }}">

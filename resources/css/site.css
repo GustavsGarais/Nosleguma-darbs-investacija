@@ -1586,8 +1586,9 @@ html.tutorial-scroll-lock body {
 /* Simulations index: card grid (dashboard-style cards) */
 .simulations-page .sim-cardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 400px));
   gap: 16px;
+  justify-content: start;
 }
 
 .simulations-page .sim-card {
@@ -1643,12 +1644,6 @@ html.tutorial-scroll-lock body {
   align-items: baseline;
   gap: 8px;
   min-width: 0;
-}
-.simulations-page .sim-card__currency {
-  font-size: 1.55rem;
-  font-weight: 900;
-  color: color-mix(in srgb, var(--c-primary) 55%, var(--c-on-surface));
-  flex: 0 0 auto;
 }
 .simulations-page .sim-card__value {
   font-variant-numeric: tabular-nums;
