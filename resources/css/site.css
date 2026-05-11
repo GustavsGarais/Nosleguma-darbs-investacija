@@ -4,8 +4,47 @@
  */
 
 /* Base */
-body { color: var(--c-on-surface); background: var(--c-surface); }
+body {
+	color: var(--c-on-surface);
+	background: var(--app-panel-gradient);
+	background-attachment: fixed;
+	min-height: 100vh;
+}
 * { box-sizing: border-box; }
+
+/* Ambient background (fills “empty” space around cards) */
+body::before,
+body::after {
+	content: "";
+	position: fixed;
+	inset: -20vh -20vw;
+	pointer-events: none;
+	z-index: 0;
+}
+body::before {
+	background:
+		radial-gradient(900px 520px at 12% 8%, color-mix(in srgb, var(--c-primary) 18%, transparent), transparent 62%),
+		radial-gradient(820px 520px at 88% 12%, color-mix(in srgb, var(--c-secondary) 14%, transparent), transparent 60%),
+		radial-gradient(1000px 700px at 50% 92%, color-mix(in srgb, var(--c-primary) 10%, transparent), transparent 66%);
+	opacity: 0.9;
+	filter: blur(0px);
+}
+body::after {
+	/* subtle texture so large areas don’t feel flat */
+	background-image:
+		linear-gradient(transparent, transparent),
+		radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.035) 1px, transparent 0);
+	background-size: auto, 22px 22px;
+	opacity: 0.6;
+	mix-blend-mode: multiply;
+}
+[data-theme="dark"] body::after {
+	background-image:
+		linear-gradient(transparent, transparent),
+		radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.045) 1px, transparent 0);
+	mix-blend-mode: overlay;
+	opacity: 0.55;
+}
 
 .sr-only {
 	position: absolute;

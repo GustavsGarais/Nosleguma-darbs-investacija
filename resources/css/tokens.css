@@ -45,6 +45,13 @@
 	/* Simulation chart: portfolio line segment colors (see simulation-runner.js). */
 	--sim-chart-trend-up: var(--c-primary);
 	--sim-chart-trend-down: #dc2626;
+	/* Page background wash (used by site.css body) */
+	--app-panel-gradient: linear-gradient(
+		125deg,
+		color-mix(in srgb, var(--c-primary) 16%, var(--c-surface)) 0%,
+		var(--c-surface) 42%,
+		color-mix(in srgb, var(--c-secondary) 12%, var(--c-surface)) 100%
+	);
 }
 
 [data-theme="dark"] {
