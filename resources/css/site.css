@@ -1584,11 +1584,29 @@ html.tutorial-scroll-lock body {
 }
 
 /* Simulations index: card grid (dashboard-style cards) */
+/* Up to 4 cards per row on wide dashboards (matches design); single card uses one column only */
 .simulations-page .sim-cardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 400px));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
-  justify-content: start;
+}
+
+@media (max-width: 1180px) {
+  .simulations-page .sim-cardGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .simulations-page .sim-cardGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .simulations-page .sim-cardGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .simulations-page .sim-card {
