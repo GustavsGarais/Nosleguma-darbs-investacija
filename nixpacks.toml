@@ -8,7 +8,10 @@ cmds = [
 ]
 
 [phases.build]
-cmds = ['npm run build']
+cmds = [
+  'npm run build',
+  'test -f public/build/manifest.json || (echo "Vite build failed: public/build/manifest.json missing" && exit 1)',
+]
 
 [start]
 cmd = 'mkdir -p /var/log/nginx && php artisan migrate --force && php artisan storage:link --force && node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf && sed -i "46,50d" /etc/nginx.conf && php-fpm -y /assets/php-fpm.conf -D && nginx -c /etc/nginx.conf'
