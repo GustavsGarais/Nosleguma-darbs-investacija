@@ -21,8 +21,12 @@
 	gap: 10px;
 	padding: 14px 16px;
 	border-radius: 14px;
-	border: 1px solid var(--c-border);
-	background: color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%);
+	overflow: hidden;
+	border: 1px solid color-mix(in srgb, var(--c-primary) 32%, var(--c-border));
+	border-left: 4px solid var(--c-primary);
+	background: var(--app-card-face);
+	background-clip: padding-box;
+	box-shadow: var(--app-card-shadow);
 }
 
 .sim-dash-toolbar-actions {
@@ -330,15 +334,35 @@
 	min-width: 0;
 	padding: 16px;
 	border-radius: 16px;
-	border: 1px solid var(--c-border);
-	background: var(--c-surface);
-	box-shadow: var(--shadow-1);
+	overflow: hidden;
+	border: 1px solid color-mix(in srgb, var(--c-primary) 32%, var(--c-border));
+	border-left: 4px solid var(--c-primary);
+	background: var(--app-card-face);
+	background-clip: padding-box;
+	box-shadow: var(--app-card-shadow);
+}
+
+.sim-dash-chartHead {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px 16px;
+	margin-bottom: 12px;
+	flex-wrap: wrap;
 }
 
 .sim-dash-chartTitle {
-	margin: 0 0 12px;
+	margin: 0;
 	font-size: 1.05rem;
 	font-weight: 800;
+	flex: 1 1 auto;
+	min-width: min(100%, 200px);
+}
+
+.sim-dash-chartReset {
+	flex: 0 0 auto;
+	align-self: flex-start;
+	white-space: nowrap;
 }
 
 .sim-run-chartWrap {
@@ -783,22 +807,27 @@ html[data-theme="dark"] .sim-deltaArrow--down {
 	color: #f87171;
 }
 
+/* Collapsible blocks below chart (events log, simulation parameters) — match app elevated panels */
 .sim-accordion {
-	border: 1px solid var(--c-border);
-	border-radius: 14px;
+	border-radius: var(--r-lg);
 	overflow: hidden;
-	background: var(--c-surface);
+	border: 1px solid color-mix(in srgb, var(--c-primary) 32%, var(--c-border));
+	border-left: 4px solid var(--c-primary);
+	background: var(--app-card-face);
+	background-clip: padding-box;
+	box-shadow: var(--app-card-shadow);
 }
 
 .sim-accordion summary {
 	cursor: pointer;
-	padding: 12px 14px;
-	font-weight: 700;
+	padding: 14px 16px;
 	list-style: none;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	gap: 12px;
+	flex-wrap: wrap;
+	transition: background 0.2s ease;
 }
 
 .sim-accordion summary::-webkit-details-marker {
@@ -806,12 +835,117 @@ html[data-theme="dark"] .sim-deltaArrow--down {
 }
 
 .sim-accordion summary:hover {
-	background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);
+	background: color-mix(in srgb, var(--c-surface) 88%, var(--c-primary) 12%);
+}
+
+.sim-accordion__title {
+	font-family: var(--font-family-heading);
+	font-weight: 800;
+	font-size: clamp(15px, 1.35vw, 17px);
+	letter-spacing: 0.02em;
+	color: color-mix(in srgb, var(--c-on-surface) 78%, var(--c-primary) 22%);
+}
+
+.sim-accordion__sub {
+	color: var(--c-on-surface-2);
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.35;
+	text-align: right;
 }
 
 .sim-accordionBody {
-	padding: 14px;
-	border-top: 1px solid var(--c-border);
+	padding: 0 16px 16px;
+	position: relative;
+}
+
+.sim-accordionBody::before {
+	content: "";
+	display: block;
+	height: 3px;
+	margin: 0 -16px 14px;
+	border-radius: 0;
+	background: linear-gradient(
+		90deg,
+		var(--c-primary) 0%,
+		color-mix(in srgb, var(--c-secondary) 70%, var(--c-primary)) 45%,
+		color-mix(in srgb, var(--c-accent) 45%, var(--c-secondary)) 100%
+	);
+	opacity: 0.88;
+}
+
+/* Event log list */
+.sim-event-log {
+	margin: 0;
+	padding-left: 0;
+	list-style: none;
+	display: grid;
+	gap: 8px;
+	font-size: 14px;
+	color: var(--c-on-surface-2);
+	line-height: 1.5;
+}
+
+.sim-event-log li {
+	padding: 10px 14px;
+	border-radius: var(--r-md);
+	border: 1px solid color-mix(in srgb, var(--c-primary) 16%, var(--c-border));
+	background: color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%);
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+html[data-theme="dark"] .sim-event-log li {
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* Simulation parameters grid (read-only chips under accordion) */
+.sim-param-grid {
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.sim-param-tile {
+	padding: 12px 14px;
+	border-radius: var(--r-md);
+	border: 1px solid color-mix(in srgb, var(--c-primary) 18%, var(--c-border));
+	background: color-mix(in srgb, var(--c-surface) 94%, var(--c-primary) 6%);
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+html[data-theme="dark"] .sim-param-tile {
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.sim-param-tile__label {
+	display: block;
+	color: var(--c-on-surface-2);
+	font-size: 13px;
+}
+
+.sim-param-tile__value {
+	margin: 4px 0 0;
+	font-size: 16px;
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+	color: var(--c-on-surface);
+}
+
+@media (max-width: 1100px) {
+	.sim-param-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 520px) {
+	.sim-param-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.sim-accordion__sub {
+		text-align: left;
+		width: 100%;
+	}
 }
 
 @media (max-width: 720px) {

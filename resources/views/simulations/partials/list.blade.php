@@ -54,10 +54,6 @@
                 </tbody>
             </table>
         </div>
-
-        <div style="margin-top:12px;">
-            {{ $simulations->links() }}
-        </div>
     @else
         <p style="margin-top:16px;">{{ __('No simulations yet.') }} <a href="{{ route('simulations.create') }}" class="sim-name-link">{{ __('Create your first simulation') }}</a>.</p>
     @endif

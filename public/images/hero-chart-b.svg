@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" width="480" height="360" role="img" aria-label="">
+  <defs>
+    <linearGradient id="areaB" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#07a05a" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#d98e12" stop-opacity="0.08"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="360" rx="12" fill="#f1f5f9"/>
+  <path d="M32 292 L72 252 L112 268 L152 220 L192 248 L232 180 L272 200 L312 140 L352 168 L392 108 L432 128 L448 96" fill="none" stroke="#07a05a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M32 292 L72 252 L112 268 L152 220 L192 248 L232 180 L272 200 L312 140 L352 168 L392 108 L432 128 L448 96 V320 H32 Z" fill="url(#areaB)"/>
+  <path d="M32 288 L448 288" stroke="#94a3b8" stroke-width="1" stroke-dasharray="6 4" opacity="0.6"/>
+  <g opacity="0.85">
+    <rect x="56" y="72" width="28" height="88" rx="4" fill="#07a05a" fill-opacity="0.35"/>
+    <rect x="100" y="96" width="28" height="64" rx="4" fill="#07a05a" fill-opacity="0.5"/>
+    <rect x="144" y="84" width="28" height="76" rx="4" fill="#07a05a" fill-opacity="0.45"/>
+    <rect x="188" y="108" width="28" height="52" rx="4" fill="#d98e12" fill-opacity="0.45"/>
+  </g>
+</svg>

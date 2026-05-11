@@ -25,7 +25,7 @@ class SimulationController extends Controller
 
     public function index(): View
     {
-        $simulations = auth()->user()->simulations()->latest()->paginate(10);
+        $simulations = auth()->user()->simulations()->latest()->get();
 
         return view('simulations.index', compact('simulations'));
     }
