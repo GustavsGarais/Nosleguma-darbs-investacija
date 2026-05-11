@@ -1553,10 +1553,34 @@ html.tutorial-scroll-lock body {
   opacity: 0.9;
 }
 .simulations-page .sim-dash-list__title {
+  margin: 0;
+  font-size: clamp(20px, 2.2vw, 28px);
   font-family: var(--font-family-heading);
   font-weight: 800;
   letter-spacing: 0.02em;
   color: color-mix(in srgb, var(--c-on-surface) 78%, var(--c-primary) 22%);
+}
+.simulations-page .sim-dash-list__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.simulations-page .sim-dash-flash {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid color-mix(in srgb, var(--c-primary) 35%, var(--c-border));
+  background: color-mix(in srgb, var(--c-primary) 12%, var(--c-surface));
+  color: var(--c-on-surface);
+  font-weight: 600;
+  line-height: 1.45;
+}
+.simulations-page .sim-card__btn-form {
+  margin: 0;
+  display: block;
+  min-width: 0;
 }
 
 /* Simulations index: card grid (dashboard-style cards) */
@@ -1677,6 +1701,16 @@ html.tutorial-scroll-lock body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.simulations-page .sim-card__metaValue.is-up {
+  color: color-mix(in srgb, var(--c-primary) 72%, var(--c-on-surface));
+}
+.simulations-page .sim-card__metaValue.is-down {
+  color: color-mix(in srgb, #ef4444 78%, var(--c-on-surface));
+}
+.simulations-page .sim-card__gainVs {
+  font-weight: 600;
+  opacity: 0.88;
 }
 
 .simulations-page .sim-card__progress {
