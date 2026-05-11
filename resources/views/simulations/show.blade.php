@@ -8,6 +8,8 @@
         'csrfToken' => csrf_token(),
         'settings' => $simulation->settings,
         'savedRunner' => $simulation->data['runner'] ?? null,
+        'savedHistory' => $simulation->data['history'] ?? null,
+        'savedSnapshot' => $simulation->data['snapshot'] ?? null,
         'i18n' => [
             'ready' => __('Ready'),
             'running' => __('Running...'),

@@ -27,7 +27,11 @@
                     $gainUp = $pctChange >= 0;
                     $gainClass = $gainUp ? 'is-up' : 'is-down';
                     $gainSign = $gainUp ? '+' : '';
-                    $barPct = (int) max(6, min(100, 50 + min(max($pctChange, -45), 45)));
+                    $horizonMonths = $snapshot ? (int) ($snapshot['horizon_months'] ?? 120) : 120;
+                    $savedDay = $snapshot ? (int) ($snapshot['month'] ?? 0) : 0;
+                    $timeBarPct = ($snapshot && $horizonMonths > 0)
+                        ? (int) max(0, min(100, (int) round(($savedDay / $horizonMonths) * 100)))
+                        : 0;
                 @endphp
                 <article class="sim-card">
                     <div class="sim-card__topbar" aria-hidden="true"></div>
@@ -37,14 +41,24 @@
                             {{-- currency-value: NosCurrencyFormatter adds the symbol; no separate € prefix --}}
                             <span class="sim-card__value currency-value" data-currency-value="{{ $lastValue }}">{{ number_format($lastValue, 2) }}</span>
                         </div>
+                        <div class="sim-card__meta">
+                            <span>{{ __('Run progress') }}</span>
+                            <span class="sim-card__metaValue">
+                                @if($snapshot && $capturedAt)
+                                    {{ __('Day :current / :total', ['current' => $savedDay, 'total' => $horizonMonths]) }}
+                                @else
+                                    {{ __('Not saved yet') }}
+                                @endif
+                            </span>
+                        </div>
+                        <div class="sim-card__progress" role="presentation" aria-hidden="true">
+                            <div class="sim-card__progressFill" style="width: {{ $timeBarPct }}%;"></div>
+                        </div>
                         @if($initial > 0)
                             <div class="sim-card__gain {{ $gainClass }}">
                                 <span class="sim-card__gainSign" aria-hidden="true">{{ $gainSign }}</span>{{ number_format(abs($pctRounded), 1) }}%
                                 <span class="sim-card__gainVs"> {{ __('vs initial') }}</span>
                                 <span class="sr-only"> — {{ __('Gain / loss') }} {{ $gainSign }}{{ number_format($delta, 2) }} €</span>
-                            </div>
-                            <div class="sim-card__progress" role="presentation" aria-hidden="true">
-                                <div class="sim-card__progressFill" style="width: {{ $barPct }}%;"></div>
                             </div>
                             <div class="sim-card__meta">
                                 <span>{{ __('Gain / loss') }}</span>

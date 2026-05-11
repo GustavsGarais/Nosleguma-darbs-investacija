@@ -121,7 +121,16 @@ const overlayPlugin = {
 Chart.register(overlayPlugin, zoomPlugin);
 
 function initFromConfig(config) {
-    const { snapshotUrl, runnerStateUrl, csrfToken, settings: rawSettings, i18n, savedRunner } = config;
+    const {
+        snapshotUrl,
+        runnerStateUrl,
+        csrfToken,
+        settings: rawSettings,
+        i18n,
+        savedRunner,
+        savedHistory,
+        savedSnapshot,
+    } = config;
 
     const chartCanvas = document.getElementById('sim-chart');
     const btnRun = document.getElementById('btn-run');
@@ -1654,6 +1663,7 @@ function initFromConfig(config) {
                 contributions: contrib,
                 total_gain: totalGain,
                 currency: activeCurrency,
+                horizon_months: Math.min(7300, Math.max(1, parseInt(monthsInput.value, 10) || 120)),
                 history,
             }),
         })
@@ -1683,8 +1693,94 @@ function initFromConfig(config) {
         }
     }
 
+    function tryHydrateFromSavedHistory(hist) {
+        if (!Array.isArray(hist) || hist.length === 0) {
+            return false;
+        }
+        if (readPlaygroundModeFromUi()) {
+            return false;
+        }
+        const sorted = [...hist]
+            .filter((r) => r && typeof r.month === 'number')
+            .sort((a, b) => a.month - b.month);
+        if (sorted.length === 0) {
+            return false;
+        }
+        simulationData = sorted.map((row, idx) => {
+            const prev = idx > 0 ? sorted[idx - 1] : null;
+            const contribDelta = prev
+                ? Number(row.contributions) - Number(prev.contributions)
+                : Number(row.contributions) || 0;
+            const growth = prev
+                ? Number(row.value) - Number(prev.value) - contribDelta
+                : 0;
+            return {
+                month: row.month,
+                value: Number(row.value),
+                inflationAdjusted: Number(row.inflationAdjusted),
+                contributions: Number(row.contributions),
+                interestEarned: growth,
+            };
+        });
+        simulationDataCompare = simulationData.map((r) => ({ ...r }));
+        simulationDataSor = simulationData.map((r) => ({ ...r }));
+        secondaryScenario = 'none';
+        if (secondarySelect) {
+            secondarySelect.value = 'none';
+        }
+        const last = simulationData[simulationData.length - 1];
+        currentMonth = last.month;
+        peakValue = settings.initialInvestment;
+        maxDrawdown = 0;
+        for (const row of simulationData) {
+            if (row.value > peakValue) {
+                peakValue = row.value;
+            }
+            const dd = (row.value - peakValue) / (peakValue || 1);
+            maxDrawdown = Math.min(maxDrawdown, dd);
+        }
+        crowdSentiment = 0;
+        lastMonthlyReturn = baseMonthlyReturnRate;
+        eventLog = [];
+        crashMonths = new Set();
+        const horizonFromSnap =
+            savedSnapshot && typeof savedSnapshot.horizon_months === 'number'
+                ? savedSnapshot.horizon_months
+                : null;
+        const horizon = Math.min(
+            7300,
+            Math.max(
+                horizonFromSnap || 0,
+                parseInt(monthsInput.value, 10) || 120,
+                last.month + 1,
+                120,
+            ),
+        );
+        monthsInput.value = String(horizon);
+        invalidatePath();
+        rebuildChartData('resize');
+        safeResetChartZoom();
+        updateSummary();
+        updateLearningNote();
+        updateRiskTip();
+        renderEvents();
+        chart.$pauseMonth = last.month;
+        chart.$crashMonths = [];
+        syncModeUi();
+        syncSecondaryUi();
+        const totalMonths = parseInt(monthsInput.value, 10) || 120;
+        statusDisplay.textContent = i18n.month
+            .replace(':current', String(last.month))
+            .replace(':total', String(totalMonths));
+        statusDisplay.style.background =
+            'color-mix(in srgb, var(--c-primary) 30%, var(--c-surface))';
+        schedulePersistRunnerState();
+        return true;
+    }
+
     const restored = savedRunner && validateSavedRunner(savedRunner) && applySavedRunner(savedRunner);
-    if (!restored) {
+    const historyHydrated = !restored && tryHydrateFromSavedHistory(savedHistory);
+    if (!restored && !historyHydrated) {
         seedInitialState();
     }
     syncSecondaryUi();

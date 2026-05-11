@@ -141,6 +141,7 @@ class SimulationController extends Controller
             'real_value' => 'required|numeric|min:0',
             'contributions' => 'required|numeric|min:0',
             'total_gain' => 'required|numeric',
+            'horizon_months' => 'nullable|integer|min:1|max:7300',
             'currency' => 'nullable|string|in:EUR,USD,GBP,JPY',
             // Client sends one entry per step. In the daily timestep build, a 20y max horizon is 7300 days.
             'history' => 'nullable|array|max:7301',
@@ -163,7 +164,7 @@ class SimulationController extends Controller
             }, $validated['history']);
         }
 
-        $data['snapshot'] = [
+        $snapshot = [
             'month' => $validated['month'],
             'value' => round($validated['value'], 2),
             'real_value' => round($validated['real_value'], 2),
@@ -172,12 +173,16 @@ class SimulationController extends Controller
             'currency' => $validated['currency'] ?? 'EUR',
             'captured_at' => now()->toIso8601String(),
         ];
+        if (isset($validated['horizon_months'])) {
+            $snapshot['horizon_months'] = (int) $validated['horizon_months'];
+        }
+        $data['snapshot'] = $snapshot;
 
         $simulation->update(['data' => $data]);
 
         return response()->json([
             'success' => true,
-            'snapshot' => $data['snapshot'],
+            'snapshot' => $snapshot,
         ]);
     }
 
@@ -189,7 +194,7 @@ class SimulationController extends Controller
         $this->authorize('update', $simulation);
 
         $validated = $request->validate([
-            'v' => 'required|integer|in:1',
+            'v' => 'required|integer|in:1,2',
             'settingsFingerprint' => 'required|string|max:512',
             'mode' => 'required|string|in:classic,playground',
             'months' => 'required|integer|min:1|max:7300',
