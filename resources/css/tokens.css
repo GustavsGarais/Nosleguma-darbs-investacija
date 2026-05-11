@@ -45,6 +45,27 @@
 	/* Simulation chart: portfolio line segment colors (see simulation-runner.js). */
 	--sim-chart-trend-up: var(--c-primary);
 	--sim-chart-trend-down: #dc2626;
+	/* Shared mint → cream panel wash (simulations cards, main top bar) */
+	--app-panel-gradient: linear-gradient(
+		125deg,
+		color-mix(in srgb, var(--c-primary) 16%, var(--c-surface)) 0%,
+		var(--c-surface) 42%,
+		color-mix(in srgb, var(--c-secondary) 12%, var(--c-surface)) 100%
+	);
+	/* Card face: bright center wash + panel gradient (glassmorphism-lite) */
+	--app-card-radial: radial-gradient(
+		ellipse 135% 92% at 50% -42%,
+		color-mix(in srgb, var(--c-surface) 96%, #ffffff) 0%,
+		transparent 58%
+	);
+	--app-card-face: var(--app-card-radial), var(--app-panel-gradient);
+	/* Layered depth + soft mint halo (keeps tint outside the panel subtle) */
+	--app-card-shadow:
+		0 1px 2px rgba(15, 23, 42, 0.05),
+		0 4px 18px rgba(15, 23, 42, 0.06),
+		0 16px 44px rgba(15, 23, 42, 0.07),
+		0 0 52px -8px color-mix(in srgb, var(--c-primary) 28%, transparent),
+		inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 [data-theme="dark"] {
@@ -69,4 +90,16 @@
 	--color-on-surface-secondary: var(--c-on-surface-2);
 	--color-border: var(--c-border);
 	--color-accent: var(--c-accent);
+	--app-card-radial: radial-gradient(
+		ellipse 135% 92% at 50% -42%,
+		color-mix(in srgb, var(--c-surface) 88%, var(--c-primary) 12%) 0%,
+		transparent 58%
+	);
+	--app-card-face: var(--app-card-radial), var(--app-panel-gradient);
+	--app-card-shadow:
+		0 1px 2px rgba(0, 0, 0, 0.45),
+		0 6px 22px rgba(0, 0, 0, 0.38),
+		0 18px 52px rgba(0, 0, 0, 0.36),
+		0 0 56px -10px color-mix(in srgb, var(--c-primary) 35%, transparent),
+		inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
