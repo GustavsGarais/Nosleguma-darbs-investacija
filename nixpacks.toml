@@ -5,13 +5,8 @@ NODE_ENV = 'production'
 cmds = [
   'composer install --no-dev --optimize-autoloader --no-interaction',
   'npm ci',
-]
-
-[phases.build]
-cmds = [
   'npm run build',
-  'test -f public/build/manifest.json || (echo "Vite build failed: public/build/manifest.json missing" && exit 1)',
 ]
 
 [start]
-cmd = 'mkdir -p /var/log/nginx && php artisan migrate --force && php artisan db:seed --class=SessionTableSeeder 2>/dev/null; php artisan schema:dump 2>/dev/null; mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE -e "CREATE TABLE IF NOT EXISTS sessions (id VARCHAR(255) PRIMARY KEY, user_id BIGINT UNSIGNED NULL, ip_address VARCHAR(45) NULL, user_agent TEXT NULL, payload LONGTEXT NOT NULL, last_activity INT NOT NULL, INDEX sessions_last_activity_index (last_activity));" 2>/dev/null && php artisan storage:link --force && node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf && sed -i "46,50d" /etc/nginx.conf && php-fpm -y /assets/php-fpm.conf -D && nginx -c /etc/nginx.conf'
+cmd = 'mkdir -p /var/log/nginx && mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE -e "CREATE TABLE IF NOT EXISTS sessions (id VARCHAR(255) PRIMARY KEY, user_id BIGINT UNSIGNED NULL, ip_address VARCHAR(45) NULL, user_agent TEXT NULL, payload LONGTEXT NOT NULL, last_activity INT NOT NULL, INDEX sessions_last_activity_index (last_activity));" 2>/dev/null; php artisan migrate --force && php artisan storage:link --force && node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf && sed -i "46,50d" /etc/nginx.conf && php-fpm -y /assets/php-fpm.conf -D && nginx -c /etc/nginx.conf'
