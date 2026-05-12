@@ -87,14 +87,14 @@
 
 @section('dashboard_content')
 <section class="sim-run-shell" aria-label="Simulation details">
-    <header class="auth-card sim-dash-header" aria-label="Simulation header" style="padding:18px 20px;">
-        <div style="min-width:240px;">
-            <h1 style="margin:0 0 6px;">{{ $simulation->name }}</h1>
-            <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">
+    <header class="sim-dash-header sim-dash-header--frameless" aria-label="{{ __('Simulation Details') }}">
+        <div class="sim-dash-header__copy">
+            <h1 class="home-hero-title hero-title">{{ $simulation->name }}</h1>
+            <p class="home-hero-subtitle hero-subtitle sim-dash-header__lede">
                 {{ __('Charts show portfolio vs contributions (break-even). Enable a second scenario to compare decisions or sequence-of-returns risk.') }}
             </p>
         </div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div class="sim-dash-header__actions cta-cluster">
             <button id="start-tutorial" class="btn btn-secondary" type="button">📚 {{ __('Start Tutorial') }}</button>
             <x-help-sheet id="sim-help-sheet" :title="__('Simulation help')" :button-label="__('Open help')">
                 <h3>{{ __('Quick start') }}</h3>
@@ -126,7 +126,7 @@
             </x-help-sheet>
             <a class="btn btn-primary" href="{{ route('simulations.edit', $simulation) }}">{{ __('Edit') }}</a>
             <a class="btn btn-outline" href="{{ route('simulations.index') }}">{{ __('Back') }}</a>
-            <form method="POST" action="{{ route('simulations.destroy', $simulation) }}" onsubmit="return confirm('{{ __('Delete this simulation?') }}');" style="display:inline;">
+            <form class="sim-dash-header__delete-form" method="POST" action="{{ route('simulations.destroy', $simulation) }}" onsubmit="return confirm('{{ __('Delete this simulation?') }}');">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-outline">{{ __('Delete') }}</button>

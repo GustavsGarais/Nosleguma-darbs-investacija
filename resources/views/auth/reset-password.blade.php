@@ -29,15 +29,14 @@
                 <input type="email" name="email" value="{{ old('email', $email ?? '') }}" required class="footer-email-input" autocomplete="email" />
             </label>
 
-            <label style="display:grid; gap:6px;">
-                <span style="font-weight:700; color: var(--c-on-surface);">{{ __('Password') }}</span>
-                <input type="password" name="password" required class="footer-email-input" autocomplete="new-password" />
-            </label>
+            <x-password-input name="password" id="reset_password" :label="__('Password')" autocomplete="new-password" />
 
-            <label style="display:grid; gap:6px;">
-                <span style="font-weight:700; color: var(--c-on-surface);">{{ __('Confirm Password') }}</span>
-                <input type="password" name="password_confirmation" required class="footer-email-input" autocomplete="new-password" />
-            </label>
+            <x-password-input
+                name="password_confirmation"
+                id="reset_password_confirmation"
+                :label="__('Confirm Password')"
+                autocomplete="new-password"
+            />
 
             <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
                 <a href="{{ route('login') }}" class="btn btn-outline">{{ __('Back to login') }}</a>

@@ -22,7 +22,7 @@ class SchoolProjectAccountsSeeder extends Seeder
                 'tutorial_completed' => true,
                 'is_admin' => true,
                 'currency_preference' => 'EUR',
-            ]
+            ],
         );
 
         User::query()->updateOrCreate(
@@ -34,7 +34,7 @@ class SchoolProjectAccountsSeeder extends Seeder
                 'tutorial_completed' => false,
                 'is_admin' => false,
                 'currency_preference' => 'EUR',
-            ]
+            ],
         );
     }
 }

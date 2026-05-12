@@ -13,6 +13,11 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasFactory, Notifiable;
 
     /**
+     * When a new account uses this email (any casing), grant admin automatically (classroom / demo convention).
+     */
+    public const DEMO_ADMIN_EMAIL = 'admin@school.demo';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -56,6 +61,20 @@ class User extends Authenticatable implements MustVerifyEmail
             'two_factor_confirmed_at' => 'datetime',
             'two_factor_recovery_codes' => 'encrypted:array',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (User $user): void {
+            if (self::emailIsDemoAdmin($user->email)) {
+                $user->is_admin = true;
+            }
+        });
+    }
+
+    public static function emailIsDemoAdmin(?string $email): bool
+    {
+        return $email !== null && strcasecmp(trim($email), self::DEMO_ADMIN_EMAIL) === 0;
     }
 
     public function simulations()

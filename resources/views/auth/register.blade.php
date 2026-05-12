@@ -31,18 +31,18 @@
 				<input type="email" name="email" value="{{ old('email') }}" required autocomplete="username" class="footer-email-input" />
 			</label>
 
-			<label style="display:grid; gap:6px;">
-				<span style="font-weight:700; color: var(--c-on-surface);">{{ __('Password') }}</span>
-				<input type="password" name="password" required autocomplete="new-password" class="footer-email-input" />
-				<small style="color:var(--c-on-surface-2); font-size:12px; margin-top:4px;">
+			<x-password-input name="password" id="register_password" :label="__('Password')" autocomplete="new-password">
+				<small style="color:var(--c-on-surface-2); font-size:12px; margin-top:4px; display:block;">
 					{{ __('Requirements: Minimum 12 characters, at least one uppercase letter, one lowercase letter, and one number or symbol (!@#$%^&*)') }}
 				</small>
-			</label>
+			</x-password-input>
 
-			<label style="display:grid; gap:6px;">
-				<span style="font-weight:700; color: var(--c-on-surface);">{{ __('Confirm password') }}</span>
-				<input type="password" name="password_confirmation" required autocomplete="new-password" class="footer-email-input" />
-			</label>
+			<x-password-input
+				name="password_confirmation"
+				id="register_password_confirmation"
+				:label="__('Confirm password')"
+				autocomplete="new-password"
+			/>
 
 			<div class="auth-actions">
 				<button type="submit" class="btn btn-primary">{{ __('Create Account') }}</button>

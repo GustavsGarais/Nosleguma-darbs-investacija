@@ -26,10 +26,7 @@
 				<input type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" class="footer-email-input" />
 			</label>
 
-			<label style="display:grid; gap:6px;">
-				<span style="font-weight:700; color: var(--c-on-surface);">{{ __('Password') }}</span>
-				<input type="password" name="password" required autocomplete="current-password" class="footer-email-input" />
-			</label>
+			<x-password-input name="password" id="login_password" :label="__('Password')" autocomplete="current-password" />
 
 			<label style="display:flex; align-items:center; gap:8px; color: var(--c-on-surface-2);">
 				<input type="checkbox" name="remember" style="width:16px; height:16px;" />

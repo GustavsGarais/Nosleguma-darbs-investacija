@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
                 'tutorial_completed' => true,
                 'is_admin' => true,
                 'currency_preference' => 'EUR',
-            ]
+            ],
         );
 
         $demo = User::query()->updateOrCreate(

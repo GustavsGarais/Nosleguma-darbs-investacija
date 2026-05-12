@@ -50,10 +50,14 @@
 			</p>
 			<form method="POST" action="{{ route('two-factor.disable') }}" style="display:flex; flex-direction:column; gap:12px;">
 				@csrf
-				<label style="display:flex; flex-direction:column; gap:6px;">
-					<span style="font-weight:600;">{{ __('Confirm Password') }}</span>
-					<input type="password" name="password" class="footer-email-input" required />
-				</label>
+				<div style="display:flex; flex-direction:column; gap:6px;">
+					<x-password-input
+						name="password"
+						id="twofactor_disable_password"
+						:label="__('Confirm Password')"
+						autocomplete="current-password"
+					/>
+				</div>
 				<button type="submit" class="btn btn-outline" style="color:#e53935; border-color:#e53935; align-self:flex-start;">{{ __('Disable 2FA') }}</button>
 			</form>
 		</article>

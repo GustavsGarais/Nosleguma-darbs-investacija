@@ -141,26 +141,38 @@
                         @csrf
                         @method('patch')
 
-                        <label style="display:flex; flex-direction:column; gap:6px;">
-                            <span style="font-weight:600; font-size:14px;">{{ __('Current password') }}</span>
-                            <input type="password" name="current_password" class="footer-email-input" required autocomplete="current-password" />
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <x-password-input
+                                name="current_password"
+                                id="settings_current_password"
+                                :label="__('Current password')"
+                                autocomplete="current-password"
+                            />
                             @error('current_password', 'updatePassword')
                                 <span style="color:#e53935; font-size:12px;">{{ $message }}</span>
                             @enderror
-                        </label>
+                        </div>
 
-                        <label style="display:flex; flex-direction:column; gap:6px;">
-                            <span style="font-weight:600; font-size:14px;">{{ __('New password') }}</span>
-                            <input type="password" name="password" class="footer-email-input" required autocomplete="new-password" />
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <x-password-input
+                                name="password"
+                                id="settings_new_password"
+                                :label="__('New password')"
+                                autocomplete="new-password"
+                            />
                             @error('password', 'updatePassword')
                                 <span style="color:#e53935; font-size:12px;">{{ $message }}</span>
                             @enderror
-                        </label>
+                        </div>
 
-                        <label style="display:flex; flex-direction:column; gap:6px;">
-                            <span style="font-weight:600; font-size:14px;">{{ __('Confirm new password') }}</span>
-                            <input type="password" name="password_confirmation" class="footer-email-input" required autocomplete="new-password" />
-                        </label>
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <x-password-input
+                                name="password_confirmation"
+                                id="settings_new_password_confirmation"
+                                :label="__('Confirm new password')"
+                                autocomplete="new-password"
+                            />
+                        </div>
 
                         <button type="submit" class="btn btn-primary" style="align-self:flex-start;">{{ __('Update password') }}</button>
                     </form>
@@ -270,13 +282,17 @@
             <form method="POST" action="{{ route('settings.destroy') }}" style="display:flex; flex-direction:column; gap:16px;" onsubmit="return confirm('{{ __('Delete your account and all simulations? This cannot be undone.') }}');">
                 @csrf
                 @method('delete')
-                <label style="display:flex; flex-direction:column; gap:6px;">
-                    <span style="font-weight:600;">{{ __('Confirm password') }}</span>
-                    <input type="password" name="password" class="footer-email-input" required />
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <x-password-input
+                        name="password"
+                        id="settings_delete_password"
+                        :label="__('Confirm password')"
+                        autocomplete="current-password"
+                    />
                     @error('password', 'userDeletion')
                         <span style="color:#e53935; font-size:12px;">{{ $message }}</span>
                     @enderror
-                </label>
+                </div>
                 <button type="submit" class="btn btn-outline" style="color:#e53935; border-color:#e53935;">{{ __('Delete account') }}</button>
             </form>
         </article>

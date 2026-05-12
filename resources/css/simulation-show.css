@@ -12,6 +12,54 @@
 	align-items: flex-start;
 	gap: 16px;
 	flex-wrap: wrap;
+	min-width: 0;
+}
+
+/* Match homepage / dashboard welcome: no card border or panel fill */
+.sim-dash-header--frameless {
+	margin: 0;
+	padding: 8px 0 14px;
+	border: none;
+	background: none;
+	box-shadow: none;
+	border-radius: 0;
+	overflow: visible;
+}
+
+@media (min-width: 768px) {
+	.sim-dash-header--frameless {
+		padding: 12px 0 20px;
+	}
+}
+
+.sim-dash-header__copy {
+	min-width: 0;
+	flex: 1 1 260px;
+	max-width: 100%;
+}
+
+.sim-dash-header--frameless .home-hero-title {
+	margin-bottom: 6px;
+}
+
+.sim-dash-header__lede {
+	margin: 0;
+	max-width: 62ch;
+}
+
+.sim-dash-header__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 8px;
+	flex: 0 1 auto;
+	min-width: 0;
+}
+
+.sim-dash-header__delete-form {
+	display: inline-flex;
+	margin: 0;
 }
 
 .sim-dash-toolbar {

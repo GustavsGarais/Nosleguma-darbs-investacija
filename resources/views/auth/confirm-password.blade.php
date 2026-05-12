@@ -22,10 +22,7 @@
 
 		<form method="POST" action="{{ route('password.confirm') }}" style="display:grid; gap:12px;">
 			@csrf
-			<label style="display:grid; gap:6px;">
-				<span style="font-weight:700; color: var(--c-on-surface);">{{ __('Password') }}</span>
-				<input type="password" name="password" required autocomplete="current-password" class="footer-email-input" />
-			</label>
+			<x-password-input name="password" id="confirm_password_gate" :label="__('Password')" autocomplete="current-password" />
 
 			<div class="auth-actions">
 				<button type="submit" class="btn btn-primary">{{ __('Confirm') }}</button>

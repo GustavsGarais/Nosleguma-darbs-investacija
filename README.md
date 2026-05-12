@@ -100,12 +100,17 @@
 
    **Demonstrācijas paroles:** `admin@school.com` → `password`; `user@user.com` → `12345678`; `test@example.com` → `password` (nepieļaujamas ražošanā).
 
+   **Īpašs e-pasts:** ja reģistrējas ar **`admin@school.demo`**, kontam automātiski tiek piešķirtas administratora tiesības (skat. `User` modeli).
+
+   **Coolify / Docker (šis repozitorijs, Nixpacks):** iestatiet vides mainīgo `BOOTSTRAP_DEFAULT_ACCOUNTS=true`, lai pēc `migrate` konteineris automātiski izpildītu `SchoolProjectAccountsSeeder` un izveidotu `admin@school.com` / `user@user.com`. Bez šī mainīgā demonstrācijas konti netiek pievienoti automātiski (var arī pēc izvietošanas: `php artisan db:seed --class=SchoolProjectAccountsSeeder`).
+
    | E-pasts | Loma |
    |---------|------|
-   | `admin@school.com` | Administrators |
+   | `admin@school.com` | Administrators (sēklots ar seeder / bootstrap) |
+   | `admin@school.demo` | Reģistrējoties ar šo e-pastu — automātiski administrators |
    | `user@user.com` | Lietotājs ar paraugu simulācijām |
    | `test@example.com` | Tests |
-   | `SchoolProjectAccountsSeeder` | Tās pašas `admin@school.com` un `user@user.com` vērtības |
+   | `SchoolProjectAccountsSeeder` | `admin@school.com` un `user@user.com` |
 
 ---
 
