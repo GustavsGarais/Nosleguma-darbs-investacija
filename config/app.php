@@ -123,4 +123,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Bootstrap default demo accounts
+    |--------------------------------------------------------------------------
+    |
+    | When true, the app ensures admin@school.demo and user@user.com exist (one-time
+    | work per deploy, cached). Set BOOTSTRAP_DEFAULT_ACCOUNTS=true on classroom servers.
+    | Leave false on public production unless you accept these default passwords.
+    |
+    */
+
+    'bootstrap_default_accounts' => (bool) env('BOOTSTRAP_DEFAULT_ACCOUNTS', false),
+
 ];

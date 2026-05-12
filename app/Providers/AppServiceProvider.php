@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\DefaultAccountsBootstrap;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -29,5 +30,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('two-factor-recovery-support-submit', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip());
         });
+
+        DefaultAccountsBootstrap::ensureIfEnabled();
     }
 }
