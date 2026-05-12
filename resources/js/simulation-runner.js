@@ -121,6 +121,8 @@ const overlayPlugin = {
 Chart.register(overlayPlugin, zoomPlugin);
 
 Chart.defaults.font.family = "'DM Sans', 'Segoe UI', system-ui, sans-serif";
+
+function initFromConfig(config) {
     const {
         snapshotUrl,
         runnerStateUrl,
