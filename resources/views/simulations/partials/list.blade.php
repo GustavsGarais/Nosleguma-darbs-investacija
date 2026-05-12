@@ -4,12 +4,6 @@
         <a href="{{ route('simulations.create') }}" class="btn btn-primary btn-lg">{{ __('New Simulation') }}</a>
     </div>
 
-    @if(session('success'))
-        <div role="status" class="sim-dash-flash">
-            {{ session('success') }}
-        </div>
-    @endif
-
     @if($simulations->count())
         <div class="sim-cardGrid" style="margin-top: 18px;">
             @foreach($simulations as $sim)

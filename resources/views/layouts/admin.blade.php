@@ -541,18 +541,7 @@
         </aside>
 
         <main class="admin-content">
-            @if(session('success'))
-                <div class="admin-alert admin-alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="admin-alert admin-alert-error">
-                    {{ session('error') }}
-                </div>
-            @endif
-
+            <x-flash-alerts />
             @yield('content')
         </main>
     </div>

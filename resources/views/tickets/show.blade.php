@@ -12,12 +12,6 @@
         <a href="{{ route('tickets.index') }}" class="btn btn-outline">{{ __('Back to My Tickets') }}</a>
     </div>
 
-    @if(session('success'))
-        <div role="status" style="margin-top:12px; padding:10px 12px; border:1px solid var(--c-border); border-radius:10px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%);">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div style="margin-top:24px; display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:16px;">
         <div class="auth-card">
             <h2 style="margin:0 0 16px; font-size:18px;">{{ __('Ticket information') }}</h2>

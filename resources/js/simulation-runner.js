@@ -1217,6 +1217,22 @@ function initFromConfig(config) {
         };
     }
 
+    function handleSimulationSaveRedirect(response) {
+        if (
+            response.status === 302 ||
+            response.status === 303 ||
+            response.status === 307 ||
+            response.status === 308
+        ) {
+            const loc = response.headers.get('Location');
+            if (loc) {
+                window.location.assign(loc);
+                return true;
+            }
+        }
+        return false;
+    }
+
     function schedulePersistRunnerState() {
         if (!runnerStateUrl || !csrfToken || typeof window.fetch !== 'function') return;
         if (Date.now() < suppressRunnerPersistUntil) return;
@@ -1233,7 +1249,17 @@ function initFromConfig(config) {
                     'X-Requested-With': 'XMLHttpRequest',
                 },
                 body: JSON.stringify(body),
-            }).catch(() => {});
+                redirect: 'manual',
+            })
+                .then((response) => {
+                    if (handleSimulationSaveRedirect(response)) return null;
+                    if (!response.ok) throw new Error('Runner persist failed');
+                    return response.json();
+                })
+                .then((body) => {
+                    if (body === null) return;
+                })
+                .catch(() => {});
         }, 700);
     }
 
@@ -1666,12 +1692,15 @@ function initFromConfig(config) {
                 horizon_months: Math.min(7300, Math.max(1, parseInt(monthsInput.value, 10) || 120)),
                 history,
             }),
+            redirect: 'manual',
         })
             .then((response) => {
+                if (handleSimulationSaveRedirect(response)) return null;
                 if (!response.ok) throw new Error('Snapshot save failed');
                 return response.json();
             })
-            .then(() => {
+            .then((data) => {
+                if (data === null) return;
                 updateSaveStatus(
                     i18n.savedAt.replace(':time', new Date().toLocaleTimeString()),
                     'var(--c-primary)',

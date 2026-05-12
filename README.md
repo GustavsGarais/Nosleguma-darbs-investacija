@@ -98,14 +98,14 @@
    php artisan db:seed
    ```
 
-   **Parole visiem pēc `db:seed` izveidotajiem demonstrācijas kontiem:** `password` (nepieļaujama ražošanā; nomainiet vai dzēsiet).
+   **Demonstrācijas paroles:** `admin@school.com` → `password`; `user@user.com` → `12345678`; `test@example.com` → `password` (nepieļaujamas ražošanā).
 
    | E-pasts | Loma |
    |---------|------|
-   | `admin@school.demo` | Administrators |
-   | `demo@school.demo` | Lietotājs ar paraugu simulācijām |
+   | `admin@school.com` | Administrators |
+   | `user@user.com` | Lietotājs ar paraugu simulācijām |
    | `test@example.com` | Tests |
-   | Papildu konti | `SchoolProjectAccountsSeeder` |
+   | `SchoolProjectAccountsSeeder` | Tās pašas `admin@school.com` un `user@user.com` vērtības |
 
 ---
 

@@ -9,15 +9,15 @@ use Illuminate\Support\Facades\Hash;
 class SchoolProjectAccountsSeeder extends Seeder
 {
     /**
-     * Legacy / alternate demo logins (run alone: php artisan db:seed --class=SchoolProjectAccountsSeeder).
+     * Same demo pair as bootstrap / DatabaseSeeder (run alone: php artisan db:seed --class=SchoolProjectAccountsSeeder).
      */
     public function run(): void
     {
         User::query()->updateOrCreate(
-            ['email' => 'admin@admin.com'],
+            ['email' => 'admin@school.com'],
             [
-                'name' => 'Administrator',
-                'password' => Hash::make('SchoolProject'),
+                'name' => 'Demo Admin',
+                'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'tutorial_completed' => true,
                 'is_admin' => true,

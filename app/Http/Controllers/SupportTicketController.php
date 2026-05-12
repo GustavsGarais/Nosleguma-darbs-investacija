@@ -59,11 +59,12 @@ class SupportTicketController extends Controller
     /**
      * Display the specified ticket
      */
-    public function show(SupportTicket $ticket): View
+    public function show(SupportTicket $ticket): View|RedirectResponse
     {
         // Ensure user can only view their own tickets
         if ($ticket->user_id !== auth()->id()) {
-            abort(403, __('Unauthorized access.'));
+            return redirect()->route('tickets.index')
+                ->with('error', __('You cannot view that ticket.'));
         }
 
         return view('tickets.show', compact('ticket'));

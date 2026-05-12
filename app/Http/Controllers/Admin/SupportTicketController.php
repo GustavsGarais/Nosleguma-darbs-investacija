@@ -7,11 +7,11 @@ use App\Mail\TwoFactorDisabledMail;
 use App\Models\AdminAuditLog;
 use App\Models\SupportTicket;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 
 class SupportTicketController extends Controller
 {
@@ -35,9 +35,9 @@ class SupportTicketController extends Controller
         // Search
         if ($request->has('search')) {
             $search = $request->get('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('subject', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -81,7 +81,7 @@ class SupportTicketController extends Controller
 
         $ticket->status = $validated['status'];
         $ticket->priority = $validated['priority'];
-        
+
         if (isset($validated['admin_response'])) {
             $ticket->admin_response = $validated['admin_response'];
         } else {
@@ -94,7 +94,7 @@ class SupportTicketController extends Controller
             $ticket->assigned_to = null;
         }
 
-        if ($validated['status'] === 'resolved' && !$ticket->resolved_at) {
+        if ($validated['status'] === 'resolved' && ! $ticket->resolved_at) {
             $ticket->resolved_at = now();
         }
 
@@ -138,13 +138,14 @@ class SupportTicketController extends Controller
         ]);
 
         if (! $ticket->isTwoFactorRecoveryTicket()) {
-            abort(404);
+            return redirect()->route('admin.tickets.show', $ticket)
+                ->with('error', __('This action is not available for this ticket.'));
         }
 
         $ticket->loadMissing(['user']);
 
         $user = $ticket->user;
-        if (!$user && $ticket->contact_email) {
+        if (! $user && $ticket->contact_email) {
             $user = User::where('email', $ticket->contact_email)->first();
         }
 
@@ -156,7 +157,7 @@ class SupportTicketController extends Controller
             ?? __('2FA was disabled by an admin after an account recovery request.');
         $ticket->save();
 
-        if (!$user) {
+        if (! $user) {
             AdminAuditLog::record('ticket.two_factor_disabled', [
                 'ticket_id' => $ticket->id,
                 'user_found' => false,

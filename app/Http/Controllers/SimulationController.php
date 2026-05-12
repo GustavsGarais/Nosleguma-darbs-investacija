@@ -6,6 +6,7 @@ use App\Models\Simulation;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class SimulationController extends Controller
@@ -135,21 +136,26 @@ class SimulationController extends Controller
     {
         $this->authorize('update', $simulation);
 
-        $validated = $request->validate([
-            'month' => 'required|integer|min:0',
-            'value' => 'required|numeric|min:0',
-            'real_value' => 'required|numeric|min:0',
-            'contributions' => 'required|numeric|min:0',
-            'total_gain' => 'required|numeric',
-            'horizon_months' => 'nullable|integer|min:1|max:7300',
-            'currency' => 'nullable|string|in:EUR,USD,GBP,JPY',
-            // Client sends one entry per step. In the daily timestep build, a 20y max horizon is 7300 days.
-            'history' => 'nullable|array|max:7301',
-            'history.*.month' => 'required|integer|min:0|max:7300',
-            'history.*.value' => 'required|numeric',
-            'history.*.inflationAdjusted' => 'required|numeric',
-            'history.*.contributions' => 'required|numeric',
-        ]);
+        try {
+            $validated = $request->validate([
+                'month' => 'required|integer|min:0',
+                'value' => 'required|numeric|min:0',
+                'real_value' => 'required|numeric|min:0',
+                'contributions' => 'required|numeric|min:0',
+                'total_gain' => 'required|numeric',
+                'horizon_months' => 'nullable|integer|min:1|max:7300',
+                'currency' => 'nullable|string|in:EUR,USD,GBP,JPY',
+                // Client sends one entry per step. In the daily timestep build, a 20y max horizon is 7300 days.
+                'history' => 'nullable|array|max:7301',
+                'history.*.month' => 'required|integer|min:0|max:7300',
+                'history.*.value' => 'required|numeric',
+                'history.*.inflationAdjusted' => 'required|numeric',
+                'history.*.contributions' => 'required|numeric',
+            ]);
+        } catch (ValidationException) {
+            return redirect()->route('simulations.show', $simulation)
+                ->with('error', __('We could not save your chart. Please adjust values or try again.'));
+        }
 
         $data = $simulation->data ?? [];
 
@@ -193,34 +199,39 @@ class SimulationController extends Controller
     {
         $this->authorize('update', $simulation);
 
-        $validated = $request->validate([
-            'v' => 'required|integer|in:1,2',
-            'settingsFingerprint' => 'required|string|max:512',
-            'mode' => 'required|string|in:classic,playground',
-            'months' => 'required|integer|min:1|max:7300',
-            'speed' => 'required|numeric|min:0.1|max:10',
-            'activePresetKey' => 'required|string|max:32',
-            'secondaryScenario' => 'required|string|in:none,compare,sor',
-            'compareExtra' => 'nullable|numeric|min:0|max:1000000',
-            'playgroundCustomAmount' => 'nullable|numeric|min:0|max:1000000',
-            'simulationData' => 'required|array|min:1|max:7302',
-            'simulationData.*' => 'array',
-            'simulationDataCompare' => 'nullable|array|max:7302',
-            'simulationDataCompare.*' => 'array',
-            'simulationDataSor' => 'nullable|array|max:7302',
-            'simulationDataSor.*' => 'array',
-            'sharedSmoothedReturns' => 'nullable|array|max:7300',
-            'sharedSmoothedReturns.*' => 'numeric',
-            'sharedSmoothedReturnsReversed' => 'nullable|array|max:7300',
-            'sharedSmoothedReturnsReversed.*' => 'numeric',
-            'crashMonths' => 'nullable|array|max:200',
-            'crashMonths.*' => 'integer|min:0|max:7300',
-            'peakValue' => 'required|numeric',
-            'maxDrawdown' => 'required|numeric',
-            'lastMonthlyReturn' => 'required|numeric',
-            'crowdSentiment' => 'required|numeric',
-            'currentMonth' => 'required|integer|min:0|max:7300',
-        ]);
+        try {
+            $validated = $request->validate([
+                'v' => 'required|integer|in:1,2',
+                'settingsFingerprint' => 'required|string|max:512',
+                'mode' => 'required|string|in:classic,playground',
+                'months' => 'required|integer|min:1|max:7300',
+                'speed' => 'required|numeric|min:0.1|max:10',
+                'activePresetKey' => 'required|string|max:32',
+                'secondaryScenario' => 'required|string|in:none,compare,sor',
+                'compareExtra' => 'nullable|numeric|min:0|max:1000000',
+                'playgroundCustomAmount' => 'nullable|numeric|min:0|max:1000000',
+                'simulationData' => 'required|array|min:1|max:7302',
+                'simulationData.*' => 'array',
+                'simulationDataCompare' => 'nullable|array|max:7302',
+                'simulationDataCompare.*' => 'array',
+                'simulationDataSor' => 'nullable|array|max:7302',
+                'simulationDataSor.*' => 'array',
+                'sharedSmoothedReturns' => 'nullable|array|max:7300',
+                'sharedSmoothedReturns.*' => 'numeric',
+                'sharedSmoothedReturnsReversed' => 'nullable|array|max:7300',
+                'sharedSmoothedReturnsReversed.*' => 'numeric',
+                'crashMonths' => 'nullable|array|max:200',
+                'crashMonths.*' => 'integer|min:0|max:7300',
+                'peakValue' => 'required|numeric',
+                'maxDrawdown' => 'required|numeric',
+                'lastMonthlyReturn' => 'required|numeric',
+                'crowdSentiment' => 'required|numeric',
+                'currentMonth' => 'required|integer|min:0|max:7300',
+            ]);
+        } catch (ValidationException) {
+            return redirect()->route('simulations.show', $simulation)
+                ->with('error', __('We could not save your simulation state. Please reload the page and try again.'));
+        }
 
         $data = $simulation->data ?? [];
         $data['runner'] = $validated;

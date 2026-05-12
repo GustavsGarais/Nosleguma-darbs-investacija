@@ -35,8 +35,9 @@
 </head>
 <body>
     <x-navigation />
-    
+
     <main>
+        <x-flash-alerts />
         @yield('content')
     </main>
 

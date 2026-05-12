@@ -501,11 +501,56 @@ html.tutorial-scroll-lock body {
   outline-offset: 2px;
 }
 
+/* Global flash alerts (session success / error / validation) */
+.flash-stack {
+	max-width: var(--maxw);
+	margin: 0 auto;
+	padding: 12px 16px 0;
+	box-sizing: border-box;
+}
+.admin-content > .flash-stack {
+	max-width: none;
+	padding: 16px 24px 0;
+}
+.flash {
+	border-radius: var(--r-md);
+	padding: 12px 16px;
+	font-size: 14px;
+	line-height: 1.45;
+	border: 1px solid var(--c-border);
+}
+.flash + .flash {
+	margin-top: 10px;
+}
+.flash--success {
+	background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 10%);
+	border-color: color-mix(in srgb, var(--c-primary) 35%, var(--c-border));
+	color: var(--c-on-surface);
+}
+.flash--error {
+	background: color-mix(in srgb, #fef2f2 92%, var(--c-surface));
+	border-color: color-mix(in srgb, #fecaca 80%, var(--c-border));
+	color: #991b1b;
+}
+[data-theme="dark"] .flash--error {
+	background: color-mix(in srgb, #450a0a 55%, var(--c-surface));
+	border-color: #991b1b;
+	color: #fecaca;
+}
+.flash-validation-list {
+	margin: 8px 0 0;
+	padding-left: 1.2rem;
+	text-align: left;
+}
+
 /* Navigation */
 .navigation {
 	position: sticky;
 	top: 0;
 	z-index: 2000;
+	transform: translateY(0);
+	transition: transform 0.28s ease;
+	will-change: transform;
 	background:
 		radial-gradient(900px 260px at 15% 0%, color-mix(in srgb, var(--c-primary) 12%, transparent), transparent 60%),
 		radial-gradient(900px 260px at 85% 0%, color-mix(in srgb, var(--c-secondary) 10%, transparent), transparent 60%),
@@ -513,6 +558,15 @@ html.tutorial-scroll-lock body {
 	backdrop-filter: blur(10px);
 	-webkit-backdrop-filter: blur(10px);
 	border-bottom: 1px solid color-mix(in srgb, var(--c-primary) 18%, var(--c-border));
+}
+.navigation.navigation--hidden {
+	transform: translateY(-100%);
+	pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+	.navigation {
+		transition: none;
+	}
 }
 .navigation::after {
 	content: "";
@@ -1520,16 +1574,26 @@ html.tutorial-scroll-lock body {
   gap: 22px;
   padding-bottom: 8px;
 }
-.simulations-page .sim-dash-welcome {
-  margin-top: 24px;
+/* Frameless welcome band — matches homepage .hero.hero--frameless (no card box) */
+.simulations-page .sim-dash-welcome--frameless {
+  margin-top: 8px;
+  margin-bottom: 0;
+  padding: 8px 0 6px;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
 }
-.simulations-page .sim-dash-welcome h1 {
-  color: color-mix(in srgb, var(--c-on-surface) 82%, var(--c-primary) 18%);
+@media (min-width: 768px) {
+  .simulations-page .sim-dash-welcome--frameless {
+    margin-top: 10px;
+    padding: 14px 0 10px;
+  }
 }
-.simulations-page .sim-dash-welcome p,
-.simulations-page .sim-dash-welcome .sim-dash-welcome__sub {
-  margin: 0;
-  color: var(--c-on-surface-2);
+.simulations-page .sim-dash-welcome--frameless .sim-dash-welcome__sub {
+  margin-bottom: 0;
+  max-width: 52ch;
 }
 .simulations-page .sim-dash-list__toolbar {
   position: relative;

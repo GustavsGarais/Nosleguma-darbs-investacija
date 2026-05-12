@@ -128,7 +128,7 @@ return [
     | Bootstrap default demo accounts
     |--------------------------------------------------------------------------
     |
-    | When true, the app ensures admin@school.demo and user@user.com exist (one-time
+    | When true, the app ensures admin@school.com and user@user.com exist (one-time
     | work per deploy, cached). Set BOOTSTRAP_DEFAULT_ACCOUNTS=true on classroom servers.
     | Leave false on public production unless you accept these default passwords.
     |

@@ -824,6 +824,20 @@
 
     "Choose the default mode when you open this simulation. You can switch modes anytime on the run page.": "Choose the default mode when you open this simulation. You can switch modes anytime on the run page.",
 
+    "Please correct the following:": "Please correct the following:",
+    "Your session expired or this form is no longer valid. Please refresh the page and try again.": "Your session expired or this form is no longer valid. Please refresh the page and try again.",
+    "Your session expired or this form is no longer valid. Please try again.": "Your session expired or this form is no longer valid. Please try again.",
+    "You are not allowed to perform this action on this simulation.": "You are not allowed to perform this action on this simulation.",
+    "You are not allowed to perform that action.": "You are not allowed to perform that action.",
+    "You are not allowed to do that.": "You are not allowed to do that.",
+    "That simulation could not be found or was removed.": "That simulation could not be found or was removed.",
+    "That page or item was not found.": "That page or item was not found.",
+    "That page was not found.": "That page was not found.",
+    "We could not save your chart. Please adjust values or try again.": "We could not save your chart. Please adjust values or try again.",
+    "We could not save your simulation state. Please reload the page and try again.": "We could not save your simulation state. Please reload the page and try again.",
+    "You cannot view that ticket.": "You cannot view that ticket.",
+    "This action is not available for this ticket.": "This action is not available for this ticket.",
+
     "ID": "ID",
 
     "Resolved at": "Resolved at"

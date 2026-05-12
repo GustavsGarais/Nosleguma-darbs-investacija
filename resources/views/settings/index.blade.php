@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const select = document.getElementById('currency-select');
     const resultEl = document.getElementById('converted-amount');
     const previewEls = document.querySelectorAll('[data-preview-base]');
-    const settingsCurrencyUrl = @json(route('settings.currency'));
+    const settingsCurrencyUrl = @json(route('settings.currency', [], false));
     const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     const accountCurrency = @json($user->currency_preference ?? 'EUR');
 

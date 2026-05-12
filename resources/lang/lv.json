@@ -832,6 +832,20 @@
 
     "Choose the default mode when you open this simulation. You can switch modes anytime on the run page.": "Izvēlies noklusējuma režīmu, atverot šo simulāciju. Palaišanas lapā režīmu jebkurā brīdī var pārslēgt.",
 
+    "Please correct the following:": "Lūdzu, izlabo šādas kļūdas:",
+    "Your session expired or this form is no longer valid. Please refresh the page and try again.": "Sesija ir beigusies vai forma vairs nav derīga. Atsvaidzini lapu un mēģini vēlreiz.",
+    "Your session expired or this form is no longer valid. Please try again.": "Sesija ir beigusies vai forma vairs nav derīga. Lūdzu, mēģini vēlreiz.",
+    "You are not allowed to perform this action on this simulation.": "Tev nav tiesību veikt šo darbību ar šo simulāciju.",
+    "You are not allowed to perform that action.": "Tev nav tiesību veikt šo darbību.",
+    "You are not allowed to do that.": "Tev nav atļauts to darīt.",
+    "That simulation could not be found or was removed.": "Šī simulācija netika atrasta vai ir dzēsta.",
+    "That page or item was not found.": "Lapa vai ieraksts netika atrasts.",
+    "That page was not found.": "Lapa netika atrasta.",
+    "We could not save your chart. Please adjust values or try again.": "Neizdevās saglabāt diagrammu. Pārbaudi vērtības un mēģini vēlreiz.",
+    "We could not save your simulation state. Please reload the page and try again.": "Neizdevās saglabāt simulācijas stāvokli. Atsvaidzini lapu un mēģini vēlreiz.",
+    "You cannot view that ticket.": "Tu nevari skatīt šo pieteikumu.",
+    "This action is not available for this ticket.": "Šī darbība nav pieejama šim pieteikumam.",
+
     "ID": "ID",
 
     "Resolved at": "Atrisināts"

@@ -36,7 +36,7 @@ final class DefaultAccountsBootstrap
             return;
         }
 
-        $emails = ['admin@school.demo', 'user@user.com'];
+        $emails = ['admin@school.com', 'user@user.com'];
         if (User::query()->whereIn('email', $emails)->count() >= 2) {
             Cache::forever(self::CACHE_FLAG, true);
 
@@ -51,7 +51,7 @@ final class DefaultAccountsBootstrap
             }
 
             User::query()->updateOrCreate(
-                ['email' => 'admin@school.demo'],
+                ['email' => 'admin@school.com'],
                 [
                     'name' => 'Demo Admin',
                     'password' => Hash::make('password'),

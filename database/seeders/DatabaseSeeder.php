@@ -15,13 +15,13 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      *
-     * Demo accounts (password for all: "password") — useful for empty installs / classroom demos.
+     * Demo accounts — useful for empty installs / classroom demos.
      * Run: php artisan migrate:fresh --seed
      */
     public function run(): void
     {
-        $admin = User::query()->updateOrCreate(
-            ['email' => 'admin@school.demo'],
+        User::query()->updateOrCreate(
+            ['email' => 'admin@school.com'],
             [
                 'name' => 'Demo Admin',
                 'password' => Hash::make('password'),
@@ -33,10 +33,10 @@ class DatabaseSeeder extends Seeder
         );
 
         $demo = User::query()->updateOrCreate(
-            ['email' => 'demo@school.demo'],
+            ['email' => 'user@user.com'],
             [
-                'name' => 'Demo Student',
-                'password' => Hash::make('password'),
+                'name' => 'User',
+                'password' => Hash::make('12345678'),
                 'email_verified_at' => now(),
                 'tutorial_completed' => false,
                 'is_admin' => false,

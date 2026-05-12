@@ -602,7 +602,7 @@
 
         function completeTutorial() {
             hideTutorial();
-            fetch('{{ route("tutorial.complete") }}', {
+            fetch('{{ route("tutorial.complete", [], false) }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

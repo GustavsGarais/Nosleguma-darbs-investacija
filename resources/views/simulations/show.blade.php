@@ -3,8 +3,8 @@
 @php
     $defaultRunnerMode = ($simulation->settings['defaultRunnerMode'] ?? 'classic') === 'playground' ? 'playground' : 'classic';
     $simulationRunnerConfig = [
-        'snapshotUrl' => route('simulations.snapshot', $simulation),
-        'runnerStateUrl' => route('simulations.runner-state', $simulation),
+        'snapshotUrl' => route('simulations.snapshot', $simulation, false),
+        'runnerStateUrl' => route('simulations.runner-state', $simulation, false),
         'csrfToken' => csrf_token(),
         'settings' => $simulation->settings,
         'savedRunner' => $simulation->data['runner'] ?? null,
