@@ -2,7 +2,7 @@
     $btnStyle = 'display:inline-block;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;';
     $dangerBtn = $btnStyle . 'background:#b91c1c;color:#ffffff;';
 @endphp
-<div style="font-family: Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif; line-height: 1.6; max-width: 560px;">
+<div style="font-family: 'Source Sans 3', system-ui, -apple-system, Segoe UI, Arial, sans-serif; line-height: 1.6; max-width: 560px;">
     <p style="margin:0 0 12px;">
         {{ __('mail.password_reset_initiated_greeting', ['name' => $userName]) }}
     </p>

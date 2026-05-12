@@ -769,7 +769,7 @@ details.sim-kpi-panel.auth-card {
 	font-weight: 800;
 	line-height: 1.15;
 	/* Prefer body/UI fonts so €, −, and digits render consistently (display fonts may lack full Latin-1 Supplement). */
-	font-family: var(--font-family-body, Inter, system-ui, -apple-system, "Segoe UI", sans-serif);
+	font-family: var(--font-family-body, "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -778,7 +778,7 @@ details.sim-kpi-panel.auth-card {
 	font-size: 13px;
 	font-weight: 600;
 	color: var(--c-on-surface-2);
-	font-family: var(--font-family-body, Inter, system-ui, -apple-system, "Segoe UI", sans-serif);
+	font-family: var(--font-family-body, "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif);
 	font-variant-numeric: tabular-nums;
 }
 

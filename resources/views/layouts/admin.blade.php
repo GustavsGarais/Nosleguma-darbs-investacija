@@ -10,7 +10,8 @@
     <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml" />
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any" />
     <link rel="manifest" href="{{ asset('site.webmanifest') }}" />
-    
+    @include('components.fonts')
+
     <!-- Styles (same token + site bundle as main app) -->
     @vite(['resources/css/app.css'])
     <!-- Apply saved theme so admin uses same light/dark as rest of site -->
@@ -43,7 +44,7 @@
             padding: 0;
             background: var(--admin-bg);
             color: var(--admin-text);
-            font-family: var(--font-family-body, 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif);
+            font-family: var(--font-family-body, 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif);
         }
 
         .admin-container {
@@ -72,7 +73,7 @@
             font-size: 20px;
             font-weight: 700;
             color: var(--admin-text);
-            font-family: var(--font-family-heading, 'Orbitron', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif);
+            font-family: var(--font-family-heading, 'Orbitron', 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif);
         }
 
         .admin-sidebar-header p {
@@ -223,7 +224,7 @@
             margin: 0 0 8px;
             font-size: 28px;
             font-weight: 700;
-            font-family: var(--font-family-heading, 'Orbitron', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif);
+            font-family: var(--font-family-heading, 'Orbitron', 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif);
         }
 
         .admin-header p {

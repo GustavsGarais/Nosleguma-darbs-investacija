@@ -3,7 +3,7 @@
     $primaryBtn = $btnStyle . 'background:#07a05a;color:#ffffff;';
     $secondaryBtn = $btnStyle . 'background:#f1f5f9;color:#0f172a;border:1px solid #cbd5e1;';
 @endphp
-<div style="font-family: Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif; line-height: 1.6; max-width: 560px;">
+<div style="font-family: 'Source Sans 3', system-ui, -apple-system, Segoe UI, Arial, sans-serif; line-height: 1.6; max-width: 560px;">
     <p style="margin:0 0 12px;">
         {{ __('mail.2fa_disabled_greeting', ['name' => $userName]) }}
     </p>

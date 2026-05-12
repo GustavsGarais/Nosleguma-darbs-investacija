@@ -120,7 +120,7 @@ const overlayPlugin = {
 
 Chart.register(overlayPlugin, zoomPlugin);
 
-function initFromConfig(config) {
+Chart.defaults.font.family = "'Source Sans 3', 'Segoe UI', system-ui, sans-serif";
     const {
         snapshotUrl,
         runnerStateUrl,
