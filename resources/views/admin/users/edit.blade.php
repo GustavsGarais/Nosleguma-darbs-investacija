@@ -3,6 +3,9 @@
 @section('title', __('Edit user'))
 
 @section('content')
+@php
+    $lockDemoAdmin = \App\Models\User::emailIsDemoAdmin($user->email);
+@endphp
 <div class="admin-header" style="display: flex; justify-content: space-between; align-items: start;">
     <div>
         <h1>{{ __('Edit user') }}</h1>
@@ -48,17 +51,27 @@
             </div>
 
             <div>
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                    <input 
-                        type="checkbox" 
-                        name="is_admin" 
-                        value="1" 
+                @if ($lockDemoAdmin)
+                    <input type="hidden" name="is_admin" value="1">
+                @endif
+                <label style="display: flex; align-items: center; gap: 8px; {{ $lockDemoAdmin ? 'cursor: default;' : 'cursor: pointer;' }}">
+                    <input
+                        type="checkbox"
+                        @unless ($lockDemoAdmin) name="is_admin" @endunless
+                        value="1"
                         {{ old('is_admin', $user->is_admin) ? 'checked' : '' }}
-                        style="width: 18px; height: 18px; cursor: pointer;"
+                        @if ($lockDemoAdmin) disabled @endif
+                        style="width: 18px; height: 18px; {{ $lockDemoAdmin ? 'cursor: not-allowed; opacity: 0.85;' : 'cursor: pointer;' }}"
                     >
                     <span style="font-weight: 500;">{{ __('Admin user') }}</span>
                 </label>
-                <p style="margin: 8px 0 0; font-size: 13px; color: var(--admin-text-muted);">{{ __('Grant admin privileges to this user') }}</p>
+                <p style="margin: 8px 0 0; font-size: 13px; color: var(--admin-text-muted);">
+                    @if ($lockDemoAdmin)
+                        {{ __('The address :email always keeps administrator privileges for this demo account.', ['email' => \App\Models\User::DEMO_ADMIN_EMAIL]) }}
+                    @else
+                        {{ __('Grant admin privileges to this user') }}
+                    @endif
+                </p>
             </div>
 
             <div style="display: flex; gap: 12px; margin-top: 8px;">

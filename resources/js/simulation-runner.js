@@ -405,6 +405,13 @@ function initFromConfig(config) {
 
     function syncModeUi() {
         isPlaygroundMode = readPlaygroundModeFromUi();
+        const simToolbar = document.querySelector('.sim-dash-toolbar');
+        if (simToolbar) {
+            simToolbar.classList.toggle('sim-dash-toolbar--playground', isPlaygroundMode);
+        }
+        if (isPlaygroundMode && isRunning) {
+            pauseSimulation();
+        }
         if (classicSecondaryWrap) {
             classicSecondaryWrap.style.display = isPlaygroundMode ? 'none' : '';
         }

@@ -1533,20 +1533,56 @@ html.tutorial-scroll-lock body {
 	color: var(--c-on-surface);
 	font-size: 14px;
 }
-.password-field__row {
-	display: flex;
-	gap: 8px;
-	align-items: stretch;
+.password-field__wrap {
+	position: relative;
+	display: block;
 	min-width: 0;
 }
-.password-field__input {
-	flex: 1;
-	min-width: 0;
+.password-field__wrap .password-field__input {
+	width: 100%;
+	box-sizing: border-box;
+	/* Room for in-field eye control (icon sits inside the same border as typed text) */
+	padding-right: 2.5rem;
 }
 .password-field__toggle {
-	flex: 0 0 auto;
-	align-self: stretch;
-	white-space: nowrap;
+	position: absolute;
+	z-index: 1;
+	right: 6px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 2.25rem;
+	height: 2.25rem;
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: 8px;
+	background: transparent;
+	color: var(--c-on-surface-2);
+	cursor: pointer;
+	display: grid;
+	place-items: center;
+	transition: color 0.15s ease, background 0.15s ease;
+}
+.password-field__toggle:hover {
+	color: var(--c-on-surface);
+	background: color-mix(in srgb, var(--c-primary) 14%, transparent);
+}
+.password-field__toggle:focus-visible {
+	outline: 2px solid var(--c-primary);
+	outline-offset: 2px;
+}
+.password-field__icon {
+	display: grid;
+	place-items: center;
+	line-height: 0;
+}
+.password-field__toggle svg {
+	width: 17px;
+	height: 17px;
+	display: block;
+}
+.password-field__icon[hidden] {
+	display: none !important;
 }
 .password-field__after {
 	min-width: 0;

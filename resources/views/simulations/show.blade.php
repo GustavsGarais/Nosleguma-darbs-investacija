@@ -66,7 +66,7 @@
             'simModePlayground' => __('Hands-on portfolio lab'),
             'simulationMode' => __('Simulation mode'),
             'playgroundHelp' => __('Buy adds money into the investment. Sell moves part of the investment back to your cash wallet. The orange line is profit/loss compared to how much you put in (it can go below 0 = loss).'),
-            'playgroundNextStep' => __('Use Step or Run in the bar above: each day reprices your holdings and redraws the chart.'),
+            'playgroundNextStep' => __('Hands-on mode uses Step in the toolbar: each day reprices your portfolio and redraws the chart. Use the trading desk to buy or sell, then tap Step.'),
             'playgroundBuyHint' => __('Add to position'),
             'playgroundCustomAdd' => __('Custom amount'),
             'playgroundSellHint' => __('Sell part of holdings (priced at current month)'),
@@ -90,9 +90,6 @@
     <header class="sim-dash-header sim-dash-header--frameless" aria-label="{{ __('Simulation Details') }}">
         <div class="sim-dash-header__copy">
             <h1 class="home-hero-title hero-title">{{ $simulation->name }}</h1>
-            <p class="home-hero-subtitle hero-subtitle sim-dash-header__lede">
-                {{ __('Charts show portfolio vs contributions (break-even). Enable a second scenario to compare decisions or sequence-of-returns risk.') }}
-            </p>
         </div>
         <div class="sim-dash-header__actions cta-cluster">
             <button id="start-tutorial" class="btn btn-secondary" type="button">📚 {{ __('Start Tutorial') }}</button>

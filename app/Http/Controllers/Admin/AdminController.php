@@ -120,11 +120,14 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'is_admin' => 'boolean',
+            'is_admin' => 'sometimes|boolean',
         ]);
 
         $wasAdmin = (bool) $user->is_admin;
-        $newAdmin = $request->has('is_admin') ? (bool) $request->is_admin : false;
+        $newAdmin = $request->boolean('is_admin');
+        if (User::emailIsDemoAdmin($user->email)) {
+            $newAdmin = true;
+        }
 
         if ($user->id === auth()->id() && $wasAdmin && ! $newAdmin) {
             return redirect()->route('admin.users.edit', $user)

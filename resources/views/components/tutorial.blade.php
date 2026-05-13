@@ -146,15 +146,10 @@
             ],
             [
                 'target' => '#btn-run',
+                'fallbackTarget' => '#btn-step',
                 'position' => 'top',
                 'heading' => __('tutorial.show.h7'),
                 'content' => __('tutorial.show.6'),
-            ],
-            [
-                'target' => '#btn-step',
-                'position' => 'top',
-                'heading' => __('tutorial.show.h8'),
-                'content' => __('tutorial.show.7'),
             ],
             [
                 'target' => '#btn-save',
@@ -396,6 +391,27 @@
             } catch (e) {}
         }
 
+        function isTutorialTargetUsable(el) {
+            if (!el || !(el instanceof Element)) return false;
+            if (el.hasAttribute('hidden')) return false;
+            const st = window.getComputedStyle(el);
+            if (st.display === 'none' || st.visibility === 'hidden') return false;
+            const r = el.getBoundingClientRect();
+            return r.width > 1 && r.height > 1;
+        }
+
+        function queryTutorialTarget(selector) {
+            if (!selector) return null;
+            const el = document.querySelector(selector);
+            return isTutorialTargetUsable(el) ? el : null;
+        }
+
+        function resolveTutorialStepTarget(step) {
+            let el = queryTutorialTarget(step.target);
+            if (!el && step.fallbackTarget) el = queryTutorialTarget(step.fallbackTarget);
+            return el;
+        }
+
         function showStep(stepIndex) {
             if (stepIndex < 0 || stepIndex >= steps.length) {
                 hideTutorial();
@@ -417,9 +433,7 @@
 
             // Find target element (and force-open flyouts/details when needed).
             clearForcedFlyouts();
-            let targetEl = null;
-            if (step.target) targetEl = document.querySelector(step.target);
-            if (!targetEl && step.fallbackTarget) targetEl = document.querySelector(step.fallbackTarget);
+            let targetEl = resolveTutorialStepTarget(step);
 
             // If the target lives inside a flyout panel, force it open before measuring/highlighting.
             if (targetEl) {
@@ -429,9 +443,7 @@
 
             const applyHighlight = () => {
                 // Re-query after CSS changes (forced flyout open) so rects are correct.
-                let resolved = null;
-                if (step.target) resolved = document.querySelector(step.target);
-                if (!resolved && step.fallbackTarget) resolved = document.querySelector(step.fallbackTarget);
+                const resolved = resolveTutorialStepTarget(step);
 
                 if (resolved) {
                     forceOpenDetailsForTarget(resolved);
