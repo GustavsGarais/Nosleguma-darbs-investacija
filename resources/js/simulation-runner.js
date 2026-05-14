@@ -132,7 +132,10 @@ function initFromConfig(config) {
         savedRunner,
         savedHistory,
         savedSnapshot,
+        terminal: terminalRaw,
     } = config;
+
+    const terminal = terminalRaw && typeof terminalRaw === 'object' ? terminalRaw : {};
 
     const chartCanvas = document.getElementById('sim-chart');
     const btnRun = document.getElementById('btn-run');
@@ -361,6 +364,11 @@ function initFromConfig(config) {
     let secondaryScenario = secondarySelect?.value || 'none';
     let isPlaygroundMode = false;
     let crowdSentiment = 0;
+    let allocationChart = null;
+    let activeRangeKey = '1m';
+    let playgroundBuys = 0;
+    let playgroundSells = 0;
+    let playgroundSellWins = 0;
 
     function readPlaygroundModeFromUi() {
         return Boolean(modePlaygroundRadio?.checked);
@@ -434,7 +442,19 @@ function initFromConfig(config) {
         chart.data.datasets[5].hidden = !isPlaygroundMode;
         syncSecondaryUi();
         chart.update('none');
+        syncModePills();
         scheduleChartResizeAfterLayout();
+    }
+
+    function syncModePills() {
+        const pc = document.getElementById('sim-mode-pill-classic');
+        const pp = document.getElementById('sim-mode-pill-playground');
+        if (!pc || !pp) return;
+        const classic = !readPlaygroundModeFromUi();
+        pc.classList.toggle('is-active', classic);
+        pp.classList.toggle('is-active', !classic);
+        pc.setAttribute('aria-pressed', classic ? 'true' : 'false');
+        pp.setAttribute('aria-pressed', classic ? 'false' : 'true');
     }
 
     const primaryColor =
@@ -653,12 +673,285 @@ function initFromConfig(config) {
         },
     });
 
+    function sparkSeriesFromReturns(baseRets, scale) {
+        return baseRets.map((r) => r * scale);
+    }
+
+    function sparkSvgPathFromVals(vals) {
+        if (!vals.length) return '';
+        let min = Math.min(...vals);
+        let max = Math.max(...vals);
+        const span = max - min || 1;
+        const pad = span * 0.02;
+        min -= pad;
+        max += pad;
+        const w = 100;
+        const h = 24;
+        const dx = vals.length > 1 ? w / (vals.length - 1) : 0;
+        const parts = [];
+        for (let i = 0; i < vals.length; i++) {
+            const x = i * dx;
+            const y = h - ((vals[i] - min) / (max - min)) * h;
+            parts.push(`${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`);
+        }
+        return parts.join(' ');
+    }
+
+    function aggregateAllocation() {
+        const d = simulationData[simulationData.length - 1];
+        if (!d) return { labels: [], data: [], colors: [] };
+        const tc = themeColors();
+        if (isPlaygroundMode && typeof d.walletCash === 'number') {
+            const cash = Math.max(0, d.walletCash);
+            const inv = Math.max(0, d.units * d.price);
+            const cost = Math.max(0, d.costBasis);
+            const unreal = Math.max(0, inv - cost);
+            const labels = [
+                terminal.allocCash || 'Cash',
+                terminal.allocInvested || 'Invested',
+                terminal.allocGrowth || 'Growth',
+            ];
+            const colors = [tc.primary, compareColor, secondaryColor];
+            return { labels, data: [cash, cost, unreal], colors };
+        }
+        const contrib = lifetimeContributedOf(d);
+        const growth = Math.max(0, d.value - contrib);
+        return {
+            labels: [terminal.allocContrib || 'Contributed', terminal.allocGrowth || 'Growth'],
+            data: [contrib, growth],
+            colors: [contribColor, tc.primary],
+        };
+    }
+
+    function updateIndexStrip() {
+        const tiles = document.querySelectorAll('.sim-index-tile');
+        if (!tiles.length) return;
+        const windowSize = 24;
+        const baseRets = [];
+        for (let i = Math.max(1, simulationData.length - windowSize); i < simulationData.length; i++) {
+            const a = simulationData[i - 1].value;
+            const b = simulationData[i].value;
+            if (a > 0) baseRets.push((b - a) / a);
+        }
+        const scales = [1, 0.92, 1.08, 1.15];
+        const names = [terminal.indexA, terminal.indexB, terminal.indexC, terminal.indexD];
+        tiles.forEach((tile, k) => {
+            const nameEl = tile.querySelector('.sim-index-tile__name');
+            if (nameEl && names[k]) nameEl.textContent = names[k];
+            const valEl = tile.querySelector('[data-field="val"]');
+            const pctEl = tile.querySelector('[data-field="pct"]');
+            const path = tile.querySelector('.sim-index-tile__spark path');
+            if (!baseRets.length) {
+                if (valEl) valEl.textContent = '—';
+                if (pctEl) {
+                    pctEl.textContent = '—';
+                    pctEl.classList.remove('sim-index-tile__pct--up', 'sim-index-tile__pct--down');
+                }
+                if (path) path.setAttribute('d', '');
+                return;
+            }
+            const sr = sparkSeriesFromReturns(baseRets, scales[k]);
+            let v = 100;
+            const pts = [v];
+            for (const r of sr) {
+                v *= 1 + r;
+                pts.push(v);
+            }
+            const lastPct = sr[sr.length - 1] * 100;
+            if (valEl) valEl.textContent = v.toFixed(1);
+            if (pctEl) {
+                const sign = lastPct >= 0 ? '+' : '';
+                pctEl.textContent = `${sign}${lastPct.toFixed(2)}%`;
+                pctEl.classList.toggle('sim-index-tile__pct--up', lastPct >= 0);
+                pctEl.classList.toggle('sim-index-tile__pct--down', lastPct < 0);
+            }
+            if (path) {
+                path.setAttribute('d', sparkSvgPathFromVals(pts));
+                const stroke =
+                    lastPct >= 0
+                        ? getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() ||
+                          '#07a05a'
+                        : '#dc2626';
+                path.setAttribute('stroke', stroke);
+            }
+        });
+    }
+
+    function updateAllocationChart() {
+        if (!allocationChart) return;
+        const agg = aggregateAllocation();
+        let filtered = agg.labels
+            .map((label, i) => ({ label, v: agg.data[i], c: agg.colors[i] }))
+            .filter((row) => row.v > 1e-6);
+        if (!filtered.length) {
+            filtered = [{ label: '\u2014', v: 1, c: '#94a3b8' }];
+        }
+        allocationChart.data.labels = filtered.map((r) => r.label);
+        allocationChart.data.datasets[0].data = filtered.map((r) => r.v);
+        allocationChart.data.datasets[0].backgroundColor = filtered.map((r) => r.c);
+        allocationChart.update('none');
+    }
+
+    function updatePerfPanel() {
+        const rets = [];
+        for (let i = 1; i < simulationData.length; i++) {
+            const a = simulationData[i - 1].value;
+            const b = simulationData[i].value;
+            if (a > 0) rets.push(((b - a) / a) * 100);
+        }
+        const bestEl = document.getElementById('sim-perf-best');
+        const worstEl = document.getElementById('sim-perf-worst');
+        const sharpeEl = document.getElementById('sim-perf-sharpe');
+        const tradesEl = document.getElementById('sim-perf-trades');
+        const winEl = document.getElementById('sim-perf-winrate');
+        if (!rets.length) {
+            if (bestEl) bestEl.textContent = '—';
+            if (worstEl) worstEl.textContent = '—';
+            if (sharpeEl) sharpeEl.textContent = terminal.railSharpeNa || '—';
+        } else {
+            const mx = Math.max(...rets);
+            const mn = Math.min(...rets);
+            if (bestEl) bestEl.textContent = `+${mx.toFixed(2)}%`;
+            if (worstEl) worstEl.textContent = `${mn.toFixed(2)}%`;
+            const mean = rets.reduce((acc, r) => acc + r, 0) / rets.length;
+            const variance = rets.reduce((s, r) => s + (r - mean) ** 2, 0) / Math.max(1, rets.length - 1);
+            const std = Math.sqrt(variance);
+            const sharpe = std > 1e-6 ? (mean / std) * Math.sqrt(12) : 0;
+            if (sharpeEl) sharpeEl.textContent = sharpe.toFixed(2);
+        }
+        const totalTrades = playgroundBuys + playgroundSells;
+        if (tradesEl) tradesEl.textContent = String(totalTrades);
+        if (winEl) {
+            if (playgroundSells === 0) winEl.textContent = '—';
+            else winEl.textContent = `${((playgroundSellWins / playgroundSells) * 100).toFixed(1)}%`;
+        }
+    }
+
+    function applyActiveChartRange() {
+        const n = chart.data.labels.length;
+        if (n < 2) {
+            chart.resetZoom('none');
+            return;
+        }
+        const spans = {
+            all: n,
+            '12m': Math.max(2, Math.ceil(n * 0.35)),
+            '6m': Math.max(2, Math.ceil(n * 0.2)),
+            '3m': Math.max(2, Math.ceil(n * 0.12)),
+            '1m': Math.max(2, Math.ceil(n * 0.05)),
+        };
+        const span = spans[activeRangeKey] ?? n;
+        const minIdx = Math.max(0, n - span);
+        const maxIdx = n - 1;
+        try {
+            if (typeof chart.zoomScale === 'function') {
+                chart.zoomScale('x', { min: minIdx, max: maxIdx }, 'none');
+            } else {
+                chart.resetZoom('none');
+            }
+        } catch (e) {
+            chart.resetZoom('none');
+        }
+    }
+
+    function initAllocationDoughnut() {
+        const ac = document.getElementById('sim-allocation-chart');
+        if (!ac || allocationChart) return;
+        const ctx = ac.getContext('2d');
+        if (!ctx) return;
+        const c = themeColors();
+        const agg = aggregateAllocation();
+        let filtered = agg.labels
+            .map((label, i) => ({ label, v: agg.data[i], col: agg.colors[i] }))
+            .filter((row) => row.v > 1e-6);
+        if (!filtered.length) {
+            filtered = [{ label: '\u2014', v: 1, col: '#94a3b8' }];
+        }
+        allocationChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: filtered.map((r) => r.label),
+                datasets: [
+                    {
+                        data: filtered.map((r) => r.v),
+                        backgroundColor: filtered.map((r) => r.col),
+                        borderWidth: 1,
+                        borderColor: c.surface,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: c.on2, boxWidth: 10, font: { size: 10 } },
+                    },
+                },
+                cutout: '58%',
+            },
+        });
+    }
+
+    function wireTerminalControls() {
+        document.getElementById('sim-chart-range')?.addEventListener('click', (ev) => {
+            const btn = ev.target.closest('[data-range]');
+            if (!btn) return;
+            activeRangeKey = btn.getAttribute('data-range') || 'all';
+            document.querySelectorAll('#sim-chart-range [data-range]').forEach((b) => {
+                b.classList.toggle('is-active', b === btn);
+            });
+            applyActiveChartRange();
+        });
+
+        document.getElementById('sim-mode-pill-classic')?.addEventListener('click', () => {
+            if (modeClassicRadio) {
+                modeClassicRadio.checked = true;
+                modeClassicRadio.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+        document.getElementById('sim-mode-pill-playground')?.addEventListener('click', () => {
+            if (modePlaygroundRadio) {
+                modePlaygroundRadio.checked = true;
+                modePlaygroundRadio.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+
+        const quickAmt = document.getElementById('sim-quick-amount');
+        const deskAmt = document.getElementById('playground-custom-amount');
+        quickAmt?.addEventListener('input', () => {
+            if (deskAmt && quickAmt) deskAmt.value = quickAmt.value;
+        });
+        deskAmt?.addEventListener('input', () => {
+            if (deskAmt && quickAmt) quickAmt.value = deskAmt.value;
+        });
+
+        document.getElementById('sim-quick-preview')?.addEventListener('click', () => {
+            if (!readPlaygroundModeFromUi()) {
+                statusDisplay.textContent = terminal.switchHandsForQuick || '';
+                window.setTimeout(() => {
+                    statusDisplay.textContent = isRunning ? i18n.running : i18n.ready;
+                }, 2600);
+                return;
+            }
+            const q = document.getElementById('sim-quick-amount');
+            const v = Math.max(0, parseFloat(q?.value) || 0);
+            if (v <= 0) return;
+            if (deskAmt) deskAmt.value = String(v);
+            playgroundBuy(v);
+        });
+    }
+
     function safeResetChartZoom() {
         chart.resetZoom('none');
     }
 
     const btnChartResetZoom = document.getElementById('sim-chart-reset-zoom');
-    btnChartResetZoom?.addEventListener('click', () => safeResetChartZoom());
+    btnChartResetZoom?.addEventListener('click', () => {
+        safeResetChartZoom();
+        window.setTimeout(() => applyActiveChartRange(), 0);
+    });
 
     function readChartHostSize() {
         const wrap = document.querySelector('.sim-run-chartWrap');
@@ -710,8 +1003,15 @@ function initFromConfig(config) {
         chart.data.datasets[2].backgroundColor = `${p}2a`;
 
         chart.update('none');
+
+        if (allocationChart) {
+            allocationChart.options.plugins.legend.labels.color = titleColor;
+            allocationChart.update('none');
+        }
     }
 
+    wireTerminalControls();
+    syncModePills();
     forceChartResize();
     applyChartTheme();
 
@@ -770,6 +1070,10 @@ function initFromConfig(config) {
     }
     if (chartColEl && typeof ResizeObserver !== 'undefined') {
         new ResizeObserver(roOnFlexLayout).observe(chartColEl);
+    }
+    const dashRail = document.querySelector('.sim-dash-rail');
+    if (dashRail && typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(roOnFlexLayout).observe(dashRail);
     }
     for (const el of [leadFlyoutEl, playgroundPanel].filter(Boolean)) {
         if (typeof ResizeObserver === 'undefined') break;
@@ -1030,6 +1334,7 @@ function initFromConfig(config) {
         peakValue = Math.max(peakValue, row.value);
         const msg = (i18n.playgroundBought || 'Added :amount').replace(':amount', formatCurrency(B));
         pushEvent(msg);
+        playgroundBuys += 1;
         rebuildChartData('none');
         updateSummary();
     }
@@ -1064,6 +1369,8 @@ function initFromConfig(config) {
             .replace(':pct', String(pct))
             .replace(':gain', formatCurrency(tradeGain));
         pushEvent(msg);
+        playgroundSells += 1;
+        if (tradeGain >= 0) playgroundSellWins += 1;
         rebuildChartData('none');
         updateSummary();
     }
@@ -1153,6 +1460,9 @@ function initFromConfig(config) {
         maxDrawdown = 0;
         eventLog = [];
         crashMonths = new Set();
+        playgroundBuys = 0;
+        playgroundSells = 0;
+        playgroundSellWins = 0;
         isPlaygroundMode = readPlaygroundModeFromUi();
         if (isPlaygroundMode) {
             const p0 = 100;
@@ -1447,6 +1757,8 @@ function initFromConfig(config) {
         chart.$crashMonths = Array.from(crashMonths).sort((a, b) => a - b);
         updateCurrencyLabels();
         chart.update(animation);
+        applyActiveChartRange();
+        updateIndexStrip();
     }
 
     function deltaArrowMarkup(diff) {
@@ -1529,6 +1841,26 @@ function initFromConfig(config) {
         }
 
         updatePlaygroundTradingDesk();
+
+        const pctBox = document.getElementById('sim-hero-return-pct');
+        if (pctBox) {
+            const gainPct = contribBase > 0 ? (totalGain / contribBase) * 100 : 0;
+            pctBox.textContent = `${gainPct >= 0 ? '+' : ''}${gainPct.toFixed(2)}%`;
+            pctBox.style.color = totalGain >= 0 ? primaryColor : '#ef4444';
+        }
+        const stepBox = document.getElementById('sim-hero-step-delta');
+        if (stepBox) {
+            if (meta.current && meta.current.innerHTML) stepBox.innerHTML = meta.current.innerHTML;
+            else stepBox.textContent = '—';
+        }
+
+        if (!allocationChart && simulationData.length) {
+            initAllocationDoughnut();
+        }
+        updateAllocationChart();
+        updatePerfPanel();
+        updateIndexStrip();
+
         schedulePersistRunnerState();
     }
 

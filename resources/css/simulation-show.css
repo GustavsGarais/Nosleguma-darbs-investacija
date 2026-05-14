@@ -6,57 +6,6 @@
 	gap: 20px;
 }
 
-.sim-dash-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	gap: 16px;
-	flex-wrap: wrap;
-	min-width: 0;
-}
-
-/* Match homepage / dashboard welcome: no card border or panel fill */
-.sim-dash-header--frameless {
-	margin: 0;
-	padding: 8px 0 14px;
-	border: none;
-	background: none;
-	box-shadow: none;
-	border-radius: 0;
-	overflow: visible;
-}
-
-@media (min-width: 768px) {
-	.sim-dash-header--frameless {
-		padding: 12px 0 20px;
-	}
-}
-
-.sim-dash-header__copy {
-	min-width: 0;
-	flex: 1 1 260px;
-	max-width: 100%;
-}
-
-.sim-dash-header--frameless .home-hero-title {
-	margin-bottom: 0;
-}
-
-.sim-dash-header__actions {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: flex-end;
-	gap: 8px;
-	flex: 0 1 auto;
-	min-width: 0;
-}
-
-.sim-dash-header__delete-form {
-	display: inline-flex;
-	margin: 0;
-}
-
 .sim-dash-toolbar {
 	display: flex;
 	flex-wrap: wrap;
@@ -78,6 +27,43 @@
 	align-items: center;
 	gap: 8px;
 	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.sim-dash-toolbar-lead {
+	flex: 1 1 140px;
+	min-width: 0;
+	max-width: 100%;
+}
+
+.sim-dash-toolbar__title {
+	margin: 0;
+	font-family: var(--font-family-heading);
+	font-size: clamp(0.95rem, 0.35vw + 0.88rem, 1.2rem);
+	font-weight: 800;
+	line-height: 1.2;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.sim-dash-toolbar-secondary {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 8px;
+	flex: 1 1 220px;
+	min-width: 0;
+}
+
+.sim-dash-toolbar-secondary .helpSheet__btn {
+	flex-shrink: 0;
+}
+
+.sim-dash-toolbar__delete-form {
+	display: inline-flex;
+	margin: 0;
 }
 
 .sim-dash-toolbar-status {
@@ -391,7 +377,7 @@
 .sim-dash-chartCard {
 	flex: 1 1 auto;
 	min-width: 0;
-	padding: 16px;
+	padding: 12px 14px 14px;
 	border-radius: 16px;
 	overflow: hidden;
 	border: 1px solid color-mix(in srgb, var(--c-primary) 32%, var(--c-border));
@@ -416,6 +402,18 @@
 	font-weight: 800;
 	flex: 1 1 auto;
 	min-width: min(100%, 200px);
+}
+
+/* Tighter chart eyebrow — reads like a terminal KPI label, not a second page title */
+.sim-dash-chartTitle--compact {
+	margin: 0 0 10px;
+	font-size: 0.72rem;
+	font-weight: 800;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--c-on-surface-2);
+	line-height: 1.35;
+	min-width: 0;
 }
 
 .sim-dash-chartReset {
@@ -709,6 +707,65 @@
 	max-width: 100%;
 }
 
+/* Left rail “settings deck” — closer to a dense control column than a generic auth card */
+.sim-run-shell .sim-dash-settings-panel {
+	padding: 14px 14px 16px;
+	border: 1px solid color-mix(in srgb, var(--c-primary) 22%, var(--c-border));
+	border-left: 3px solid var(--c-primary);
+	border-radius: 12px;
+	background: linear-gradient(
+		165deg,
+		color-mix(in srgb, var(--c-surface) 88%, var(--c-primary) 12%) 0%,
+		color-mix(in srgb, var(--c-surface) 97%, transparent) 55%
+	);
+	box-shadow: none;
+}
+
+.sim-dash-settings-panel > h3.sim-dash-settings-panel__heading {
+	margin: 0 0 12px;
+	font-size: 0.68rem;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--c-on-surface-2);
+	line-height: 1.3;
+	font-family: var(--font-family-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+.sim-run-shell .sim-dash-coach-panel {
+	padding: 12px 14px;
+	border-radius: 12px;
+	border: 1px dashed color-mix(in srgb, var(--c-border) 75%, var(--c-primary) 25%);
+	background: color-mix(in srgb, var(--c-surface) 94%, var(--c-primary) 6%);
+	box-shadow: none;
+}
+
+.sim-dash-coach-panel__stack {
+	display: grid;
+	gap: 10px;
+	min-width: 0;
+}
+
+.sim-dash-coach-panel__note {
+	padding: 12px;
+	border-radius: 10px;
+	border: 1px solid var(--c-border);
+	font-size: 14px;
+	line-height: 1.6;
+	min-width: 0;
+	overflow-wrap: anywhere;
+	word-break: break-word;
+	hyphens: auto;
+}
+
+.sim-dash-coach-panel__note--primary {
+	background: color-mix(in srgb, var(--c-surface) 90%, var(--c-primary) 10%);
+}
+
+.sim-dash-coach-panel__note--secondary {
+	background: color-mix(in srgb, var(--c-surface) 94%, var(--c-secondary) 6%);
+}
+
 .sim-dash-controlsBlock #learning-note,
 .sim-dash-controlsBlock #risk-tip {
 	overflow-wrap: anywhere;
@@ -738,7 +795,7 @@
 /* Collapsible, denser KPI block on the simulation page */
 details.sim-kpi-panel.auth-card {
 	padding: 0;
-	overflow: hidden;
+	overflow: visible;
 }
 
 .sim-kpi-panel__summary {
@@ -747,9 +804,52 @@ details.sim-kpi-panel.auth-card {
 	padding: 12px 16px;
 	display: flex;
 	align-items: flex-start;
+	justify-content: flex-start;
 	gap: 10px;
 	min-width: 0;
 	user-select: none;
+}
+
+.sim-kpi-panel__summary .sim-help-wrap {
+	margin-left: auto;
+	flex-shrink: 0;
+}
+
+/* Section help: clear “?” affordance + tooltip above neighbours */
+.sim-run-section-help {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 28px;
+	min-height: 28px;
+}
+
+.sim-run-section-help__glyph {
+	display: grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	border-radius: 999px;
+	border: 1px solid color-mix(in srgb, var(--c-primary) 35%, var(--c-border));
+	background: color-mix(in srgb, var(--c-surface) 90%, var(--c-primary) 10%);
+	color: color-mix(in srgb, var(--c-on-surface) 55%, var(--c-primary) 45%);
+	font-size: 14px;
+	font-weight: 900;
+	line-height: 1;
+	font-family: var(--font-family-body), ui-sans-serif, system-ui, sans-serif;
+	cursor: help;
+}
+
+.sim-run-section-help:hover .sim-run-section-help__glyph,
+.sim-run-section-help:focus-visible .sim-run-section-help__glyph {
+	color: var(--c-primary);
+	border-color: color-mix(in srgb, var(--c-primary) 55%, var(--c-border));
+	background: color-mix(in srgb, var(--c-primary) 14%, var(--c-surface));
+}
+
+.info-bubble.sim-run-section-help::after,
+.info-bubble.sim-run-section-help::before {
+	z-index: 120;
 }
 
 .sim-kpi-panel__summary::-webkit-details-marker {
@@ -869,7 +969,7 @@ html[data-theme="dark"] .sim-deltaArrow--down {
 /* Collapsible blocks below chart (events log, simulation parameters) — match app elevated panels */
 .sim-accordion {
 	border-radius: var(--r-lg);
-	overflow: hidden;
+	overflow: visible;
 	border: 1px solid color-mix(in srgb, var(--c-primary) 32%, var(--c-border));
 	border-left: 4px solid var(--c-primary);
 	background: var(--app-card-face);
@@ -895,6 +995,18 @@ html[data-theme="dark"] .sim-deltaArrow--down {
 
 .sim-accordion summary:hover {
 	background: color-mix(in srgb, var(--c-surface) 88%, var(--c-primary) 12%);
+}
+
+.sim-accordion__summary-left {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+	flex: 1 1 200px;
+}
+
+.sim-accordion__summary-left .sim-accordion__title {
+	margin: 0;
 }
 
 .sim-accordion__title {
@@ -1123,9 +1235,447 @@ html[data-theme="dark"] .sim-param-tile {
 		align-items: stretch;
 	}
 
+	.sim-dash-toolbar-lead {
+		flex: 1 1 auto;
+	}
+
+	.sim-dash-toolbar-secondary {
+		justify-content: flex-start;
+		flex: 1 1 auto;
+	}
+
 	.sim-dash-toolbar-status {
 		margin-left: 0;
 		justify-content: flex-start;
+	}
+}
+
+/* ─── Simulation run: trading-terminal layout (show page) ─── */
+.sim-run-shell--terminal .sim-dash-body {
+	display: grid;
+	grid-template-columns: minmax(260px, 300px) minmax(0, 1fr) minmax(240px, 300px);
+	gap: 16px;
+	align-items: start;
+}
+
+.sim-dash-toolbar-modes {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	flex: 0 1 220px;
+	min-width: 0;
+}
+
+.sim-mode-pill {
+	border: 1px solid color-mix(in srgb, var(--c-primary) 35%, var(--c-border));
+	background: color-mix(in srgb, var(--c-surface) 94%, var(--c-primary) 6%);
+	color: var(--c-on-surface-2);
+	font-size: 12px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	padding: 8px 14px;
+	border-radius: 999px;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		color 0.15s ease,
+		border-color 0.15s ease;
+}
+
+.sim-mode-pill.is-active {
+	background: color-mix(in srgb, var(--c-primary) 22%, var(--c-surface));
+	color: var(--c-on-surface);
+	border-color: color-mix(in srgb, var(--c-primary) 55%, var(--c-border));
+	box-shadow: 0 0 0 1px color-mix(in srgb, var(--c-primary) 35%, transparent);
+}
+
+.sim-dash-terminal-center {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	min-width: 0;
+	align-self: stretch;
+}
+
+.sim-index-strip {
+	padding: 10px 12px 12px;
+	border-radius: 14px;
+	border: 1px solid color-mix(in srgb, var(--c-primary) 22%, var(--c-border));
+	background: color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%);
+}
+
+.sim-index-strip__note {
+	margin: 0 0 8px;
+	font-size: 11px;
+	line-height: 1.45;
+	color: var(--c-on-surface-2);
+}
+
+.sim-index-strip__grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 8px;
+}
+
+.sim-index-tile {
+	min-width: 0;
+	padding: 8px 8px 6px;
+	border-radius: 10px;
+	border: 1px solid var(--c-border);
+	background: var(--app-card-face);
+	display: grid;
+	gap: 2px;
+}
+
+.sim-index-tile__name {
+	font-size: 10px;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--c-on-surface-2);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.sim-index-tile__val {
+	font-size: 13px;
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+}
+
+.sim-index-tile__pct {
+	font-size: 11px;
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+}
+
+.sim-index-tile__pct--up {
+	color: var(--c-primary);
+}
+
+.sim-index-tile__pct--down {
+	color: #ef4444;
+}
+
+.sim-index-tile__spark {
+	display: block;
+	width: 100%;
+	height: 22px;
+	margin-top: 2px;
+}
+
+.sim-chart-hero {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px 16px;
+	margin-bottom: 10px;
+}
+
+.sim-chart-hero__main {
+	min-width: 0;
+	flex: 1 1 200px;
+}
+
+.sim-chart-hero__eyebrow {
+	margin: 0 0 4px;
+	font-size: 0.68rem;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--c-on-surface-2);
+}
+
+.sim-chart-hero__value {
+	margin: 0;
+	font-size: clamp(1.35rem, 2.2vw + 0.8rem, 1.85rem);
+	font-weight: 900;
+	font-variant-numeric: tabular-nums;
+	line-height: 1.1;
+	color: var(--c-primary);
+}
+
+.sim-chart-hero__meta {
+	margin: 6px 0 0;
+	font-size: 13px;
+	color: var(--c-on-surface-2);
+	min-height: 1.2em;
+}
+
+.sim-chart-hero__side {
+	flex: 0 1 160px;
+	text-align: right;
+	min-width: 0;
+}
+
+.sim-chart-hero__pct {
+	margin: 0 0 8px;
+	font-size: 1.15rem;
+	font-weight: 900;
+	font-variant-numeric: tabular-nums;
+}
+
+.sim-chart-hero__sub {
+	margin: 0;
+	font-size: 12px;
+	color: var(--c-on-surface-2);
+	min-height: 1.2em;
+}
+
+.sim-chart-range {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 8px;
+}
+
+.sim-chart-range__btn {
+	border: 1px solid var(--c-border);
+	background: color-mix(in srgb, var(--c-surface) 96%, transparent);
+	color: var(--c-on-surface-2);
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	padding: 6px 10px;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.sim-chart-range__btn.is-active {
+	border-color: color-mix(in srgb, var(--c-primary) 45%, var(--c-border));
+	color: var(--c-on-surface);
+	background: color-mix(in srgb, var(--c-primary) 14%, var(--c-surface));
+}
+
+.sim-chart-range__btn--ghost {
+	margin-left: auto;
+}
+
+.sim-quick-trade {
+	padding: 12px 14px 14px;
+	border-radius: 14px;
+	border: 1px solid color-mix(in srgb, var(--c-primary) 22%, var(--c-border));
+	background: var(--app-card-face);
+}
+
+.sim-quick-trade__head {
+	margin-bottom: 8px;
+}
+
+.sim-quick-trade__title {
+	margin: 0;
+	font-size: 0.72rem;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--c-on-surface-2);
+}
+
+.sim-quick-trade__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 10px;
+	align-items: end;
+}
+
+.sim-quick-trade__field {
+	display: grid;
+	gap: 4px;
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--c-on-surface-2);
+	min-width: 0;
+}
+
+.sim-quick-trade__actions {
+	display: flex;
+	align-items: flex-end;
+}
+
+.sim-dash-rail {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	min-width: 0;
+	align-self: stretch;
+}
+
+.sim-rail-card {
+	padding: 12px 14px 14px;
+	border-radius: 14px;
+	border: 1px solid color-mix(in srgb, var(--c-primary) 24%, var(--c-border));
+	border-left: 4px solid var(--c-primary);
+	background: var(--app-card-face);
+	box-shadow: var(--app-card-shadow);
+}
+
+.sim-rail-card__title {
+	margin: 0 0 10px;
+	font-size: 0.72rem;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--c-on-surface-2);
+}
+
+.sim-rail-kpiGrid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 10px;
+}
+
+.sim-rail-kpi {
+	padding: 10px 12px;
+	border-radius: 10px;
+	border: 1px solid var(--c-border);
+	background: color-mix(in srgb, var(--c-surface) 96%, transparent);
+	min-width: 0;
+}
+
+.sim-rail-donutWrap {
+	position: relative;
+	height: 180px;
+	max-width: 100%;
+}
+
+.sim-rail-donutWrap canvas {
+	max-height: 100%;
+}
+
+.sim-rail-perf {
+	margin: 0;
+	display: grid;
+	gap: 8px;
+	font-size: 13px;
+}
+
+.sim-rail-perf > div {
+	display: flex;
+	justify-content: space-between;
+	gap: 10px;
+	align-items: baseline;
+	padding: 8px 0;
+	border-bottom: 1px solid var(--c-border);
+}
+
+.sim-rail-perf > div:last-child {
+	border-bottom: none;
+}
+
+.sim-rail-perf dt {
+	margin: 0;
+	color: var(--c-on-surface-2);
+	font-weight: 700;
+}
+
+.sim-rail-perf dd {
+	margin: 0;
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+	text-align: right;
+}
+
+.sim-dash-terminal__footer {
+	display: grid;
+	gap: 12px;
+	margin-top: 4px;
+}
+
+@media (min-width: 1101px) {
+	.sim-run-shell--terminal .sim-controls-flyout--lead {
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.sim-run-shell--terminal .sim-controls-flyout--lead .sim-controls-flyout__rail {
+		display: none;
+	}
+
+	.sim-run-shell--terminal .sim-controls-flyout--lead .sim-controls-flyout__panel {
+		position: relative;
+		left: auto;
+		top: auto;
+		opacity: 1;
+		transform: none;
+		pointer-events: auto;
+		width: 100% !important;
+		min-width: 0 !important;
+		max-width: none !important;
+		border-radius: 12px;
+		border: 1px solid var(--c-border);
+		box-shadow: var(--shadow-1, 0 6px 20px rgba(0, 0, 0, 0.08));
+	}
+
+	.sim-run-shell--terminal #playground-panel:not([hidden]) {
+		width: 100%;
+	}
+
+	.sim-run-shell--terminal #playground-panel:not([hidden]) .sim-controls-flyout__rail {
+		display: none;
+	}
+
+	.sim-run-shell--terminal #playground-panel:not([hidden]) .sim-controls-flyout__panel {
+		position: relative;
+		left: auto;
+		opacity: 1;
+		transform: none;
+		pointer-events: auto;
+		width: 100% !important;
+		min-width: 0 !important;
+		max-width: none !important;
+		border-radius: 12px;
+		border: 1px solid var(--c-border);
+	}
+}
+
+@media (max-width: 1100px) {
+	.sim-run-shell--terminal .sim-dash-body {
+		grid-template-columns: 1fr;
+	}
+
+	.sim-run-shell--terminal .sim-dash-work {
+		order: 2;
+		width: 100%;
+		flex-direction: column;
+	}
+
+	.sim-dash-rail {
+		order: 3;
+	}
+
+	.sim-dash-terminal-center {
+		order: 2;
+	}
+
+	.sim-dash-lead {
+		order: 1;
+	}
+
+	.sim-index-strip__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 640px) {
+	.sim-dash-toolbar-modes {
+		flex: 1 1 100%;
+		justify-content: flex-start;
+	}
+
+	.sim-chart-hero__side {
+		text-align: left;
+		flex-basis: 100%;
+	}
+
+	.sim-chart-range__btn--ghost {
+		margin-left: 0;
 	}
 }
 

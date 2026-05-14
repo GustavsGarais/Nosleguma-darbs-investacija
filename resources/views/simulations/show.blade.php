@@ -80,19 +80,67 @@
             'xAxisDay' => __('Day'),
             'yAxisValue' => __('Value (:currency)'),
         ],
+        'terminal' => [
+            'modeAuto' => __('sim.terminal.mode_auto'),
+            'modeHands' => __('sim.terminal.mode_hands'),
+            'indicesNote' => __('sim.terminal.indices_note'),
+            'indexA' => __('sim.terminal.index_a'),
+            'indexB' => __('sim.terminal.index_b'),
+            'indexC' => __('sim.terminal.index_c'),
+            'indexD' => __('sim.terminal.index_d'),
+            'switchHandsForQuick' => __('sim.terminal.switch_hands_for_quick'),
+            'railSharpeNa' => '—',
+            'allocCash' => __('sim.terminal.alloc_cash'),
+            'allocInvested' => __('sim.terminal.alloc_invested'),
+            'allocGrowth' => __('sim.terminal.alloc_growth'),
+            'allocContrib' => __('sim.terminal.alloc_contrib'),
+        ],
     ];
 @endphp
 
 @section('title', $simulation->name)
 
 @section('dashboard_content')
-<section class="sim-run-shell" aria-label="Simulation details">
-    <header class="sim-dash-header sim-dash-header--frameless" aria-label="{{ __('Simulation Details') }}">
-        <div class="sim-dash-header__copy">
-            <h1 class="home-hero-title hero-title">{{ $simulation->name }}</h1>
+<section class="sim-run-shell sim-run-shell--terminal" aria-label="Simulation details">
+    <div class="sim-dash-toolbar" aria-label="{{ __('Simulation actions') }}">
+        <div class="sim-dash-toolbar-lead">
+            <h1 class="sim-dash-toolbar__title">{{ $simulation->name }}</h1>
         </div>
-        <div class="sim-dash-header__actions cta-cluster">
-            <button id="start-tutorial" class="btn btn-secondary" type="button">📚 {{ __('Start Tutorial') }}</button>
+        <div class="sim-dash-toolbar-modes" role="group" aria-label="{{ __('Simulation mode') }}">
+            <button type="button" id="sim-mode-pill-classic" class="sim-mode-pill @if($defaultRunnerMode === 'classic') is-active @endif" data-sim-mode="classic" aria-pressed="{{ $defaultRunnerMode === 'classic' ? 'true' : 'false' }}">
+                {{ __('sim.terminal.mode_auto') }}
+            </button>
+            <button type="button" id="sim-mode-pill-playground" class="sim-mode-pill @if($defaultRunnerMode === 'playground') is-active @endif" data-sim-mode="playground" aria-pressed="{{ $defaultRunnerMode === 'playground' ? 'true' : 'false' }}">
+                {{ __('sim.terminal.mode_hands') }}
+            </button>
+        </div>
+        <div class="sim-dash-toolbar-actions">
+            <button
+                id="btn-run"
+                class="btn btn-primary"
+                type="button"
+                data-label-run="{{ __('Run') }}"
+                data-label-pause="{{ __('Pause') }}"
+                data-icon-run="▶"
+                data-icon-pause="⏸"
+                aria-pressed="false"
+            >▶ {{ __('Run') }}</button>
+            <button id="btn-step" class="btn btn-secondary" type="button" title="{{ __('Advance by one day') }}">➜ {{ __('Step') }}</button>
+            <button id="btn-reset" class="btn btn-outline" type="button">🔄 {{ __('Reset') }}</button>
+            <button id="btn-save" class="btn btn-outline" type="button" title="{{ __('Save results and full monthly history to the server') }}">💾 {{ __('Save') }}</button>
+            <button
+                id="btn-toggle-controls"
+                class="btn btn-outline"
+                type="button"
+                aria-expanded="true"
+                aria-controls="sim-dash-lead"
+                title="{{ __('Hide controls panel') }}"
+                data-title-hide="{{ __('Hide controls panel') }}"
+                data-title-show="{{ __('Show controls panel') }}"
+            >⏴ {{ __('Controls') }}</button>
+        </div>
+        <div class="sim-dash-toolbar-secondary">
+            <button id="start-tutorial" class="btn btn-secondary btn-sm" type="button">📚 {{ __('Start Tutorial') }}</button>
             <x-help-sheet id="sim-help-sheet" :title="__('Simulation help')" :button-label="__('Open help')">
                 <h3>{{ __('Quick start') }}</h3>
                 <ul>
@@ -121,41 +169,13 @@
                     {!! __('Arrow tip: under the big numbers, <span style="color:var(--c-primary); font-weight:800;">green ↑</span> means that number went up since the previous step, and <span style="color:#dc2626; font-weight:800;">red ↓</span> means it went down. The chart legend lines are separate.') !!}
                 </p>
             </x-help-sheet>
-            <a class="btn btn-primary" href="{{ route('simulations.edit', $simulation) }}">{{ __('Edit') }}</a>
-            <a class="btn btn-outline" href="{{ route('simulations.index') }}">{{ __('Back') }}</a>
-            <form class="sim-dash-header__delete-form" method="POST" action="{{ route('simulations.destroy', $simulation) }}" onsubmit="return confirm('{{ __('Delete this simulation?') }}');">
+            <a class="btn btn-primary btn-sm" href="{{ route('simulations.edit', $simulation) }}">{{ __('Edit') }}</a>
+            <a class="btn btn-outline btn-sm" href="{{ route('simulations.index') }}">{{ __('Back') }}</a>
+            <form class="sim-dash-toolbar__delete-form" method="POST" action="{{ route('simulations.destroy', $simulation) }}" onsubmit="return confirm('{{ __('Delete this simulation?') }}');">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-outline">{{ __('Delete') }}</button>
+                <button type="submit" class="btn btn-outline btn-sm">{{ __('Delete') }}</button>
             </form>
-        </div>
-    </header>
-
-    <div class="sim-dash-toolbar" aria-label="Simulation actions">
-        <div class="sim-dash-toolbar-actions">
-            <button
-                id="btn-run"
-                class="btn btn-primary"
-                type="button"
-                data-label-run="{{ __('Run') }}"
-                data-label-pause="{{ __('Pause') }}"
-                data-icon-run="▶"
-                data-icon-pause="⏸"
-                aria-pressed="false"
-            >▶ {{ __('Run') }}</button>
-            <button id="btn-step" class="btn btn-secondary" type="button" title="{{ __('Advance by one day') }}">➜ {{ __('Step') }}</button>
-            <button id="btn-reset" class="btn btn-outline" type="button">🔄 {{ __('Reset') }}</button>
-            <button id="btn-save" class="btn btn-outline" type="button" title="{{ __('Save results and full monthly history to the server') }}">💾 {{ __('Save') }}</button>
-            <button
-                id="btn-toggle-controls"
-                class="btn btn-outline"
-                type="button"
-                aria-expanded="true"
-                aria-controls="sim-dash-lead"
-                title="{{ __('Hide controls panel') }}"
-                data-title-hide="{{ __('Hide controls panel') }}"
-                data-title-show="{{ __('Show controls panel') }}"
-            >⏴ {{ __('Controls') }}</button>
         </div>
         <div class="sim-dash-toolbar-status">
             <div id="status-display" style="padding:8px 12px; border-radius:10px; border:1px solid var(--c-border); background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); font-weight:700; font-size:13px;">
@@ -174,21 +194,12 @@
                 <span class="sim-controls-flyout__label">{{ __('Controls') }}</span>
             </div>
             <aside class="sim-dash-controls sim-controls-flyout__panel" aria-label="{{ __('Simulation Controls') }}">
-            <div class="sim-dash-controlsBlock auth-card" style="padding:16px; box-shadow:none;">
-                <h3>{{ __('Simulation Controls') }}</h3>
-                <fieldset style="border:none; padding:0; margin:0 0 12px;">
-                    <legend class="sr-only">{{ __('Simulation mode') }}</legend>
-                    <span style="display:block; font-weight:700; margin-bottom:8px;">{{ __('Mode') }}</span>
-                    <div style="display:flex; flex-direction:column; gap:8px;">
-                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                            <input type="radio" name="sim-mode" id="mode-classic" value="classic" @checked($defaultRunnerMode === 'classic') />
-                            <span>{{ __('Classic (auto monthly)') }}</span>
-                        </label>
-                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                            <input type="radio" name="sim-mode" id="mode-playground" value="playground" @checked($defaultRunnerMode === 'playground') />
-                            <span>{{ __('Hands-on portfolio lab') }}</span>
-                        </label>
-                    </div>
+            <div class="sim-dash-controlsBlock sim-dash-settings-panel">
+                <h3 class="sim-dash-settings-panel__heading">{{ __('Simulation Controls') }}</h3>
+                <fieldset class="sr-only" aria-hidden="true" tabindex="-1">
+                    <legend>{{ __('Simulation mode') }}</legend>
+                    <input type="radio" name="sim-mode" id="mode-classic" value="classic" @checked($defaultRunnerMode === 'classic') />
+                    <input type="radio" name="sim-mode" id="mode-playground" value="playground" @checked($defaultRunnerMode === 'playground') />
                 </fieldset>
                 <div style="display:grid; gap:10px;">
                     <label style="display:grid; gap:6px;">
@@ -226,10 +237,10 @@
                 </div>
             </div>
 
-            <div class="sim-dash-controlsBlock auth-card" style="padding:16px; box-shadow:none;">
-                <div style="display:grid; gap:10px;">
-                    <div id="learning-note" style="padding:12px; border-radius:12px; border:1px solid var(--c-border); background:color-mix(in srgb, var(--c-surface) 90%, var(--c-primary) 10%); font-size:14px; line-height:1.6;"></div>
-                    <div id="risk-tip" style="padding:12px; border-radius:12px; border:1px solid var(--c-border); background:color-mix(in srgb, var(--c-surface) 94%, var(--c-secondary) 6%); font-size:14px; line-height:1.6;"></div>
+            <div class="sim-dash-controlsBlock sim-dash-coach-panel">
+                <div class="sim-dash-coach-panel__stack">
+                    <div id="learning-note" class="sim-dash-coach-panel__note sim-dash-coach-panel__note--primary"></div>
+                    <div id="risk-tip" class="sim-dash-coach-panel__note sim-dash-coach-panel__note--secondary"></div>
                 </div>
             </div>
             </aside>
@@ -297,65 +308,154 @@
         </div>
         </div>
 
-        <div class="sim-dash-work">
-        <div class="sim-dash-chartCol">
+        <div class="sim-dash-work sim-dash-terminal-center">
+            <div class="sim-index-strip" aria-label="{{ __('Market Regime') }}">
+                <p class="sim-index-strip__note">{{ __('sim.terminal.indices_note') }}</p>
+                <div class="sim-index-strip__grid">
+                    <div class="sim-index-tile" data-sim-index="0">
+                        <span class="sim-index-tile__name">{{ __('sim.terminal.index_a') }}</span>
+                        <span class="sim-index-tile__val" data-field="val">—</span>
+                        <span class="sim-index-tile__pct" data-field="pct">—</span>
+                        <svg class="sim-index-tile__spark" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><path fill="none" stroke-width="1.8" vector-effect="non-scaling-stroke" d="" /></svg>
+                    </div>
+                    <div class="sim-index-tile" data-sim-index="1">
+                        <span class="sim-index-tile__name">{{ __('sim.terminal.index_b') }}</span>
+                        <span class="sim-index-tile__val" data-field="val">—</span>
+                        <span class="sim-index-tile__pct" data-field="pct">—</span>
+                        <svg class="sim-index-tile__spark" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><path fill="none" stroke-width="1.8" vector-effect="non-scaling-stroke" d="" /></svg>
+                    </div>
+                    <div class="sim-index-tile" data-sim-index="2">
+                        <span class="sim-index-tile__name">{{ __('sim.terminal.index_c') }}</span>
+                        <span class="sim-index-tile__val" data-field="val">—</span>
+                        <span class="sim-index-tile__pct" data-field="pct">—</span>
+                        <svg class="sim-index-tile__spark" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><path fill="none" stroke-width="1.8" vector-effect="non-scaling-stroke" d="" /></svg>
+                    </div>
+                    <div class="sim-index-tile" data-sim-index="3">
+                        <span class="sim-index-tile__name">{{ __('sim.terminal.index_d') }}</span>
+                        <span class="sim-index-tile__val" data-field="val">—</span>
+                        <span class="sim-index-tile__pct" data-field="pct">—</span>
+                        <svg class="sim-index-tile__spark" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><path fill="none" stroke-width="1.8" vector-effect="non-scaling-stroke" d="" /></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sim-dash-chartCol">
             <div class="sim-dash-chartCard" aria-label="Chart">
-                <h2 class="sim-dash-chartTitle">{{ __('Investment growth over time') }}</h2>
+                <div class="sim-chart-hero">
+                    <div class="sim-chart-hero__main">
+                        <p class="sim-chart-hero__eyebrow">{{ __('sim.terminal.portfolio_value') }}</p>
+                        <p id="current-value" class="sim-chart-hero__value">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                        <p id="current-value-meta" class="sim-chart-hero__meta"></p>
+                    </div>
+                    <div class="sim-chart-hero__side">
+                        <p class="sim-chart-hero__eyebrow">{{ __('sim.terminal.total_return') }}</p>
+                        <p id="sim-hero-return-pct" class="sim-chart-hero__pct">—</p>
+                        <p class="sim-chart-hero__eyebrow">{{ __('sim.terminal.step_change') }}</p>
+                        <p id="sim-hero-step-delta" class="sim-chart-hero__sub">—</p>
+                    </div>
+                </div>
+                <div class="sim-chart-range" id="sim-chart-range" role="toolbar" aria-label="{{ __('Investment growth over time') }}">
+                    <button type="button" class="sim-chart-range__btn" data-range="all">{{ __('sim.terminal.chart_range_all') }}</button>
+                    <button type="button" class="sim-chart-range__btn" data-range="12m">{{ __('sim.terminal.chart_range_12m') }}</button>
+                    <button type="button" class="sim-chart-range__btn" data-range="6m">{{ __('sim.terminal.chart_range_6m') }}</button>
+                    <button type="button" class="sim-chart-range__btn" data-range="3m">{{ __('sim.terminal.chart_range_3m') }}</button>
+                    <button type="button" class="sim-chart-range__btn is-active" data-range="1m">{{ __('sim.terminal.chart_range_1m') }}</button>
+                    <button type="button" id="sim-chart-reset-zoom" class="sim-chart-range__btn sim-chart-range__btn--ghost">{{ __('sim.terminal.reset_zoom') }}</button>
+                </div>
+                <h2 class="sim-dash-chartTitle sim-dash-chartTitle--compact">{{ __('Investment growth over time') }}</h2>
                 <div class="sim-run-chartWrap">
                     <canvas id="sim-chart" aria-label="Simulation chart"></canvas>
                 </div>
             </div>
-        </div>
-        </div>
-    </div>
+            </div>
 
-    <details class="auth-card sim-kpi-panel" aria-label="{{ __('Key indicators') }}">
-        <summary class="sim-kpi-panel__summary">
-            <span class="sim-kpi-panel__summary-text">
-                <span class="sim-kpi-panel__title">{{ __('Key indicators') }}</span>
-                <span class="sim-kpi-panel__subtitle">{{ __('Optional detail — open for numbers and month-over-month hints') }}</span>
-            </span>
-        </summary>
-        <div class="sim-kpi-panel__body">
-            <div class="sim-kpiGrid sim-kpis">
-                <div class="sim-kpi">
-                    <p class="sim-kpiLabel">{{ __('Current Value') }}</p>
-                    <p id="current-value" class="sim-kpiValue" style="color: var(--c-primary);">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
-                    <p id="current-value-meta" class="sim-kpiMeta"></p>
+            <div class="sim-quick-trade auth-card">
+                <div class="sim-quick-trade__head">
+                    <h3 class="sim-quick-trade__title">{{ __('sim.terminal.quick_trade') }}</h3>
                 </div>
-                <div class="sim-kpi">
-                    <p class="sim-kpiLabel">{{ __('Total Contributed') }}</p>
-                    <p id="total-contributed" class="sim-kpiValue">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
-                    <p id="total-contributed-meta" class="sim-kpiMeta"></p>
-                </div>
-                <div class="sim-kpi">
-                    <p class="sim-kpiLabel">{{ __('Total Gain') }}</p>
-                    <p id="total-gain" class="sim-kpiValue" style="color: var(--c-primary);">€0.00</p>
-                    <p id="total-gain-meta" class="sim-kpiMeta"></p>
-                </div>
-                <div class="sim-kpi">
-                    <p class="sim-kpiLabel">{{ __('Real Value (Inflation Adj.)') }}</p>
-                    <p id="real-value" class="sim-kpiValue" style="color: var(--c-secondary);">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
-                    <p id="real-value-meta" class="sim-kpiMeta"></p>
-                </div>
-                <div class="sim-kpi">
-                    <p class="sim-kpiLabel">{{ __('Max Drawdown') }}</p>
-                    <p id="drawdown" class="sim-kpiValue" style="color:#ef4444;">0%</p>
-                    <p id="drawdown-meta" class="sim-kpiMeta"></p>
-                </div>
-                <div class="sim-kpi">
-                    <p class="sim-kpiLabel">{{ __('Projected CAGR') }}</p>
-                    <p id="cagr" class="sim-kpiValue">0%</p>
-                    <p id="cagr-meta" class="sim-kpiMeta"></p>
+                <div class="sim-quick-trade__grid">
+                    <label class="sim-quick-trade__field">
+                        <span>{{ __('sim.terminal.order_type') }}</span>
+                        <select class="footer-email-input" disabled>
+                            <option>{{ __('sim.terminal.market_order') }}</option>
+                        </select>
+                    </label>
+                    <label class="sim-quick-trade__field">
+                        <span>{{ __('sim.terminal.ticker_caption') }}</span>
+                        <input type="text" class="footer-email-input" value="{{ __('sim.terminal.ticker_lab') }}" readonly />
+                    </label>
+                    <label class="sim-quick-trade__field">
+                        <span>{{ __('sim.terminal.amount_eur') }}</span>
+                        <input id="sim-quick-amount" type="number" min="1" step="1" value="50" class="footer-email-input" />
+                    </label>
+                    <div class="sim-quick-trade__actions">
+                        <button type="button" id="sim-quick-preview" class="btn btn-primary">{{ __('sim.terminal.preview_add') }}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </details>
 
+        <aside class="sim-dash-rail" aria-label="{{ __('sim.terminal.rail_summary') }}">
+            <div class="sim-rail-card">
+                <h3 class="sim-rail-card__title">{{ __('sim.terminal.rail_summary') }}</h3>
+                <div class="sim-rail-kpiGrid">
+                    <div class="sim-rail-kpi">
+                        <p class="sim-kpiLabel">{{ __('Total Contributed') }}</p>
+                        <p id="total-contributed" class="sim-kpiValue">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                        <p id="total-contributed-meta" class="sim-kpiMeta"></p>
+                    </div>
+                    <div class="sim-rail-kpi">
+                        <p class="sim-kpiLabel">{{ __('Total Gain') }}</p>
+                        <p id="total-gain" class="sim-kpiValue" style="color: var(--c-primary);">€0.00</p>
+                        <p id="total-gain-meta" class="sim-kpiMeta"></p>
+                    </div>
+                    <div class="sim-rail-kpi">
+                        <p class="sim-kpiLabel">{{ __('Real Value (Inflation Adj.)') }}</p>
+                        <p id="real-value" class="sim-kpiValue" style="color: var(--c-secondary);">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                        <p id="real-value-meta" class="sim-kpiMeta"></p>
+                    </div>
+                    <div class="sim-rail-kpi">
+                        <p class="sim-kpiLabel">{{ __('Max Drawdown') }}</p>
+                        <p id="drawdown" class="sim-kpiValue" style="color:#ef4444;">0%</p>
+                        <p id="drawdown-meta" class="sim-kpiMeta"></p>
+                    </div>
+                    <div class="sim-rail-kpi">
+                        <p class="sim-kpiLabel">{{ __('Projected CAGR') }}</p>
+                        <p id="cagr" class="sim-kpiValue">0%</p>
+                        <p id="cagr-meta" class="sim-kpiMeta"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="sim-rail-card">
+                <h3 class="sim-rail-card__title">{{ __('sim.terminal.rail_allocation') }}</h3>
+                <div class="sim-rail-donutWrap">
+                    <canvas id="sim-allocation-chart" height="160" aria-label="{{ __('sim.terminal.rail_allocation') }}"></canvas>
+                </div>
+            </div>
+            <div class="sim-rail-card">
+                <h3 class="sim-rail-card__title">{{ __('sim.terminal.rail_performance') }}</h3>
+                <dl class="sim-rail-perf">
+                    <div><dt>{{ __('sim.terminal.best_step') }}</dt><dd id="sim-perf-best">—</dd></div>
+                    <div><dt>{{ __('sim.terminal.worst_step') }}</dt><dd id="sim-perf-worst">—</dd></div>
+                    <div><dt>{{ __('sim.terminal.sharpe') }}</dt><dd id="sim-perf-sharpe">—</dd></div>
+                    <div><dt>{{ __('sim.terminal.total_trades') }}</dt><dd id="sim-perf-trades">0</dd></div>
+                    <div><dt>{{ __('sim.terminal.win_rate') }}</dt><dd id="sim-perf-winrate">—</dd></div>
+                </dl>
+            </div>
+        </aside>
+    </div>
+
+    <div class="sim-dash-terminal__footer">
     <details class="sim-accordion" open>
-        <summary aria-label="Market Events & Teaching Moments">
-            <span>{{ __('Market Events & Teaching Moments') }}</span>
-            <span style="color:var(--c-on-surface-2); font-size:13px;">{{ __('Highlights as you run') }}</span>
+        <summary aria-label="{{ __('Market Events & Teaching Moments') }}">
+            <span class="sim-accordion__summary-left">
+                <span class="sim-accordion__title">{{ __('Market Events & Teaching Moments') }}</span>
+                @include('simulations.partials.section-help', [
+                    'tooltip' => __('sim.tooltip.market_events'),
+                    'label' => __('sim.help.market_events'),
+                ])
+            </span>
+            <span class="sim-accordion__sub">{{ __('Highlights as you run') }}</span>
         </summary>
         <div class="sim-accordionBody">
             <ul id="event-log" style="margin:0; padding-left:18px; display:grid; gap:8px; font-size:14px; color:var(--c-on-surface-2);"></ul>
@@ -363,9 +463,15 @@
     </details>
 
     <details class="sim-accordion">
-        <summary aria-label="Settings">
-            <span>{{ __('Simulation Parameters') }}</span>
-            <span style="color:var(--c-on-surface-2); font-size:13px;">{{ __('What you assumed') }}</span>
+        <summary aria-label="{{ __('Simulation Parameters') }}">
+            <span class="sim-accordion__summary-left">
+                <span class="sim-accordion__title">{{ __('Simulation Parameters') }}</span>
+                @include('simulations.partials.section-help', [
+                    'tooltip' => __('sim.tooltip.simulation_parameters'),
+                    'label' => __('sim.help.simulation_parameters'),
+                ])
+            </span>
+            <span class="sim-accordion__sub">{{ __('What you assumed') }}</span>
         </summary>
         <div class="sim-accordionBody">
             <div
@@ -402,6 +508,7 @@
             </div>
         </div>
     </details>
+    </div>
 </section>
 
 <script type="application/json" id="simulation-runner-config">@json($simulationRunnerConfig)</script>
