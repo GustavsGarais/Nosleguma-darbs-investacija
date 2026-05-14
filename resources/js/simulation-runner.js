@@ -150,7 +150,6 @@ function initFromConfig(config) {
     const compareExtraInput = document.getElementById('compare-extra-monthly');
     const classicSecondaryWrap = document.getElementById('classic-secondary-wrap');
     const playgroundPanel = document.getElementById('playground-panel');
-    const playgroundHelpEl = document.getElementById('playground-help');
     const modeClassicRadio = document.getElementById('mode-classic');
     const modePlaygroundRadio = document.getElementById('mode-playground');
     const statusDisplay = document.getElementById('status-display');
@@ -427,9 +426,6 @@ function initFromConfig(config) {
             playgroundPanel.hidden = !isPlaygroundMode;
             playgroundPanel.setAttribute('aria-hidden', isPlaygroundMode ? 'false' : 'true');
         }
-        if (playgroundHelpEl) {
-            playgroundHelpEl.textContent = i18n.playgroundHelp || '';
-        }
         const playgroundNextStepEl = document.getElementById('playground-next-step');
         if (playgroundNextStepEl) {
             playgroundNextStepEl.textContent = i18n.playgroundNextStep || '';
@@ -626,11 +622,14 @@ function initFromConfig(config) {
                 zoom: {
                     limits: {
                         x: { min: 'original', max: 'original', minRange: 4 },
-                        y: { min: 'original', max: 'original' },
                     },
                     pan: {
                         enabled: true,
                         mode: 'x',
+                        onPanComplete: () => {
+                            syncChartYToVisibleWindow();
+                            chart.update('none');
+                        },
                     },
                     zoom: {
                         mode: 'x',
@@ -640,6 +639,10 @@ function initFromConfig(config) {
                         },
                         pinch: {
                             enabled: true,
+                        },
+                        onZoomComplete: () => {
+                            syncChartYToVisibleWindow();
+                            chart.update('none');
                         },
                     },
                 },
@@ -672,6 +675,53 @@ function initFromConfig(config) {
             animation: { duration: 0 },
         },
     });
+
+    function syncChartYToVisibleWindow() {
+        const n = chart.data.labels.length;
+        if (n < 2) {
+            delete chart.options.scales.y.min;
+            delete chart.options.scales.y.max;
+            return;
+        }
+        const xScale = chart.scales.x;
+        if (!xScale) return;
+        const rawMin = xScale.min;
+        const rawMax = xScale.max;
+        const i0 = Math.max(0, Math.min(n - 1, Math.floor(Math.min(rawMin, rawMax))));
+        const i1 = Math.max(0, Math.min(n - 1, Math.ceil(Math.max(rawMin, rawMax))));
+        let lo = Infinity;
+        let hi = -Infinity;
+        for (let di = 0; di < chart.data.datasets.length; di++) {
+            const meta = chart.getDatasetMeta(di);
+            if (meta.hidden) continue;
+            const ds = chart.data.datasets[di];
+            if (ds.hidden) continue;
+            const pts = ds.data;
+            for (let i = i0; i <= i1; i++) {
+                const v = pts[i];
+                if (v == null || Number.isNaN(v)) continue;
+                const num = typeof v === 'number' ? v : Number(v);
+                if (!Number.isFinite(num)) continue;
+                lo = Math.min(lo, num);
+                hi = Math.max(hi, num);
+            }
+        }
+        if (!Number.isFinite(lo) || !Number.isFinite(hi)) {
+            delete chart.options.scales.y.min;
+            delete chart.options.scales.y.max;
+            return;
+        }
+        if (lo === hi) {
+            const pad = Math.max(Math.abs(hi) * 0.02, 1);
+            chart.options.scales.y.min = lo - pad;
+            chart.options.scales.y.max = hi + pad;
+            return;
+        }
+        const span = hi - lo;
+        const pad = Math.max(span * 0.06, Math.max(Math.abs(hi), Math.abs(lo)) * 0.015, 1);
+        chart.options.scales.y.min = lo - pad;
+        chart.options.scales.y.max = hi + pad;
+    }
 
     function sparkSeriesFromReturns(baseRets, scale) {
         return baseRets.map((r) => r * scale);
@@ -831,6 +881,9 @@ function initFromConfig(config) {
         const n = chart.data.labels.length;
         if (n < 2) {
             chart.resetZoom('none');
+            delete chart.options.scales.y.min;
+            delete chart.options.scales.y.max;
+            chart.update('none');
             return;
         }
         const spans = {
@@ -852,6 +905,8 @@ function initFromConfig(config) {
         } catch (e) {
             chart.resetZoom('none');
         }
+        syncChartYToVisibleWindow();
+        chart.update('none');
     }
 
     function initAllocationDoughnut() {
@@ -1038,7 +1093,6 @@ function initFromConfig(config) {
 
     const dashBody = document.querySelector('.sim-dash-body');
     const dashLead = document.getElementById('sim-dash-lead');
-    const btnToggleControls = document.getElementById('btn-toggle-controls');
     const leadFlyoutEl = document.querySelector('.sim-controls-flyout--lead');
     const chartColEl = document.querySelector('.sim-dash-chartCol');
 
@@ -1092,21 +1146,64 @@ function initFromConfig(config) {
     // Moving the pointer onto the chart usually means a flyout just collapsed — settle size immediately.
     dashWork?.addEventListener('pointerenter', () => scheduleChartResizeAfterLayout());
 
-    btnToggleControls?.addEventListener('click', () => {
-        if (!dashBody || !dashLead) return;
-        dashBody.classList.toggle('sim-dash-body--controls-hidden');
-        const expanded = !dashBody.classList.contains('sim-dash-body--controls-hidden');
-        btnToggleControls.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        const titleHide = btnToggleControls.getAttribute('data-title-hide') || '';
-        const titleShow = btnToggleControls.getAttribute('data-title-show') || '';
-        btnToggleControls.title = expanded ? titleHide : titleShow;
-        if (expanded) {
-            dashLead.removeAttribute('inert');
-        } else {
-            dashLead.setAttribute('inert', '');
-        }
-        scheduleChartResizeAfterLayout();
-    });
+    /** Draggable grid gutters: persist column widths for the trading-terminal layout. */
+    (function initTerminalColumnResize() {
+        const shell = document.querySelector('.sim-run-shell--terminal');
+        if (!shell) return;
+        const LS_L = 'simTermGridLeft';
+        const LS_R = 'simTermGridRight';
+        const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+        let leftPx = parseInt(localStorage.getItem(LS_L), 10);
+        let rightPx = parseInt(localStorage.getItem(LS_R), 10);
+        if (!Number.isFinite(leftPx)) leftPx = 288;
+        if (!Number.isFinite(rightPx)) rightPx = 268;
+        leftPx = clamp(leftPx, 200, 440);
+        rightPx = clamp(rightPx, 180, 400);
+        shell.style.setProperty('--sim-grid-left', `${leftPx}px`);
+        shell.style.setProperty('--sim-grid-right', `${rightPx}px`);
+
+        const bind = (handle, edge) => {
+            if (!handle) return;
+            let startX = 0;
+            let startVal = 0;
+            const onMove = (ev) => {
+                const dx = ev.clientX - startX;
+                if (edge === 'lead') {
+                    const next = clamp(startVal + dx, 200, 440);
+                    shell.style.setProperty('--sim-grid-left', `${next}px`);
+                } else {
+                    const next = clamp(startVal - dx, 180, 400);
+                    shell.style.setProperty('--sim-grid-right', `${next}px`);
+                }
+                scheduleChartResizeAfterLayout();
+            };
+            const onUp = () => {
+                document.removeEventListener('pointermove', onMove);
+                document.removeEventListener('pointerup', onUp);
+                handle.classList.remove('is-dragging');
+                const l = parseFloat(String(shell.style.getPropertyValue('--sim-grid-left')).replace(/px/g, '')) || 288;
+                const r = parseFloat(String(shell.style.getPropertyValue('--sim-grid-right')).replace(/px/g, '')) || 268;
+                localStorage.setItem(LS_L, String(Math.round(l)));
+                localStorage.setItem(LS_R, String(Math.round(r)));
+            };
+            handle.addEventListener('pointerdown', (ev) => {
+                if (ev.button !== 0) return;
+                ev.preventDefault();
+                handle.setPointerCapture?.(ev.pointerId);
+                startX = ev.clientX;
+                const cs = getComputedStyle(shell);
+                startVal =
+                    edge === 'lead'
+                        ? parseFloat(cs.getPropertyValue('--sim-grid-left')) || 288
+                        : parseFloat(cs.getPropertyValue('--sim-grid-right')) || 268;
+                handle.classList.add('is-dragging');
+                document.addEventListener('pointermove', onMove);
+                document.addEventListener('pointerup', onUp);
+            });
+        };
+        bind(document.querySelector('[data-sim-resize-edge="lead"]'), 'lead');
+        bind(document.querySelector('[data-sim-resize-edge="rail"]'), 'rail');
+    })();
 
     /** Flyouts open/close in CSS — transitionend / leaving focus catches collapse after width animation. */
     (function bindChartSyncToFlyoutLayout() {

@@ -245,74 +245,91 @@
                     <div id="risk-tip" class="sim-dash-coach-panel__note sim-dash-coach-panel__note--secondary"></div>
                 </div>
             </div>
+
+            <section id="playground-panel" class="sim-dash-controlsBlock sim-dash-hands-on sim-playground-flyout" tabindex="-1" hidden aria-label="{{ __('Trading desk') }}">
+                <div class="sim-dash-hands-on__head">
+                    <h3 class="sim-dash-hands-on__title">{{ __('sim.terminal.hands_on_title') }}</h3>
+                    @include('simulations.partials.section-help', [
+                        'tooltip' => __('sim.tooltip.trading_hands_on'),
+                        'label' => __('sim.help.trading_hands_on'),
+                    ])
+                </div>
+                <p id="playground-next-step" class="sim-dash-hands-on__hint" role="status" aria-live="polite"></p>
+                <div class="sim-playground-panel__inner">
+                    <div class="sim-playground-hud" aria-live="polite">
+                        <div class="sim-playground-hud__tile">
+                            <span class="sim-playground-hud__label">{{ __('Cash wallet') }}</span>
+                            <span class="sim-playground-hud__value" id="playground-hud-cash">—</span>
+                        </div>
+                        <div class="sim-playground-hud__tile">
+                            <span class="sim-playground-hud__label">{{ __('In the market') }}</span>
+                            <span class="sim-playground-hud__value" id="playground-hud-invested">—</span>
+                        </div>
+                        <div class="sim-playground-hud__tile">
+                            <span class="sim-playground-hud__label">{{ __('Unrealized on holdings') }}</span>
+                            <span class="sim-playground-hud__value" id="playground-hud-unrealized">—</span>
+                        </div>
+                    </div>
+                    <div class="sim-playground-actions">
+                        <div class="sim-playground-actions__col">
+                            <div class="sim-playground-actions__titleRow">
+                                <span class="sim-playground-actions__title">{{ __('Add to position') }}</span>
+                            </div>
+                            <div class="sim-playground-actions__btns">
+                                <button type="button" class="btn btn-secondary btn-sm pg-buy" data-amount="25">+25</button>
+                                <button type="button" class="btn btn-secondary btn-sm pg-buy" data-amount="50">+50</button>
+                                <button type="button" class="btn btn-secondary btn-sm pg-buy" data-amount="100">+100</button>
+                            </div>
+                            <label class="sim-playground-custom">
+                                <span class="sim-playground-custom__label">{{ __('Custom amount') }}</span>
+                                <div class="sim-playground-amount-row">
+                                    <input id="playground-custom-amount" type="number" min="1" step="1" value="50" class="footer-email-input sim-playground-amount-input" />
+                                    <button type="button" id="playground-custom-buy" class="btn btn-primary btn-sm sim-playground-amount-btn">{{ __('Add') }}</button>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="sim-playground-actions__col">
+                            <div class="sim-playground-actions__titleRow">
+                                <span class="sim-playground-actions__title">{{ __('Sell') }}</span>
+                                @include('simulations.partials.section-help', [
+                                    'tooltip' => __('sim.tooltip.trading_buy_sell'),
+                                    'label' => __('sim.help.trading_buy_sell'),
+                                ])
+                            </div>
+                            <div class="sim-playground-actions__btns">
+                                <button type="button" class="btn btn-outline btn-sm pg-sell" data-fraction="0.25">25%</button>
+                                <button type="button" class="btn btn-outline btn-sm pg-sell" data-fraction="0.5">50%</button>
+                                <button type="button" class="btn btn-outline btn-sm pg-sell" data-fraction="1">{{ __('All') }}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="playground-realized" class="sim-playground-realized"></p>
+                </div>
+            </section>
+
             </aside>
         </div>
+        </div>
+        </div>
 
-        {{-- Trading desk stacked under Controls (desktop); hover desk hides controls rail for a single-column flyout. --}}
-        <div class="sim-dash-deskSlot" id="sim-dash-main">
-            <div id="playground-panel" class="sim-controls-flyout sim-playground-flyout" tabindex="-1" hidden aria-label="{{ __('Trading desk') }}">
-                <div class="sim-controls-flyout__rail" aria-hidden="true">
-                    <span class="sim-controls-flyout__icon" aria-hidden="true">◇</span>
-                    <span class="sim-controls-flyout__label">{{ __('Trading desk') }}</span>
-                </div>
-                <aside class="sim-controls-flyout__panel sim-playground-panel" aria-label="{{ __('Trading desk') }}">
-                    <div class="sim-playground-panel__inner">
-                <p class="sim-playground-flyout__cue">{{ __('Close this panel to make the chart wider. Open it to buy/sell.') }}</p>
-                        <div class="sim-playground-deck__intro">
-                            <p id="playground-help" class="sim-playground-deck__lead"></p>
-                            <p id="playground-next-step" class="sim-playground-deck__hint"></p>
-                        </div>
-                        <div class="sim-playground-hud" aria-live="polite">
-                            <div class="sim-playground-hud__tile">
-                                <span class="sim-playground-hud__label">{{ __('Cash wallet') }}</span>
-                                <span class="sim-playground-hud__value" id="playground-hud-cash">—</span>
-                            </div>
-                            <div class="sim-playground-hud__tile">
-                                <span class="sim-playground-hud__label">{{ __('In the market') }}</span>
-                                <span class="sim-playground-hud__value" id="playground-hud-invested">—</span>
-                            </div>
-                            <div class="sim-playground-hud__tile">
-                                <span class="sim-playground-hud__label">{{ __('Unrealized on holdings') }}</span>
-                                <span class="sim-playground-hud__value" id="playground-hud-unrealized">—</span>
-                            </div>
-                        </div>
-                        <div class="sim-playground-actions">
-                            <div class="sim-playground-actions__col">
-                                <span class="sim-playground-actions__title">{{ __('Add to position') }}</span>
-                                <div class="sim-playground-actions__btns">
-                                    <button type="button" class="btn btn-secondary btn-sm pg-buy" data-amount="25">+25</button>
-                                    <button type="button" class="btn btn-secondary btn-sm pg-buy" data-amount="50">+50</button>
-                                    <button type="button" class="btn btn-secondary btn-sm pg-buy" data-amount="100">+100</button>
-                                </div>
-                                <label class="sim-playground-custom">
-                                    <span class="sim-playground-custom__label">{{ __('Custom amount') }}</span>
-                                    <div class="sim-playground-amount-row">
-                                        <input id="playground-custom-amount" type="number" min="1" step="1" value="50" class="footer-email-input sim-playground-amount-input" />
-                                        <button type="button" id="playground-custom-buy" class="btn btn-primary btn-sm sim-playground-amount-btn">{{ __('Add') }}</button>
-                                    </div>
-                                </label>
-                            </div>
-                            <div class="sim-playground-actions__col">
-                                <span class="sim-playground-actions__title">{{ __('Sell') }}</span>
-                                <p class="sim-playground-actions__note">{{ __('Sell part of holdings (priced at current day)') }}</p>
-                                <div class="sim-playground-actions__btns">
-                                    <button type="button" class="btn btn-outline btn-sm pg-sell" data-fraction="0.25">25%</button>
-                                    <button type="button" class="btn btn-outline btn-sm pg-sell" data-fraction="0.5">50%</button>
-                                    <button type="button" class="btn btn-outline btn-sm pg-sell" data-fraction="1">{{ __('All') }}</button>
-                                </div>
-                            </div>
-                        </div>
-                        <p id="playground-realized" class="sim-playground-realized"></p>
-                    </div>
-                </aside>
-            </div>
-        </div>
-        </div>
-        </div>
+        <div
+            class="sim-dash-resize sim-dash-resize--lead"
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="{{ __('sim.terminal.drag_resize_panels') }}"
+            tabindex="0"
+            data-sim-resize-edge="lead"
+        ></div>
 
         <div class="sim-dash-work sim-dash-terminal-center">
             <div class="sim-index-strip" aria-label="{{ __('Market Regime') }}">
-                <p class="sim-index-strip__note">{{ __('sim.terminal.indices_note') }}</p>
+                <div class="sim-index-strip__head">
+                    <span class="sim-index-strip__title">{{ __('sim.terminal.indices_heading') }}</span>
+                    @include('simulations.partials.section-help', [
+                        'tooltip' => __('sim.tooltip.indices_spark'),
+                        'label' => __('sim.help.indices_spark'),
+                    ])
+                </div>
                 <div class="sim-index-strip__grid">
                     <div class="sim-index-tile" data-sim-index="0">
                         <span class="sim-index-tile__name">{{ __('sim.terminal.index_a') }}</span>
@@ -396,6 +413,15 @@
                 </div>
             </div>
         </div>
+
+        <div
+            class="sim-dash-resize sim-dash-resize--rail"
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="{{ __('sim.terminal.drag_resize_panels') }}"
+            tabindex="0"
+            data-sim-resize-edge="rail"
+        ></div>
 
         <aside class="sim-dash-rail" aria-label="{{ __('sim.terminal.rail_summary') }}">
             <div class="sim-rail-card">

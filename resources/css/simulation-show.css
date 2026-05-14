@@ -165,20 +165,6 @@
 	pointer-events: none;
 }
 
-.sim-dash-deskSlot {
-	flex: 0 0 auto;
-	min-width: 0;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 0;
-}
-
-/* Classic mode: no trading UI — enable “Hands-on portfolio lab” in Controls to show the desk rail. */
-.sim-dash-deskSlot:has(#playground-panel[hidden]) {
-	display: none !important;
-}
-
 .sim-dash-chartCol {
 	flex: 1 1 auto;
 	min-width: 0;
@@ -336,16 +322,13 @@
 		min-height: 0;
 	}
 
-	.sim-dash-deskSlot:has(#playground-panel[hidden]) {
-		flex: 0 0 auto;
-	}
-
-	.sim-dash-deskSlot:has(#playground-panel:not([hidden])) {
+	.sim-dash-controls #playground-panel:not([hidden]).sim-playground-flyout {
 		flex: 0 0 auto;
 		min-height: 0;
+		max-height: none;
+		overflow: visible;
+		position: static;
 		align-self: flex-start;
-		display: flex;
-		flex-direction: column;
 	}
 
 	.sim-dash-chartCol {
@@ -362,16 +345,6 @@
 		min-height: 0;
 	}
 
-	.sim-dash-deskSlot:has(#playground-panel:not([hidden])) #playground-panel.sim-playground-flyout {
-		flex: 0 0 auto;
-		min-height: 0;
-		max-height: none;
-		overflow: visible;
-		/* Make the Trading desk panel align with Controls (top of the stack), while keeping the rail in-flow. */
-		position: static;
-		align-self: flex-start;
-	}
-
 	.sim-dash-chartCol .sim-run-chartWrap {
 		flex: 1 1 auto;
 		min-height: min(56vh, 520px);
@@ -380,11 +353,6 @@
 
 	.sim-dash-body:has(#playground-panel:not([hidden])) .sim-run-chartWrap {
 		min-height: min(56vh, 520px);
-	}
-
-	.sim-playground-flyout:hover .sim-playground-panel.sim-controls-flyout__panel,
-	.sim-playground-flyout:focus-within .sim-playground-panel.sim-controls-flyout__panel {
-		max-height: min(calc(100vh - var(--nav-h, 64px) - 48px), 900px);
 	}
 
 	/* NOTE: previously we hid Controls when hovering Trading desk. With overlay panels this causes hover/flex feedback
@@ -738,8 +706,17 @@
 	box-shadow: none;
 }
 
-.sim-dash-settings-panel > h3.sim-dash-settings-panel__heading {
-	margin: 0 0 12px;
+.sim-dash-settings-panel__head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 10px;
+	min-width: 0;
+}
+
+.sim-dash-settings-panel__heading {
+	margin: 0;
 	font-size: 0.68rem;
 	font-weight: 800;
 	letter-spacing: 0.12em;
@@ -747,6 +724,80 @@
 	color: var(--c-on-surface-2);
 	line-height: 1.3;
 	font-family: var(--font-family-body), ui-sans-serif, system-ui, sans-serif;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.sim-dash-coach-panel__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 8px;
+	min-width: 0;
+}
+
+.sim-dash-coach-panel__title {
+	font-size: 0.68rem;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--c-on-surface-2);
+	line-height: 1.3;
+}
+
+.sim-dash-hands-on {
+	margin-top: 4px;
+	padding-top: 12px;
+	border-top: 1px solid color-mix(in srgb, var(--c-border) 80%, var(--c-secondary) 20%);
+}
+
+.sim-dash-hands-on__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 6px;
+	min-width: 0;
+}
+
+.sim-dash-hands-on__title {
+	margin: 0;
+	font-size: 0.68rem;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--c-on-surface-2);
+	line-height: 1.3;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.sim-dash-hands-on__hint {
+	margin: 0 0 10px;
+	font-size: 12px;
+	line-height: 1.45;
+	color: var(--c-on-surface-2);
+	min-height: 0;
+}
+
+.sim-dash-hands-on .sim-playground-panel__inner {
+	background: linear-gradient(
+		145deg,
+		color-mix(in srgb, var(--c-surface) 88%, var(--c-primary) 12%) 0%,
+		var(--c-surface) 48%,
+		color-mix(in srgb, var(--c-surface) 92%, var(--c-secondary) 8%) 100%
+	);
+	border-radius: 12px;
+	border: 1px solid color-mix(in srgb, var(--c-border) 70%, var(--c-secondary) 30%);
+}
+
+.sim-playground-actions__titleRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 6px;
+	min-width: 0;
 }
 
 .sim-run-shell .sim-dash-coach-panel {
@@ -1180,11 +1231,6 @@ html[data-theme="dark"] .sim-param-tile {
 		order: -1;
 	}
 
-	.sim-dash-deskSlot {
-		flex-direction: column;
-		width: 100%;
-	}
-
 	.sim-controls-flyout {
 		width: 100% !important;
 		max-height: none;
@@ -1268,11 +1314,47 @@ html[data-theme="dark"] .sim-param-tile {
 }
 
 /* ─── Simulation run: trading-terminal layout (show page) ─── */
+.sim-run-shell--terminal {
+	--sim-grid-left: 288px;
+	--sim-grid-right: 268px;
+}
+
 .sim-run-shell--terminal .sim-dash-body {
 	display: grid;
-	grid-template-columns: minmax(260px, 300px) minmax(0, 1fr) minmax(240px, 300px);
-	gap: 16px;
+	grid-template-columns: minmax(200px, var(--sim-grid-left)) 6px minmax(0, 1fr) 6px minmax(180px, var(--sim-grid-right));
+	gap: 16px 10px;
 	align-items: start;
+}
+
+.sim-dash-resize {
+	display: none;
+	width: 6px;
+	min-height: 200px;
+	margin: 0;
+	border-radius: 6px;
+	cursor: col-resize;
+	touch-action: none;
+	align-self: stretch;
+	justify-self: center;
+	background: color-mix(in srgb, var(--c-primary) 10%, var(--c-border));
+	transition: background 0.15s ease;
+	z-index: 2;
+}
+
+.sim-dash-resize:hover,
+.sim-dash-resize:focus-visible {
+	background: color-mix(in srgb, var(--c-primary) 26%, var(--c-border));
+	outline: none;
+}
+
+.sim-dash-resize.is-dragging {
+	background: color-mix(in srgb, var(--c-primary) 42%, var(--c-border));
+}
+
+@media (min-width: 1101px) {
+	.sim-run-shell--terminal .sim-dash-resize {
+		display: block;
+	}
 }
 
 .sim-run-shell--terminal .sim-dash-lead,
@@ -1450,11 +1532,22 @@ html[data-theme="dark"] .sim-param-tile {
 	background: color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%);
 }
 
-.sim-index-strip__note {
+.sim-index-strip__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
 	margin: 0 0 8px;
-	font-size: 11px;
-	line-height: 1.45;
+	min-width: 0;
+}
+
+.sim-index-strip__title {
+	font-size: 0.72rem;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
 	color: var(--c-on-surface-2);
+	line-height: 1.35;
 }
 
 .sim-index-strip__grid {
@@ -1725,6 +1818,55 @@ html[data-theme="dark"] .sim-param-tile {
 	text-align: right;
 }
 
+.sim-run-shell--terminal .sim-dash-rail {
+	gap: 8px;
+}
+
+.sim-run-shell--terminal .sim-rail-card {
+	padding: 9px 11px 11px;
+	border-radius: 12px;
+}
+
+.sim-run-shell--terminal .sim-rail-card__title {
+	margin: 0 0 6px;
+	font-size: 0.65rem;
+	letter-spacing: 0.1em;
+}
+
+.sim-run-shell--terminal .sim-rail-kpiGrid {
+	gap: 6px;
+}
+
+.sim-run-shell--terminal .sim-rail-kpi {
+	padding: 7px 9px;
+	border-radius: 8px;
+}
+
+.sim-run-shell--terminal .sim-kpiLabel {
+	font-size: 10px;
+}
+
+.sim-run-shell--terminal .sim-kpiValue {
+	font-size: 0.95rem;
+}
+
+.sim-run-shell--terminal .sim-kpiMeta {
+	font-size: 10px;
+}
+
+.sim-run-shell--terminal .sim-rail-donutWrap {
+	height: 132px;
+}
+
+.sim-run-shell--terminal .sim-rail-perf {
+	gap: 5px;
+	font-size: 12px;
+}
+
+.sim-run-shell--terminal .sim-rail-perf > div {
+	padding: 5px 0;
+}
+
 .sim-dash-terminal__footer {
 	display: grid;
 	gap: 12px;
@@ -1774,30 +1916,11 @@ html[data-theme="dark"] .sim-param-tile {
 	max-width: 100%;
 }
 
-.sim-run-shell--terminal #playground-panel:not([hidden]) .sim-controls-flyout__rail {
-	display: none;
-}
-
-.sim-run-shell--terminal #playground-panel:not([hidden]) .sim-controls-flyout__panel {
-	position: relative;
-	left: auto;
-	top: auto;
-	opacity: 1;
-	transform: none;
-	pointer-events: auto;
-	width: 100% !important;
-	min-width: 0 !important;
-	max-width: none !important;
-	border-radius: 12px;
-	border: 1px solid var(--c-border);
-}
-
-.sim-run-shell--terminal .sim-dash-deskSlot {
-	width: 100%;
-	min-width: 0;
-}
-
 @media (max-width: 1100px) {
+	.sim-run-shell--terminal .sim-dash-resize {
+		display: none !important;
+	}
+
 	.sim-run-shell--terminal .sim-dash-body {
 		grid-template-columns: 1fr;
 	}
