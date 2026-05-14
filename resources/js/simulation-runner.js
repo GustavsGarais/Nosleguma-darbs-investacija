@@ -150,6 +150,7 @@ function initFromConfig(config) {
     const compareExtraInput = document.getElementById('compare-extra-monthly');
     const classicSecondaryWrap = document.getElementById('classic-secondary-wrap');
     const playgroundPanel = document.getElementById('playground-panel');
+    const allocationRailCard = document.getElementById('sim-rail-allocation-card');
     const modeClassicRadio = document.getElementById('mode-classic');
     const modePlaygroundRadio = document.getElementById('mode-playground');
     const statusDisplay = document.getElementById('status-display');
@@ -159,8 +160,6 @@ function initFromConfig(config) {
     const realValueEl = document.getElementById('real-value');
     const drawdownEl = document.getElementById('drawdown');
     const cagrEl = document.getElementById('cagr');
-    const learningNoteEl = document.getElementById('learning-note');
-    const riskTipEl = document.getElementById('risk-tip');
     const eventLogEl = document.getElementById('event-log');
     const saveStatusEl = document.getElementById('save-status');
 
@@ -425,6 +424,20 @@ function initFromConfig(config) {
         if (playgroundPanel) {
             playgroundPanel.hidden = !isPlaygroundMode;
             playgroundPanel.setAttribute('aria-hidden', isPlaygroundMode ? 'false' : 'true');
+        }
+        if (allocationRailCard) {
+            allocationRailCard.hidden = !isPlaygroundMode;
+            allocationRailCard.setAttribute('aria-hidden', isPlaygroundMode ? 'false' : 'true');
+        }
+        if (!isPlaygroundMode && allocationChart) {
+            allocationChart.destroy();
+            allocationChart = null;
+        }
+        if (isPlaygroundMode && simulationData.length) {
+            if (!allocationChart) {
+                initAllocationDoughnut();
+            }
+            updateAllocationChart();
         }
         const playgroundNextStepEl = document.getElementById('playground-next-step');
         if (playgroundNextStepEl) {
@@ -1055,8 +1068,8 @@ function initFromConfig(config) {
         let rightPx = parseInt(localStorage.getItem(LS_R), 10);
         if (!Number.isFinite(leftPx)) leftPx = 288;
         if (!Number.isFinite(rightPx)) rightPx = 268;
-        leftPx = clamp(leftPx, 200, 440);
-        rightPx = clamp(rightPx, 180, 400);
+        leftPx = clamp(leftPx, 272, 440);
+        rightPx = clamp(rightPx, 200, 400);
         shell.style.setProperty('--sim-grid-left', `${leftPx}px`);
         shell.style.setProperty('--sim-grid-right', `${rightPx}px`);
 
@@ -1067,10 +1080,10 @@ function initFromConfig(config) {
             const onMove = (ev) => {
                 const dx = ev.clientX - startX;
                 if (edge === 'lead') {
-                    const next = clamp(startVal + dx, 200, 440);
+                    const next = clamp(startVal + dx, 272, 440);
                     shell.style.setProperty('--sim-grid-left', `${next}px`);
                 } else {
-                    const next = clamp(startVal - dx, 180, 400);
+                    const next = clamp(startVal - dx, 200, 400);
                     shell.style.setProperty('--sim-grid-right', `${next}px`);
                 }
                 scheduleChartResizeAfterLayout();
@@ -1489,8 +1502,6 @@ function initFromConfig(config) {
         rebuildChartData('resize');
         safeResetChartZoom();
         updateSummary();
-        updateLearningNote();
-        updateRiskTip();
         renderEvents();
         chart.$pauseMonth = null;
         chart.$crashMonths = [];
@@ -1656,8 +1667,6 @@ function initFromConfig(config) {
         rebuildChartData('resize');
         safeResetChartZoom();
         updateSummary();
-        updateLearningNote();
-        updateRiskTip();
         renderEvents();
         chart.$pauseMonth = currentMonth > 0 ? currentMonth : null;
         chart.$crashMonths = Array.from(crashMonths).sort((a, b) => a - b);
@@ -1851,45 +1860,15 @@ function initFromConfig(config) {
             else stepBox.textContent = '—';
         }
 
-        if (!allocationChart && simulationData.length) {
-            initAllocationDoughnut();
+        if (isPlaygroundMode) {
+            if (!allocationChart && simulationData.length) {
+                initAllocationDoughnut();
+            }
+            updateAllocationChart();
         }
-        updateAllocationChart();
         updatePerfPanel();
 
         schedulePersistRunnerState();
-    }
-
-    function updateLearningNote() {
-        if (learningNoteEl) {
-            if (isPlaygroundMode) {
-                learningNoteEl.textContent = i18n.playgroundLesson || i18n.stayInvested;
-            } else {
-                const preset = presetConfigs[activePresetKey] ?? presetConfigs.balanced;
-                learningNoteEl.textContent = preset.lesson || i18n.stayInvested;
-            }
-        }
-    }
-
-    function updateRiskTip() {
-        if (!riskTipEl) return;
-        const risk = settings.riskAppetite;
-        const market = settings.marketInfluence;
-        const inflation = settings.inflationRate;
-        const investors = settings.investors;
-        const tips = [
-            risk > 0.6 ? i18n.riskHigh : null,
-            market > 0.6 ? i18n.riskMarket : null,
-            investors >= 25 ? (i18n.investorsHigh || null) : null,
-            inflation > 0.03 ? i18n.inflHigh : i18n.inflMod,
-        ].filter(Boolean);
-        let extra = '';
-        if (secondaryScenario === 'compare') {
-            extra = ` ${i18n.compareExplainer}`;
-        } else if (secondaryScenario === 'sor') {
-            extra = ` ${i18n.sorExplainer}`;
-        }
-        riskTipEl.textContent = (tips.join(' ') || i18n.riskDefault) + extra;
     }
 
     function pushEvent(text) {
@@ -2127,8 +2106,6 @@ function initFromConfig(config) {
         rebuildChartData('resize');
         safeResetChartZoom();
         updateSummary();
-        updateLearningNote();
-        updateRiskTip();
         renderEvents();
         chart.$pauseMonth = last.month;
         chart.$crashMonths = [];
@@ -2163,8 +2140,6 @@ function initFromConfig(config) {
         activePresetKey = e.target.value;
         crowdSentiment = 0;
         invalidatePath();
-        updateLearningNote();
-        updateRiskTip();
         if (!isRunning) {
             const label = presetConfigs[activePresetKey]?.label ?? i18n.balancedLabel;
             statusDisplay.textContent = i18n.presetLabel.replace(':label', label);
@@ -2176,7 +2151,6 @@ function initFromConfig(config) {
         secondaryScenario = secondarySelect.value;
         invalidatePath();
         syncSecondaryUi();
-        updateRiskTip();
         seedInitialState();
     });
 

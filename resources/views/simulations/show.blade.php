@@ -178,6 +178,7 @@
                 <span class="sim-controls-flyout__label">{{ __('Controls') }}</span>
             </div>
             <aside class="sim-dash-controls sim-controls-flyout__panel" aria-label="{{ __('Simulation Controls') }}">
+            <div class="sim-dash-controls__scroller">
             <div class="sim-dash-controlsBlock sim-dash-settings-panel">
                 <div class="sim-dash-settings-panel__head">
                     <h3 class="sim-dash-settings-panel__heading">{{ __('Simulation Controls') }}</h3>
@@ -224,20 +225,6 @@
                         <input id="compare-extra-monthly" type="number" min="0" step="10" value="100" class="footer-email-input" />
                     </label>
                     </div>
-                </div>
-            </div>
-
-            <div class="sim-dash-controlsBlock sim-dash-coach-panel">
-                <div class="sim-dash-coach-panel__head">
-                    <span class="sim-dash-coach-panel__title">{{ __('sim.terminal.coaching_title') }}</span>
-                    @include('simulations.partials.section-help', [
-                        'tooltip' => __('sim.tooltip.coaching_tips'),
-                        'label' => __('sim.help.coaching_tips'),
-                    ])
-                </div>
-                <div class="sim-dash-coach-panel__stack">
-                    <div id="learning-note" class="sim-dash-coach-panel__note sim-dash-coach-panel__note--primary"></div>
-                    <div id="risk-tip" class="sim-dash-coach-panel__note sim-dash-coach-panel__note--secondary"></div>
                 </div>
             </div>
 
@@ -302,6 +289,7 @@
                 </div>
             </section>
 
+            </div>
             </aside>
         </div>
         </div>
@@ -388,7 +376,12 @@
                     </div>
                 </div>
             </div>
-            <div class="sim-rail-card">
+            <div
+                class="sim-rail-card"
+                id="sim-rail-allocation-card"
+                @if($defaultRunnerMode === 'classic') hidden @endif
+                aria-hidden="{{ $defaultRunnerMode === 'playground' ? 'false' : 'true' }}"
+            >
                 <h3 class="sim-rail-card__title">{{ __('sim.terminal.rail_allocation') }}</h3>
                 <div class="sim-rail-donutWrap">
                     <canvas id="sim-allocation-chart" height="160" aria-label="{{ __('sim.terminal.rail_allocation') }}"></canvas>

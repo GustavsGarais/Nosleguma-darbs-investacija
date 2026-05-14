@@ -728,24 +728,6 @@
 	min-width: 0;
 }
 
-.sim-dash-coach-panel__head {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 8px;
-	margin-bottom: 8px;
-	min-width: 0;
-}
-
-.sim-dash-coach-panel__title {
-	font-size: 0.68rem;
-	font-weight: 800;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	color: var(--c-on-surface-2);
-	line-height: 1.3;
-}
-
 .sim-dash-hands-on {
 	margin-top: 4px;
 	padding-top: 12px;
@@ -792,53 +774,25 @@
 	border: 1px solid color-mix(in srgb, var(--c-border) 70%, var(--c-secondary) 30%);
 }
 
+/* Narrow hands-on column: hide numeric HUD + trade grids (no squished figures). */
+.sim-run-shell--terminal #playground-panel.sim-dash-hands-on {
+	container-type: inline-size;
+	container-name: sim-hands-on;
+}
+
+@container sim-hands-on (max-width: 280px) {
+	#playground-panel .sim-playground-hud,
+	#playground-panel .sim-playground-actions {
+		display: none;
+	}
+}
+
 .sim-playground-actions__titleRow {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 6px;
 	min-width: 0;
-}
-
-.sim-run-shell .sim-dash-coach-panel {
-	padding: 12px 14px;
-	border-radius: 12px;
-	border: 1px dashed color-mix(in srgb, var(--c-border) 75%, var(--c-primary) 25%);
-	background: color-mix(in srgb, var(--c-surface) 94%, var(--c-primary) 6%);
-	box-shadow: none;
-}
-
-.sim-dash-coach-panel__stack {
-	display: grid;
-	gap: 10px;
-	min-width: 0;
-}
-
-.sim-dash-coach-panel__note {
-	padding: 12px;
-	border-radius: 10px;
-	border: 1px solid var(--c-border);
-	font-size: 14px;
-	line-height: 1.6;
-	min-width: 0;
-	overflow-wrap: anywhere;
-	word-break: break-word;
-	hyphens: auto;
-}
-
-.sim-dash-coach-panel__note--primary {
-	background: color-mix(in srgb, var(--c-surface) 90%, var(--c-primary) 10%);
-}
-
-.sim-dash-coach-panel__note--secondary {
-	background: color-mix(in srgb, var(--c-surface) 94%, var(--c-secondary) 6%);
-}
-
-.sim-dash-controlsBlock #learning-note,
-.sim-dash-controlsBlock #risk-tip {
-	overflow-wrap: anywhere;
-	word-break: break-word;
-	hyphens: auto;
 }
 
 .sim-kpiGrid {
@@ -1321,7 +1275,7 @@ html[data-theme="dark"] .sim-param-tile {
 
 .sim-run-shell--terminal .sim-dash-body {
 	display: grid;
-	grid-template-columns: minmax(200px, var(--sim-grid-left)) 6px minmax(0, 1fr) 6px minmax(180px, var(--sim-grid-right));
+	grid-template-columns: minmax(272px, var(--sim-grid-left)) 6px minmax(0, 1fr) 6px minmax(200px, var(--sim-grid-right));
 	gap: 16px 10px;
 	align-items: start;
 }
@@ -1786,9 +1740,77 @@ html[data-theme="dark"] .sim-param-tile {
 	width: 100% !important;
 	min-width: 0 !important;
 	max-width: none !important;
+	max-height: none !important;
+	overflow: visible;
+	overflow-x: visible;
+	overflow-y: visible;
 	border-radius: 12px;
 	border: 1px solid var(--c-border);
 	box-shadow: var(--shadow-1, 0 6px 20px rgba(0, 0, 0, 0.08));
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	min-height: 0;
+}
+
+.sim-run-shell--terminal .sim-dash-controls__scroller {
+	display: grid;
+	gap: 14px;
+	min-height: 0;
+	max-height: calc(100vh - var(--nav-h, 64px) - 32px);
+	overflow-x: visible;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	-webkit-overflow-scrolling: touch;
+	padding-right: 2px;
+}
+
+/* “?” help: show tooltip *below* the control so it stays in the scroll column (above was clipped by the scroller). */
+.sim-run-shell--terminal .sim-dash-controls .info-bubble.sim-run-section-help::after {
+	top: calc(100% + 10px);
+	bottom: auto;
+	left: 50%;
+	right: auto;
+	transform: translateX(-50%) translateY(4px);
+	width: min(320px, calc(100vw - 40px));
+	max-width: min(320px, calc(100vw - 40px));
+	z-index: 400;
+}
+
+.sim-run-shell--terminal .sim-dash-controls .info-bubble.sim-run-section-help:hover::after,
+.sim-run-shell--terminal .sim-dash-controls .info-bubble.sim-run-section-help:focus-within::after {
+	transform: translateX(-50%) translateY(0);
+}
+
+.sim-run-shell--terminal .sim-dash-controls .info-bubble.sim-run-section-help::before {
+	top: calc(100% + 2px);
+	bottom: auto;
+	left: 50%;
+	right: auto;
+	transform: translateX(-50%);
+	border: 7px solid transparent;
+	border-top-color: transparent;
+	border-bottom-color: var(--c-surface);
+	z-index: 401;
+}
+
+[data-theme="dark"] .sim-run-shell--terminal .sim-dash-controls .info-bubble.sim-run-section-help::before {
+	border-bottom-color: color-mix(in srgb, #7c3aed 78%, #0b1220);
+	border-top-color: transparent;
+}
+
+/* Keep help targets from shrinking / sitting under the next card in flex heads */
+.sim-run-shell--terminal .sim-dash-settings-panel__head .sim-help-wrap,
+.sim-run-shell--terminal .sim-dash-hands-on__head .sim-help-wrap,
+.sim-run-shell--terminal .sim-playground-actions__titleRow .sim-help-wrap {
+	flex-shrink: 0;
+	position: relative;
+	z-index: 6;
+}
+
+.sim-run-shell--terminal .info-bubble.sim-run-section-help::after,
+.sim-run-shell--terminal .info-bubble.sim-run-section-help::before {
+	z-index: 200;
 }
 
 .sim-run-shell--terminal #playground-panel:not([hidden]) {
