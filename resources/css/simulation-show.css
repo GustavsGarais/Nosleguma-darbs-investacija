@@ -1414,6 +1414,35 @@ html[data-theme="dark"] .sim-param-tile {
 	align-self: stretch;
 }
 
+/*
+ * Terminal (3-col grid): do not let the main chart participate in unbounded flex growth.
+ * Desktop rules use flex:1 + height:auto on .sim-run-chartWrap so it “fills” the card — with
+ * grid align-self stretch + Chart.js sizing from clientHeight, the center column can inflate the row.
+ */
+.sim-run-shell--terminal .sim-dash-chartCol {
+	flex: 0 1 auto;
+	min-height: 0;
+	width: 100%;
+}
+
+.sim-run-shell--terminal .sim-dash-chartCol .sim-dash-chartCard {
+	flex: 0 1 auto;
+}
+
+.sim-run-shell--terminal .sim-dash-chartCol .sim-run-chartWrap {
+	flex: 0 0 auto;
+	height: min(56vh, 520px);
+	min-height: min(38vh, 360px);
+	max-height: min(64vh, 600px);
+	width: 100%;
+}
+
+.sim-run-shell--terminal .sim-dash-terminal-center {
+	align-self: start;
+	width: 100%;
+	min-width: 0;
+}
+
 .sim-index-strip {
 	padding: 10px 12px 12px;
 	border-radius: 14px;

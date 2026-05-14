@@ -961,6 +961,9 @@ function initFromConfig(config) {
         if (height < 2) {
             height = Math.max(0, Math.floor(wrap.getBoundingClientRect().height));
         }
+        /* Guard: bad flex/grid frames can report a huge box; Chart.resize would then lock in a runaway layout. */
+        const cap = Math.max(280, Math.floor(window.innerHeight * 0.72));
+        height = Math.min(height, cap);
         if (width < 2 || height < 2) return null;
         return { width, height };
     }

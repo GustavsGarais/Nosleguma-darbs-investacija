@@ -83,7 +83,6 @@
         'terminal' => [
             'modeAuto' => __('sim.terminal.mode_auto'),
             'modeHands' => __('sim.terminal.mode_hands'),
-            'indicesNote' => __('sim.terminal.indices_note'),
             'indexA' => __('sim.terminal.index_a'),
             'indexB' => __('sim.terminal.index_b'),
             'indexC' => __('sim.terminal.index_c'),
@@ -128,16 +127,6 @@
             <button id="btn-step" class="btn btn-secondary" type="button" title="{{ __('Advance by one day') }}">➜ {{ __('Step') }}</button>
             <button id="btn-reset" class="btn btn-outline" type="button">🔄 {{ __('Reset') }}</button>
             <button id="btn-save" class="btn btn-outline" type="button" title="{{ __('Save results and full monthly history to the server') }}">💾 {{ __('Save') }}</button>
-            <button
-                id="btn-toggle-controls"
-                class="btn btn-outline"
-                type="button"
-                aria-expanded="true"
-                aria-controls="sim-dash-lead"
-                title="{{ __('Hide controls panel') }}"
-                data-title-hide="{{ __('Hide controls panel') }}"
-                data-title-show="{{ __('Show controls panel') }}"
-            >⏴ {{ __('Controls') }}</button>
         </div>
         <div class="sim-dash-toolbar-secondary">
             <button id="start-tutorial" class="btn btn-outline btn-sm" type="button">📚 {{ __('Start Tutorial') }}</button>
@@ -195,7 +184,13 @@
             </div>
             <aside class="sim-dash-controls sim-controls-flyout__panel" aria-label="{{ __('Simulation Controls') }}">
             <div class="sim-dash-controlsBlock sim-dash-settings-panel">
-                <h3 class="sim-dash-settings-panel__heading">{{ __('Simulation Controls') }}</h3>
+                <div class="sim-dash-settings-panel__head">
+                    <h3 class="sim-dash-settings-panel__heading">{{ __('Simulation Controls') }}</h3>
+                    @include('simulations.partials.section-help', [
+                        'tooltip' => __('sim.tooltip.simulation_controls'),
+                        'label' => __('sim.help.simulation_controls'),
+                    ])
+                </div>
                 <fieldset class="sr-only" aria-hidden="true" tabindex="-1">
                     <legend>{{ __('Simulation mode') }}</legend>
                     <input type="radio" name="sim-mode" id="mode-classic" value="classic" @checked($defaultRunnerMode === 'classic') />
@@ -238,6 +233,13 @@
             </div>
 
             <div class="sim-dash-controlsBlock sim-dash-coach-panel">
+                <div class="sim-dash-coach-panel__head">
+                    <span class="sim-dash-coach-panel__title">{{ __('sim.terminal.coaching_title') }}</span>
+                    @include('simulations.partials.section-help', [
+                        'tooltip' => __('sim.tooltip.coaching_tips'),
+                        'label' => __('sim.help.coaching_tips'),
+                    ])
+                </div>
                 <div class="sim-dash-coach-panel__stack">
                     <div id="learning-note" class="sim-dash-coach-panel__note sim-dash-coach-panel__note--primary"></div>
                     <div id="risk-tip" class="sim-dash-coach-panel__note sim-dash-coach-panel__note--secondary"></div>
