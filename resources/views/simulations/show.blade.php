@@ -140,7 +140,7 @@
             >⏴ {{ __('Controls') }}</button>
         </div>
         <div class="sim-dash-toolbar-secondary">
-            <button id="start-tutorial" class="btn btn-secondary btn-sm" type="button">📚 {{ __('Start Tutorial') }}</button>
+            <button id="start-tutorial" class="btn btn-outline btn-sm" type="button">📚 {{ __('Start Tutorial') }}</button>
             <x-help-sheet id="sim-help-sheet" :title="__('Simulation help')" :button-label="__('Open help')">
                 <h3>{{ __('Quick start') }}</h3>
                 <ul>
@@ -178,10 +178,10 @@
             </form>
         </div>
         <div class="sim-dash-toolbar-status">
-            <div id="status-display" style="padding:8px 12px; border-radius:10px; border:1px solid var(--c-border); background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); font-weight:700; font-size:13px;">
+            <div id="status-display" class="sim-dash-toolbar-status__badge">
                 {{ __('Ready') }}
             </div>
-            <span id="save-status" style="font-size:13px; color:var(--c-on-surface-2); white-space:nowrap;">{{ __('Not saved yet') }}</span>
+            <span id="save-status" class="sim-dash-toolbar-status__meta">{{ __('Not saved yet') }}</span>
         </div>
     </div>
 
