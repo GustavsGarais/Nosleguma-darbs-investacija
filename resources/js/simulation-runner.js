@@ -723,30 +723,6 @@ function initFromConfig(config) {
         chart.options.scales.y.max = hi + pad;
     }
 
-    function sparkSeriesFromReturns(baseRets, scale) {
-        return baseRets.map((r) => r * scale);
-    }
-
-    function sparkSvgPathFromVals(vals) {
-        if (!vals.length) return '';
-        let min = Math.min(...vals);
-        let max = Math.max(...vals);
-        const span = max - min || 1;
-        const pad = span * 0.02;
-        min -= pad;
-        max += pad;
-        const w = 100;
-        const h = 24;
-        const dx = vals.length > 1 ? w / (vals.length - 1) : 0;
-        const parts = [];
-        for (let i = 0; i < vals.length; i++) {
-            const x = i * dx;
-            const y = h - ((vals[i] - min) / (max - min)) * h;
-            parts.push(`${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`);
-        }
-        return parts.join(' ');
-    }
-
     function aggregateAllocation() {
         const d = simulationData[simulationData.length - 1];
         if (!d) return { labels: [], data: [], colors: [] };
@@ -771,60 +747,6 @@ function initFromConfig(config) {
             data: [contrib, growth],
             colors: [contribColor, tc.primary],
         };
-    }
-
-    function updateIndexStrip() {
-        const tiles = document.querySelectorAll('.sim-index-tile');
-        if (!tiles.length) return;
-        const windowSize = 24;
-        const baseRets = [];
-        for (let i = Math.max(1, simulationData.length - windowSize); i < simulationData.length; i++) {
-            const a = simulationData[i - 1].value;
-            const b = simulationData[i].value;
-            if (a > 0) baseRets.push((b - a) / a);
-        }
-        const scales = [1, 0.92, 1.08, 1.15];
-        const names = [terminal.indexA, terminal.indexB, terminal.indexC, terminal.indexD];
-        tiles.forEach((tile, k) => {
-            const nameEl = tile.querySelector('.sim-index-tile__name');
-            if (nameEl && names[k]) nameEl.textContent = names[k];
-            const valEl = tile.querySelector('[data-field="val"]');
-            const pctEl = tile.querySelector('[data-field="pct"]');
-            const path = tile.querySelector('.sim-index-tile__spark path');
-            if (!baseRets.length) {
-                if (valEl) valEl.textContent = '—';
-                if (pctEl) {
-                    pctEl.textContent = '—';
-                    pctEl.classList.remove('sim-index-tile__pct--up', 'sim-index-tile__pct--down');
-                }
-                if (path) path.setAttribute('d', '');
-                return;
-            }
-            const sr = sparkSeriesFromReturns(baseRets, scales[k]);
-            let v = 100;
-            const pts = [v];
-            for (const r of sr) {
-                v *= 1 + r;
-                pts.push(v);
-            }
-            const lastPct = sr[sr.length - 1] * 100;
-            if (valEl) valEl.textContent = v.toFixed(1);
-            if (pctEl) {
-                const sign = lastPct >= 0 ? '+' : '';
-                pctEl.textContent = `${sign}${lastPct.toFixed(2)}%`;
-                pctEl.classList.toggle('sim-index-tile__pct--up', lastPct >= 0);
-                pctEl.classList.toggle('sim-index-tile__pct--down', lastPct < 0);
-            }
-            if (path) {
-                path.setAttribute('d', sparkSvgPathFromVals(pts));
-                const stroke =
-                    lastPct >= 0
-                        ? getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() ||
-                          '#07a05a'
-                        : '#dc2626';
-                path.setAttribute('stroke', stroke);
-            }
-        });
     }
 
     function updateAllocationChart() {
@@ -971,30 +893,6 @@ function initFromConfig(config) {
                 modePlaygroundRadio.checked = true;
                 modePlaygroundRadio.dispatchEvent(new Event('change', { bubbles: true }));
             }
-        });
-
-        const quickAmt = document.getElementById('sim-quick-amount');
-        const deskAmt = document.getElementById('playground-custom-amount');
-        quickAmt?.addEventListener('input', () => {
-            if (deskAmt && quickAmt) deskAmt.value = quickAmt.value;
-        });
-        deskAmt?.addEventListener('input', () => {
-            if (deskAmt && quickAmt) quickAmt.value = deskAmt.value;
-        });
-
-        document.getElementById('sim-quick-preview')?.addEventListener('click', () => {
-            if (!readPlaygroundModeFromUi()) {
-                statusDisplay.textContent = terminal.switchHandsForQuick || '';
-                window.setTimeout(() => {
-                    statusDisplay.textContent = isRunning ? i18n.running : i18n.ready;
-                }, 2600);
-                return;
-            }
-            const q = document.getElementById('sim-quick-amount');
-            const v = Math.max(0, parseFloat(q?.value) || 0);
-            if (v <= 0) return;
-            if (deskAmt) deskAmt.value = String(v);
-            playgroundBuy(v);
         });
     }
 
@@ -1858,7 +1756,6 @@ function initFromConfig(config) {
         updateCurrencyLabels();
         chart.update(animation);
         applyActiveChartRange();
-        updateIndexStrip();
     }
 
     function deltaArrowMarkup(diff) {
@@ -1959,7 +1856,6 @@ function initFromConfig(config) {
         }
         updateAllocationChart();
         updatePerfPanel();
-        updateIndexStrip();
 
         schedulePersistRunnerState();
     }

@@ -83,11 +83,6 @@
         'terminal' => [
             'modeAuto' => __('sim.terminal.mode_auto'),
             'modeHands' => __('sim.terminal.mode_hands'),
-            'indexA' => __('sim.terminal.index_a'),
-            'indexB' => __('sim.terminal.index_b'),
-            'indexC' => __('sim.terminal.index_c'),
-            'indexD' => __('sim.terminal.index_d'),
-            'switchHandsForQuick' => __('sim.terminal.switch_hands_for_quick'),
             'railSharpeNa' => '—',
             'allocCash' => __('sim.terminal.alloc_cash'),
             'allocInvested' => __('sim.terminal.alloc_invested'),
@@ -322,42 +317,6 @@
         ></div>
 
         <div class="sim-dash-work sim-dash-terminal-center">
-            <div class="sim-index-strip" aria-label="{{ __('Market Regime') }}">
-                <div class="sim-index-strip__head">
-                    <span class="sim-index-strip__title">{{ __('sim.terminal.indices_heading') }}</span>
-                    @include('simulations.partials.section-help', [
-                        'tooltip' => __('sim.tooltip.indices_spark'),
-                        'label' => __('sim.help.indices_spark'),
-                    ])
-                </div>
-                <div class="sim-index-strip__grid">
-                    <div class="sim-index-tile" data-sim-index="0">
-                        <span class="sim-index-tile__name">{{ __('sim.terminal.index_a') }}</span>
-                        <span class="sim-index-tile__val" data-field="val">—</span>
-                        <span class="sim-index-tile__pct" data-field="pct">—</span>
-                        <svg class="sim-index-tile__spark" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><path fill="none" stroke-width="1.8" vector-effect="non-scaling-stroke" d="" /></svg>
-                    </div>
-                    <div class="sim-index-tile" data-sim-index="1">
-                        <span class="sim-index-tile__name">{{ __('sim.terminal.index_b') }}</span>
-                        <span class="sim-index-tile__val" data-field="val">—</span>
-                        <span class="sim-index-tile__pct" data-field="pct">—</span>
-                        <svg class="sim-index-tile__spark" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><path fill="none" stroke-width="1.8" vector-effect="non-scaling-stroke" d="" /></svg>
-                    </div>
-                    <div class="sim-index-tile" data-sim-index="2">
-                        <span class="sim-index-tile__name">{{ __('sim.terminal.index_c') }}</span>
-                        <span class="sim-index-tile__val" data-field="val">—</span>
-                        <span class="sim-index-tile__pct" data-field="pct">—</span>
-                        <svg class="sim-index-tile__spark" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><path fill="none" stroke-width="1.8" vector-effect="non-scaling-stroke" d="" /></svg>
-                    </div>
-                    <div class="sim-index-tile" data-sim-index="3">
-                        <span class="sim-index-tile__name">{{ __('sim.terminal.index_d') }}</span>
-                        <span class="sim-index-tile__val" data-field="val">—</span>
-                        <span class="sim-index-tile__pct" data-field="pct">—</span>
-                        <svg class="sim-index-tile__spark" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><path fill="none" stroke-width="1.8" vector-effect="non-scaling-stroke" d="" /></svg>
-                    </div>
-                </div>
-            </div>
-
             <div class="sim-dash-chartCol">
             <div class="sim-dash-chartCard" aria-label="Chart">
                 <div class="sim-chart-hero">
@@ -386,31 +345,6 @@
                     <canvas id="sim-chart" aria-label="Simulation chart"></canvas>
                 </div>
             </div>
-            </div>
-
-            <div class="sim-quick-trade auth-card">
-                <div class="sim-quick-trade__head">
-                    <h3 class="sim-quick-trade__title">{{ __('sim.terminal.quick_trade') }}</h3>
-                </div>
-                <div class="sim-quick-trade__grid">
-                    <label class="sim-quick-trade__field">
-                        <span>{{ __('sim.terminal.order_type') }}</span>
-                        <select class="footer-email-input" disabled>
-                            <option>{{ __('sim.terminal.market_order') }}</option>
-                        </select>
-                    </label>
-                    <label class="sim-quick-trade__field">
-                        <span>{{ __('sim.terminal.ticker_caption') }}</span>
-                        <input type="text" class="footer-email-input" value="{{ __('sim.terminal.ticker_lab') }}" readonly />
-                    </label>
-                    <label class="sim-quick-trade__field">
-                        <span>{{ __('sim.terminal.amount_eur') }}</span>
-                        <input id="sim-quick-amount" type="number" min="1" step="1" value="50" class="footer-email-input" />
-                    </label>
-                    <div class="sim-quick-trade__actions">
-                        <button type="button" id="sim-quick-preview" class="btn btn-primary">{{ __('sim.terminal.preview_add') }}</button>
-                    </div>
-                </div>
             </div>
         </div>
 
