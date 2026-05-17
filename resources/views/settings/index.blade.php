@@ -7,7 +7,7 @@
     <header style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
         <div>
             <h1 style="margin:0;">{{ __('Account') }}</h1>
-            <p style="margin:6px 0 0; color:var(--c-on-surface-2);">{{ __('Manage profile info, security, notifications, and currency in one place.') }}</p>
+            <p style="margin:6px 0 0; color:var(--c-on-surface-2);">{{ __('Manage profile info, security, and currency in one place.') }}</p>
         </div>
         <a class="btn btn-secondary" href="{{ route('simulations.index') }}">← {{ __('Back') }}</a>
     </header>
@@ -52,12 +52,13 @@
         </div>
     @endif
 
-    <div style="display:flex; flex-direction:column; gap:24px;">
+    <div class="settings-sections" style="display:flex; flex-direction:column; gap:24px;">
+        <div class="settings-account-row">
         <!-- Profile -->
-        <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; background:color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%); display:flex; flex-direction:column; gap:16px;">
+        <article class="settings-account-card" style="border:1px solid var(--c-border); border-radius:16px; padding:24px; background:color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%); display:flex; flex-direction:column; gap:16px;">
             <div style="display:flex; align-items:center; gap:6px;">
                 <h2 style="margin:0;">{{ __('Profile') }}</h2>
-                <div class="info-bubble" data-tooltip="{{ __('Your name is synced across reports, invites, and alerts. Email cannot be changed.') }}">
+                <div class="info-bubble" data-tooltip="{{ __('Your name appears on simulations and reports. Email cannot be changed.') }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
                         <circle cx="12" cy="12" r="10"></circle>
                         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -100,7 +101,7 @@
         </article>
 
         <!-- Security -->
-        <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
+        <article class="settings-account-card" style="border:1px solid var(--c-border); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
             <div style="display:flex; align-items:center; gap:6px;">
                 <h2 style="margin:0;">{{ __('Security') }}</h2>
                 <div class="info-bubble" data-tooltip="{{ __('Manage your password and two-factor authentication to keep your account secure.') }}">
@@ -114,7 +115,7 @@
             <div style="display:grid; gap:16px;">
                 <!-- Change Password -->
                 <div style="border-radius:12px; padding:16px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-secondary) 5%); display:flex; flex-direction:column; gap:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                    <div class="settings-security-action" style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
                         <div>
                             <h4 style="margin:0 0 4px;">{{ __('Password') }}</h4>
                             <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">{{ __('Minimum 12 characters with uppercase, lowercase, and numbers or symbols.') }}</p>
@@ -179,7 +180,7 @@
                 </div>
 
                 <!-- 2FA -->
-                <div style="border-radius:12px; padding:16px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-secondary) 5%); display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                <div class="settings-security-action" style="border-radius:12px; padding:16px; background:color-mix(in srgb, var(--c-surface) 95%, var(--c-secondary) 5%); display:flex; justify-content:space-between; align-items:center; gap:12px;">
                     <div>
                         <h4 style="margin:0 0 4px;">{{ __('Two-Factor Authentication (2FA)') }}</h4>
                         <p style="margin:0; color:var(--c-on-surface-2); font-size:13px;">
@@ -201,30 +202,7 @@
             </div>
         </article>
 
-        <!-- Notifications -->
-        <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
-            <div style="display:flex; align-items:center; gap:6px;">
-                <h2 style="margin:0;">{{ __('Notifications') }}</h2>
-                <div class="info-bubble" data-tooltip="{{ __('These toggles only affect this browser for now and are stored locally.') }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c-on-surface-2); cursor:help;">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                        <path d="M12 17h.01"></path>
-                    </svg>
-                </div>
-            </div>
-            <div style="display:grid; gap:12px;">
-                @foreach ([
-                    ['label' => __('Monthly performance insights'), 'key' => 'notify-performance'],
-                    ['label' => __('Security alerts & logins'), 'key' => 'notify-security'],
-                ] as $toggle)
-                    <label style="display:flex; justify-content:space-between; gap:12px; align-items:center; border:1px solid var(--c-border); border-radius:10px; padding:12px 16px;">
-                        <span>{{ $toggle['label'] }}</span>
-                        <input type="checkbox" data-setting-key="{{ $toggle['key'] }}" />
-                    </label>
-                @endforeach
-            </div>
-        </article>
+        </div>
 
         <!-- Currency -->
         <article style="border:1px solid var(--c-border); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
@@ -310,19 +288,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pwForm) pwForm.style.display = 'flex';
         if (pwToggle) pwToggle.textContent = '{{ __('Cancel') }}';
     @endif
-
-    const toggles = document.querySelectorAll('[data-setting-key]');
-    const localKey = 'nosleguma-settings';
-    const saved = JSON.parse(localStorage.getItem(localKey) || '{}');
-
-    toggles.forEach(toggle => {
-        const key = toggle.dataset.settingKey;
-        toggle.checked = Boolean(saved[key]);
-        toggle.addEventListener('change', () => {
-            saved[key] = toggle.checked;
-            localStorage.setItem(localKey, JSON.stringify(saved));
-        });
-    });
 
     const amountInput = document.getElementById('currency-amount');
     const select = document.getElementById('currency-select');
@@ -424,6 +389,23 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <style>
+.settings-account-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+}
+.settings-account-card {
+    min-width: 0;
+}
+.settings-account-row .settings-security-action {
+    flex-wrap: wrap;
+}
+@media (max-width: 960px) {
+    .settings-account-row {
+        grid-template-columns: 1fr;
+    }
+}
 .info-bubble { position:relative; display:inline-flex; align-items:center; transition:opacity 0.2s; }
 .info-bubble:hover { opacity:0.8; }
 .info-bubble:hover::after {
