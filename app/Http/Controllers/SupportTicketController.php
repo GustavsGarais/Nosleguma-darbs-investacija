@@ -45,6 +45,7 @@ class SupportTicketController extends Controller
 
         $ticket = SupportTicket::create([
             'user_id' => auth()->id(),
+            'contact_email' => auth()->user()->email,
             'subject' => $validated['subject'],
             'description' => $validated['description'],
             'error_type' => $validated['error_type'],
