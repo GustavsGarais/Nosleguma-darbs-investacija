@@ -18,6 +18,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public const DEMO_ADMIN_EMAIL = 'admin@school.demo';
 
     /**
+     * Default / demo accounts that may use the app without completing email verification.
+     *
+     * @var list<string>
+     */
+    public const VERIFICATION_EXEMPT_EMAILS = [
+        self::DEMO_ADMIN_EMAIL,
+        'user@user.com',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -75,6 +85,35 @@ class User extends Authenticatable implements MustVerifyEmail
     public static function emailIsDemoAdmin(?string $email): bool
     {
         return $email !== null && strcasecmp(trim($email), self::DEMO_ADMIN_EMAIL) === 0;
+    }
+
+    public static function emailIsVerificationExempt(?string $email): bool
+    {
+        if ($email === null || trim($email) === '') {
+            return false;
+        }
+
+        $normalized = strtolower(trim($email));
+
+        foreach (self::VERIFICATION_EXEMPT_EMAILS as $exempt) {
+            if ($normalized === strtolower($exempt)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        if (self::emailIsVerificationExempt($this->email)) {
+            return true;
+        }
+
+        return parent::hasVerifiedEmail();
     }
 
     public function simulations()
