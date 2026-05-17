@@ -1143,13 +1143,11 @@ function initFromConfig(config) {
         const LS_COLLAPSED = 'simTermLeadCollapsed';
         const EXPANDED_MIN = 200;
         const EXPANDED_MAX = 440;
-        const LEAD_DRAG_MIN = 64;
+        const LEAD_DRAG_MIN = 0;
         const LEAD_COLLAPSE_BELOW = 200;
         const LEAD_HIDE_WHILE_DRAGGING = 220;
         const RAIL_MIN = 200;
         const RAIL_MAX = 400;
-        const expandBtn = document.getElementById('sim-terminal-show-controls');
-        const hideBtn = document.getElementById('sim-terminal-hide-controls');
         const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
         function setLeadDragPreview(narrow) {
@@ -1161,14 +1159,9 @@ function initFromConfig(config) {
             shell.classList.toggle('sim-run-shell--terminal-lead-collapsed', c);
             setLeadDragPreview(false);
             localStorage.setItem(LS_COLLAPSED, c ? '1' : '0');
-            if (expandBtn) {
-                expandBtn.hidden = !c;
-                expandBtn.setAttribute('aria-expanded', c ? 'false' : 'true');
-            }
-            if (hideBtn) {
-                hideBtn.hidden = c;
-            }
-            if (!c) {
+            if (c) {
+                shell.style.setProperty('--sim-grid-left', '0px');
+            } else {
                 let l = parseInt(localStorage.getItem(LS_L), 10);
                 if (!Number.isFinite(l)) l = 288;
                 l = clamp(l, EXPANDED_MIN, EXPANDED_MAX);
@@ -1193,14 +1186,6 @@ function initFromConfig(config) {
             localStorage.setItem(LS_L, String(Math.round(leftPx)));
         }
         applyLeadCollapsed(collapsed);
-
-        expandBtn?.addEventListener('click', () => {
-            applyLeadCollapsed(false);
-        });
-
-        hideBtn?.addEventListener('click', () => {
-            applyLeadCollapsed(true);
-        });
 
         const bind = (handle, edge) => {
             if (!handle) return;
@@ -1242,18 +1227,20 @@ function initFromConfig(config) {
             };
             handle.addEventListener('pointerdown', (ev) => {
                 if (ev.button !== 0) return;
-                if (edge === 'lead' && shell.classList.contains('sim-run-shell--terminal-lead-collapsed')) {
-                    applyLeadCollapsed(false);
-                    return;
-                }
                 ev.preventDefault();
                 handle.setPointerCapture?.(ev.pointerId);
                 startX = ev.clientX;
                 const cs = getComputedStyle(shell);
-                startVal =
-                    edge === 'lead'
-                        ? parseFloat(cs.getPropertyValue('--sim-grid-left')) || 288
-                        : parseFloat(cs.getPropertyValue('--sim-grid-right')) || 268;
+                if (edge === 'lead' && shell.classList.contains('sim-run-shell--terminal-lead-collapsed')) {
+                    shell.classList.remove('sim-run-shell--terminal-lead-collapsed');
+                    shell.style.setProperty('--sim-grid-left', '0px');
+                    startVal = 0;
+                } else {
+                    startVal =
+                        edge === 'lead'
+                            ? parseFloat(cs.getPropertyValue('--sim-grid-left')) || 288
+                            : parseFloat(cs.getPropertyValue('--sim-grid-right')) || 268;
+                }
                 handle.classList.add('is-dragging');
                 document.addEventListener('pointermove', onMove);
                 document.addEventListener('pointerup', onUp);

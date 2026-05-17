@@ -186,13 +186,6 @@
                             'tooltip' => __('sim.tooltip.simulation_controls'),
                             'label' => __('sim.help.simulation_controls'),
                         ])
-                        <button
-                            type="button"
-                            id="sim-terminal-hide-controls"
-                            class="btn btn-outline btn-sm sim-terminal-hide-controls"
-                            title="{{ __('sim.terminal.hide_controls') }}"
-                            aria-label="{{ __('sim.terminal.hide_controls') }}"
-                        >{{ __('sim.terminal.hide_controls') }}</button>
                     </div>
                 </div>
                 <fieldset class="sr-only" aria-hidden="true" tabindex="-1">
@@ -324,14 +317,6 @@
         ></div>
 
         <div class="sim-dash-work sim-dash-terminal-center">
-            <button
-                type="button"
-                id="sim-terminal-show-controls"
-                class="btn btn-outline btn-sm sim-terminal-show-controls"
-                hidden
-                aria-expanded="false"
-                aria-controls="sim-dash-lead"
-            >{{ __('sim.terminal.show_controls') }}</button>
             <div class="sim-dash-chartCol">
             <div class="sim-dash-chartCard" aria-label="Chart">
                 <div class="sim-chart-hero">

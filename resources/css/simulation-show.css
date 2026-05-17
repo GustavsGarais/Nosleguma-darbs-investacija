@@ -722,12 +722,6 @@
 	flex-shrink: 0;
 }
 
-.sim-terminal-hide-controls {
-	font-size: 11px;
-	padding: 4px 8px;
-	white-space: nowrap;
-}
-
 .sim-dash-settings-panel__heading {
 	margin: 0;
 	font-size: 0.68rem;
@@ -1288,32 +1282,14 @@ html[data-theme="dark"] .sim-param-tile {
 
 .sim-run-shell--terminal .sim-dash-body {
 	display: grid;
-	grid-template-columns: minmax(200px, var(--sim-grid-left)) 6px minmax(0, 1fr) 6px minmax(200px, var(--sim-grid-right));
+	grid-template-columns: minmax(0, var(--sim-grid-left)) 6px minmax(0, 1fr) 6px minmax(200px, var(--sim-grid-right));
 	gap: 16px 10px;
 	align-items: start;
 }
 
-/* Kreisā kolonna paslēpta, kad kreiso starpliku velk ļoti šauru un atlaiž (skat. simulation-runner.js). */
-.sim-run-shell--terminal.sim-run-shell--terminal-lead-collapsed .sim-dash-lead,
-.sim-run-shell--terminal.sim-run-shell--terminal-lead-collapsed .sim-dash-resize--lead {
+/* Kreisā kolonna paslēpta; starplika paliek redzama — velc pa labi, lai atvērtu (simulation-runner.js). */
+.sim-run-shell--terminal.sim-run-shell--terminal-lead-collapsed .sim-dash-lead {
 	display: none !important;
-}
-
-.sim-run-shell--terminal.sim-run-shell--terminal-lead-collapsed .sim-dash-body {
-	grid-template-columns: minmax(0, 1fr) 6px minmax(200px, var(--sim-grid-right));
-}
-
-.sim-terminal-show-controls {
-	position: absolute;
-	left: 6px;
-	top: 4px;
-	z-index: 8;
-	max-width: calc(100% - 12px);
-	white-space: nowrap;
-}
-
-.sim-run-shell--terminal.sim-run-shell--terminal-lead-collapsed .sim-dash-terminal-center {
-	padding-top: 42px;
 }
 
 /* Velkot šauri: paslēpt vadības saturu, lai nepaliek “pusredzams” panelis */
