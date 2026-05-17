@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+﻿@extends('layouts.dashboard')
 
 @php
     $defaultRunnerMode = ($simulation->settings['defaultRunnerMode'] ?? 'classic') === 'playground' ? 'playground' : 'classic';
@@ -16,13 +16,13 @@
             'paused' => __('Paused'),
             'complete' => __('Complete'),
             'month' => __('Day :current / :total'),
-            'saving' => __('Saving…'),
+            'saving' => __('Savingā€¦'),
             'savedAt' => __('Saved :time'),
             'saveFailed' => __('Save failed. Try again.'),
             'noEvents' => __('No notable events yet. Run or step the simulation.'),
             'marketShock' => __('Market shock: :pct% day (:label)'),
             'newHigh' => __('New portfolio high reached on day :month.'),
-            'drawdownCoaching' => __('Drawdown :pct% — keep contributions consistent.'),
+            'drawdownCoaching' => __('Drawdown :pct% ā€” keep contributions consistent.'),
             'presetLabel' => __('Preset: :label'),
             'balancedLabel' => __('Balanced (default)'),
             'balancedLesson' => __('Balanced portfolios rely on regular contributions and modest volatility. Focus on time in the market.'),
@@ -48,9 +48,9 @@
             'chartSor' => __('Same returns, reversed order'),
             'secondaryLabel' => __('Second scenario'),
             'secondaryNone' => __('None (single path)'),
-            'secondaryCompare' => __('Invest €100 / month more'),
+            'secondaryCompare' => __('Invest ā‚¬100 / month more'),
             'secondarySor' => __('Sequence-of-returns (reversed)'),
-            'compareExtraHint' => __('Extra € per month vs your baseline.'),
+            'compareExtraHint' => __('Extra ā‚¬ per month vs your baseline.'),
             'fatTailEvent' => __('Rare tail event (~:pct% this month)'),
             'crowdSelling' => __('Heavy selling from other investors weighed on prices (~:pct% crowd drag).'),
             'crowdBuying' => __('Broad buying from other investors helped prices (~:pct% crowd lift).'),
@@ -61,7 +61,7 @@
             'mom' => __('MoM'),
             'cagr' => __('CAGR'),
             'compareExplainer' => __('Second line adds your extra monthly amount with the same monthly returns as the base scenario.'),
-            'sorExplainer' => __('Blue line uses the same return magnitudes in reverse order — average return matches, ending wealth usually does not.'),
+            'sorExplainer' => __('Blue line uses the same return magnitudes in reverse order ā€” average return matches, ending wealth usually does not.'),
             'simModeClassic' => __('Classic (auto monthly)'),
             'simModePlayground' => __('Hands-on portfolio lab'),
             'simulationMode' => __('Simulation mode'),
@@ -69,7 +69,7 @@
             'playgroundBuyHint' => __('Add to position'),
             'playgroundCustomAdd' => __('Custom amount'),
             'playgroundSellHint' => __('Sell part of holdings (priced at current month)'),
-            'playgroundBought' => __('Added :amount — more shares at current price.'),
+            'playgroundBought' => __('Added :amount ā€” more shares at current price.'),
             'playgroundSold' => __('Sold :pct% of position. This trade P/L: :gain.'),
             'chartNetWorth' => __('Net worth (cash + invested)'),
             'chartTotalPL' => __('Total gain/loss vs contributed'),
@@ -82,7 +82,7 @@
         'terminal' => [
             'modeAuto' => __('sim.terminal.mode_auto'),
             'modeHands' => __('sim.terminal.mode_hands'),
-            'railSharpeNa' => '—',
+            'railSharpeNa' => 'ā€”',
             'allocCash' => __('sim.terminal.alloc_cash'),
             'allocInvested' => __('sim.terminal.alloc_invested'),
             'allocGrowth' => __('sim.terminal.alloc_growth'),
@@ -114,16 +114,16 @@
                 type="button"
                 data-label-run="{{ __('Run') }}"
                 data-label-pause="{{ __('Pause') }}"
-                data-icon-run="▶"
-                data-icon-pause="⏸"
+                data-icon-run="ā–¶"
+                data-icon-pause="ā¸ø"
                 aria-pressed="false"
-            >▶ {{ __('Run') }}</button>
-            <button id="btn-step" class="btn btn-secondary" type="button" title="{{ __('Advance by one day') }}">➜ {{ __('Step') }}</button>
-            <button id="btn-reset" class="btn btn-outline" type="button">🔄 {{ __('Reset') }}</button>
-            <button id="btn-save" class="btn btn-outline" type="button" title="{{ __('Save results and full monthly history to the server') }}">💾 {{ __('Save') }}</button>
+            >ā–¶ {{ __('Run') }}</button>
+            <button id="btn-step" class="btn btn-secondary" type="button" title="{{ __('Advance by one day') }}">ā˛ {{ __('Step') }}</button>
+            <button id="btn-reset" class="btn btn-outline" type="button">š”„ {{ __('Reset') }}</button>
+            <button id="btn-save" class="btn btn-outline" type="button" title="{{ __('Save results and full monthly history to the server') }}">š’¾ {{ __('Save') }}</button>
         </div>
         <div class="sim-dash-toolbar-secondary">
-            <button id="start-tutorial" class="btn btn-outline btn-sm" type="button">📚 {{ __('Start Tutorial') }}</button>
+            <button id="start-tutorial" class="btn btn-outline btn-sm" type="button">š“ {{ __('Start Tutorial') }}</button>
             <x-help-sheet id="sim-help-sheet" :title="__('Simulation help')" :button-label="__('Open help')">
                 <h3>{{ __('Quick start') }}</h3>
                 <ul>
@@ -134,7 +134,7 @@
 
                 <h3>{{ __('Market Regime') }}</h3>
                 <p>
-                    {{ __('Market Regime changes the “behavior pattern” of returns: drift (average direction), volatility (swing size), and rare shock events. Your inputs stay the same; only the market behavior changes.') }}
+                    {{ __('Market Regime changes the ā€behavior patternā€¯ of returns: drift (average direction), volatility (swing size), and rare shock events. Your inputs stay the same; only the market behavior changes.') }}
                 </p>
                 <ul>
                     <li>{{ __('Balanced: typical long-run growth with moderate swings.') }}</li>
@@ -146,10 +146,10 @@
 
                 <h3>{{ __('Reading the chart') }}</h3>
                 <p>
-                    {{ __('Compare “Total you put in” vs portfolio value to see break-even. Real value shows purchasing power after inflation.') }}
+                    {{ __('Compare ā€Total you put inā€¯ vs portfolio value to see break-even. Real value shows purchasing power after inflation.') }}
                 </p>
                 <p>
-                    {!! __('Arrow tip: under the big numbers, <span style="color:var(--c-primary); font-weight:800;">green ↑</span> means that number went up since the previous step, and <span style="color:#dc2626; font-weight:800;">red ↓</span> means it went down. The chart legend lines are separate.') !!}
+                    {!! __('Arrow tip: under the big numbers, <span style="color:var(--c-primary); font-weight:800;">green ā†‘</span> means that number went up since the previous step, and <span style="color:#dc2626; font-weight:800;">red ā†“</span> means it went down. The chart legend lines are separate.') !!}
                 </p>
             </x-help-sheet>
             <a class="btn btn-primary btn-sm" href="{{ route('simulations.edit', $simulation) }}">{{ __('Edit') }}</a>
@@ -169,11 +169,12 @@
     </div>
 
     <div class="sim-dash-body">
+        <div class="sim-terminal-lead-pane" id="sim-terminal-lead-pane">
         <div class="sim-dash-lead" id="sim-dash-lead">
         <div class="sim-dash-flyout-stack">
         <div class="sim-controls-flyout sim-controls-flyout--lead" tabindex="-1">
             <div class="sim-controls-flyout__rail" aria-hidden="true">
-                <span class="sim-controls-flyout__icon" aria-hidden="true">⚙</span>
+                <span class="sim-controls-flyout__icon" aria-hidden="true">ā™</span>
                 <span class="sim-controls-flyout__label">{{ __('Controls') }}</span>
             </div>
             <aside class="sim-dash-controls sim-controls-flyout__panel" aria-label="{{ __('Simulation Controls') }}">
@@ -229,12 +230,12 @@
                         </span>
                         <select id="secondary-scenario" class="footer-email-input">
                             <option value="none">{{ __('None (single path)') }}</option>
-                            <option value="compare">{{ __('Invest €100 / month more') }}</option>
+                            <option value="compare">{{ __('Invest ā‚¬100 / month more') }}</option>
                             <option value="sor">{{ __('Sequence-of-returns (reversed)') }}</option>
                         </select>
                     </label>
                     <label id="compare-extra-wrap" style="display:none; grid-template-columns:1fr; gap:6px;">
-                        <span style="font-weight:700;">{{ __('Extra € per month vs your baseline.') }}</span>
+                        <span style="font-weight:700;">{{ __('Extra ā‚¬ per month vs your baseline.') }}</span>
                         <input id="compare-extra-monthly" type="number" min="0" step="10" value="100" class="footer-email-input" />
                     </label>
                     </div>
@@ -253,15 +254,15 @@
                     <div class="sim-playground-hud" aria-live="polite">
                         <div class="sim-playground-hud__tile">
                             <span class="sim-playground-hud__label">{{ __('Cash wallet') }}</span>
-                            <span class="sim-playground-hud__value" id="playground-hud-cash">—</span>
+                            <span class="sim-playground-hud__value" id="playground-hud-cash">ā€”</span>
                         </div>
                         <div class="sim-playground-hud__tile">
                             <span class="sim-playground-hud__label">{{ __('In the market') }}</span>
-                            <span class="sim-playground-hud__value" id="playground-hud-invested">—</span>
+                            <span class="sim-playground-hud__value" id="playground-hud-invested">ā€”</span>
                         </div>
                         <div class="sim-playground-hud__tile">
                             <span class="sim-playground-hud__label">{{ __('Unrealized on holdings') }}</span>
-                            <span class="sim-playground-hud__value" id="playground-hud-unrealized">—</span>
+                            <span class="sim-playground-hud__value" id="playground-hud-unrealized">ā€”</span>
                         </div>
                     </div>
                     <div class="sim-playground-actions">
@@ -306,11 +307,15 @@
         </div>
         </div>
         </div>
+        </div>
 
         <div
             class="sim-dash-resize sim-dash-resize--lead"
+            id="sim-terminal-lead-splitter"
             role="separator"
             aria-orientation="vertical"
+            aria-expanded="true"
+            aria-controls="sim-terminal-lead-pane"
             aria-label="{{ __('sim.terminal.drag_resize_panels') }}"
             tabindex="0"
             data-sim-resize-edge="lead"
@@ -322,14 +327,14 @@
                 <div class="sim-chart-hero">
                     <div class="sim-chart-hero__main">
                         <p class="sim-chart-hero__eyebrow">{{ __('sim.terminal.portfolio_value') }}</p>
-                        <p id="current-value" class="sim-chart-hero__value">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                        <p id="current-value" class="sim-chart-hero__value">ā‚¬{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
                         <p id="current-value-meta" class="sim-chart-hero__meta"></p>
                     </div>
                     <div class="sim-chart-hero__side">
                         <p class="sim-chart-hero__eyebrow">{{ __('sim.terminal.total_return') }}</p>
-                        <p id="sim-hero-return-pct" class="sim-chart-hero__pct">—</p>
+                        <p id="sim-hero-return-pct" class="sim-chart-hero__pct">ā€”</p>
                         <p class="sim-chart-hero__eyebrow">{{ __('sim.terminal.step_change') }}</p>
-                        <p id="sim-hero-step-delta" class="sim-chart-hero__sub">—</p>
+                        <p id="sim-hero-step-delta" class="sim-chart-hero__sub">ā€”</p>
                     </div>
                 </div>
                 <div class="sim-chart-range" id="sim-chart-range" role="toolbar" aria-label="{{ __('Investment growth over time') }}">
@@ -363,17 +368,17 @@
                 <div class="sim-rail-kpiGrid">
                     <div class="sim-rail-kpi">
                         <p class="sim-kpiLabel">{{ __('Total Contributed') }}</p>
-                        <p id="total-contributed" class="sim-kpiValue">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                        <p id="total-contributed" class="sim-kpiValue">ā‚¬{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
                         <p id="total-contributed-meta" class="sim-kpiMeta"></p>
                     </div>
                     <div class="sim-rail-kpi">
                         <p class="sim-kpiLabel">{{ __('Total Gain') }}</p>
-                        <p id="total-gain" class="sim-kpiValue" style="color: var(--c-primary);">€0.00</p>
+                        <p id="total-gain" class="sim-kpiValue" style="color: var(--c-primary);">ā‚¬0.00</p>
                         <p id="total-gain-meta" class="sim-kpiMeta"></p>
                     </div>
                     <div class="sim-rail-kpi">
                         <p class="sim-kpiLabel">{{ __('Real Value (Inflation Adj.)') }}</p>
-                        <p id="real-value" class="sim-kpiValue" style="color: var(--c-secondary);">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                        <p id="real-value" class="sim-kpiValue" style="color: var(--c-secondary);">ā‚¬{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
                         <p id="real-value-meta" class="sim-kpiMeta"></p>
                     </div>
                     <div class="sim-rail-kpi">
@@ -402,11 +407,11 @@
             <div class="sim-rail-card">
                 <h3 class="sim-rail-card__title">{{ __('sim.terminal.rail_performance') }}</h3>
                 <dl class="sim-rail-perf">
-                    <div><dt>{{ __('sim.terminal.best_step') }}</dt><dd id="sim-perf-best">—</dd></div>
-                    <div><dt>{{ __('sim.terminal.worst_step') }}</dt><dd id="sim-perf-worst">—</dd></div>
-                    <div><dt>{{ __('sim.terminal.sharpe') }}</dt><dd id="sim-perf-sharpe">—</dd></div>
+                    <div><dt>{{ __('sim.terminal.best_step') }}</dt><dd id="sim-perf-best">ā€”</dd></div>
+                    <div><dt>{{ __('sim.terminal.worst_step') }}</dt><dd id="sim-perf-worst">ā€”</dd></div>
+                    <div><dt>{{ __('sim.terminal.sharpe') }}</dt><dd id="sim-perf-sharpe">ā€”</dd></div>
                     <div><dt>{{ __('sim.terminal.total_trades') }}</dt><dd id="sim-perf-trades">0</dd></div>
-                    <div><dt>{{ __('sim.terminal.win_rate') }}</dt><dd id="sim-perf-winrate">—</dd></div>
+                    <div><dt>{{ __('sim.terminal.win_rate') }}</dt><dd id="sim-perf-winrate">ā€”</dd></div>
                 </dl>
             </div>
         </aside>
@@ -450,11 +455,11 @@
             >
                 <div style="padding:10px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
                     <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Initial Investment') }}</span>
-                    <p style="margin:4px 0 0; font-size:16px; font-weight:800;">€{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
+                    <p style="margin:4px 0 0; font-size:16px; font-weight:800;">ā‚¬{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
                 </div>
                 <div style="padding:10px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
                     <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Monthly Contribution') }}</span>
-                    <p style="margin:4px 0 0; font-size:16px; font-weight:800;">€{{ number_format($simulation->settings['monthlyContribution'], 2) }}</p>
+                    <p style="margin:4px 0 0; font-size:16px; font-weight:800;">ā‚¬{{ number_format($simulation->settings['monthlyContribution'], 2) }}</p>
                 </div>
                 <div style="padding:10px; border-radius:12px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border);">
                     <span style="color: var(--c-on-surface-2); font-size:13px;">{{ __('Annual Growth Rate') }}</span>

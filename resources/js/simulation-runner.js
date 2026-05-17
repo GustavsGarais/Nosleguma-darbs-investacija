@@ -1134,18 +1134,19 @@ function initFromConfig(config) {
     // Peles kursors virs diagrammas parasti nozīmē, ka flyout tikko sakļāvies — uzreiz pārlabot izmēru.
     dashWork?.addEventListener('pointerenter', () => scheduleChartResizeAfterLayout());
 
-    /** Velkama režģa starplika: kreisā kolonna (vadības) var pilnībā paslēpties; diagramma un kopsavilkums vienmēr redzami. */
+    /** Kreisā vadības josla: draw.io stils — saturs pazūd, starplika paliek; diagramma un kopsavilkums vienmēr redzami. */
     (function initTerminalColumnResize() {
         const shell = document.querySelector('.sim-run-shell--terminal');
         if (!shell) return;
+        const leadSplitter = document.getElementById('sim-terminal-lead-splitter');
         const LS_L = 'simTermGridLeft';
         const LS_R = 'simTermGridRight';
         const LS_LEAD_COLLAPSED = 'simTermLeadCollapsed';
         const EXPANDED_MIN = 200;
         const EXPANDED_MAX = 440;
         const LEAD_DRAG_MIN = 0;
-        const LEAD_COLLAPSE_BELOW = 200;
-        const LEAD_HIDE_WHILE_DRAGGING = 220;
+        const LEAD_SNAP_COLLAPSED = 56;
+        const LEAD_HIDE_WHILE_DRAGGING = 200;
         const RAIL_MIN = 200;
         const RAIL_MAX = 400;
         const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
@@ -1165,6 +1166,8 @@ function initFromConfig(config) {
         function applyLeadCollapsed(collapsed) {
             const c = Boolean(collapsed);
             shell.classList.toggle('sim-run-shell--terminal-lead-collapsed', c);
+            leadSplitter?.classList.toggle('is-collapsed', c);
+            leadSplitter?.setAttribute('aria-expanded', c ? 'false' : 'true');
             setLeadDragPreview(false);
             localStorage.setItem(LS_LEAD_COLLAPSED, c ? '1' : '0');
             if (c) {
@@ -1179,6 +1182,14 @@ function initFromConfig(config) {
             scheduleChartResizeAfterLayout();
         }
 
+        function snapLeadWidth(px) {
+            if (px <= LEAD_SNAP_COLLAPSED) {
+                return { width: 0, collapsed: true };
+            }
+            const open = clamp(px < EXPANDED_MIN ? EXPANDED_MIN : px, EXPANDED_MIN, EXPANDED_MAX);
+            return { width: open, collapsed: false };
+        }
+
         const leadCollapsed = localStorage.getItem(LS_LEAD_COLLAPSED) === '1'
             || localStorage.getItem('simTermLeadCollapsed') === '1';
         if (!leadCollapsed) {
@@ -1191,7 +1202,6 @@ function initFromConfig(config) {
         applyLeadCollapsed(leadCollapsed);
 
         localStorage.removeItem('simTermRailCollapsed');
-        shell.classList.remove('sim-run-shell--terminal-rail-collapsed');
         let rightPx = parseInt(localStorage.getItem(LS_R), 10);
         if (!Number.isFinite(rightPx)) rightPx = 268;
         rightPx = clamp(rightPx, RAIL_MIN, RAIL_MAX);
@@ -1205,6 +1215,11 @@ function initFromConfig(config) {
             const onMove = (ev) => {
                 const dx = ev.clientX - startX;
                 if (edge === 'lead') {
+                    if (shell.classList.contains('sim-run-shell--terminal-lead-collapsed') && dx > 0) {
+                        shell.classList.remove('sim-run-shell--terminal-lead-collapsed');
+                        leadSplitter?.classList.remove('is-collapsed');
+                        leadSplitter?.setAttribute('aria-expanded', 'true');
+                    }
                     const next = clamp(startVal + dx, LEAD_DRAG_MIN, EXPANDED_MAX);
                     shell.style.setProperty('--sim-grid-left', `${next}px`);
                     setLeadDragPreview(next < LEAD_HIDE_WHILE_DRAGGING);
@@ -1219,18 +1234,18 @@ function initFromConfig(config) {
                 document.removeEventListener('pointerup', onUp);
                 handle.classList.remove('is-dragging');
                 setLeadDragPreview(false);
-                const l = readInlinePx('--sim-grid-left', 288);
-                const r = readInlinePx('--sim-grid-right', 268);
                 if (edge === 'lead') {
-                    if (l < LEAD_COLLAPSE_BELOW) {
+                    const l = readInlinePx('--sim-grid-left', 0);
+                    const snap = snapLeadWidth(l);
+                    if (snap.collapsed) {
                         applyLeadCollapsed(true);
                     } else {
-                        const clamped = clamp(l, EXPANDED_MIN, EXPANDED_MAX);
-                        shell.style.setProperty('--sim-grid-left', `${clamped}px`);
-                        localStorage.setItem(LS_L, String(Math.round(clamped)));
+                        shell.style.setProperty('--sim-grid-left', `${snap.width}px`);
+                        localStorage.setItem(LS_L, String(Math.round(snap.width)));
                         applyLeadCollapsed(false);
                     }
                 } else {
+                    const r = readInlinePx('--sim-grid-right', 268);
                     const clampedR = clamp(r, RAIL_MIN, RAIL_MAX);
                     shell.style.setProperty('--sim-grid-right', `${clampedR}px`);
                     localStorage.setItem(LS_R, String(Math.round(clampedR)));
@@ -1243,8 +1258,6 @@ function initFromConfig(config) {
                 startX = ev.clientX;
                 const cs = getComputedStyle(shell);
                 if (edge === 'lead' && shell.classList.contains('sim-run-shell--terminal-lead-collapsed')) {
-                    shell.classList.remove('sim-run-shell--terminal-lead-collapsed');
-                    shell.style.setProperty('--sim-grid-left', '0px');
                     startVal = 0;
                 } else {
                     startVal =
@@ -1257,7 +1270,7 @@ function initFromConfig(config) {
                 document.addEventListener('pointerup', onUp);
             });
         };
-        bind(document.querySelector('[data-sim-resize-edge="lead"]'), 'lead');
+        bind(leadSplitter, 'lead');
         bind(document.querySelector('[data-sim-resize-edge="rail"]'), 'rail');
     })();
 
