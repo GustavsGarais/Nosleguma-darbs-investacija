@@ -1149,6 +1149,14 @@ function initFromConfig(config) {
         const RAIL_MIN = 200;
         const RAIL_MAX = 400;
         const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+        const readInlinePx = (prop, fallback) => {
+            const n = parseFloat(String(shell.style.getPropertyValue(prop)).replace(/px/g, ''));
+            return Number.isFinite(n) ? n : fallback;
+        };
+        const readComputedPx = (cs, prop, fallback) => {
+            const n = parseFloat(cs.getPropertyValue(prop));
+            return Number.isFinite(n) ? n : fallback;
+        };
 
         function setLeadDragPreview(narrow) {
             shell.classList.toggle('sim-run-shell--terminal-lead-drag-narrow', Boolean(narrow));
@@ -1208,8 +1216,8 @@ function initFromConfig(config) {
                 document.removeEventListener('pointerup', onUp);
                 handle.classList.remove('is-dragging');
                 setLeadDragPreview(false);
-                const l = parseFloat(String(shell.style.getPropertyValue('--sim-grid-left')).replace(/px/g, '')) || 288;
-                const r = parseFloat(String(shell.style.getPropertyValue('--sim-grid-right')).replace(/px/g, '')) || 268;
+                const l = readInlinePx('--sim-grid-left', 288);
+                const r = readInlinePx('--sim-grid-right', 268);
                 if (edge === 'lead') {
                     if (l < LEAD_COLLAPSE_BELOW) {
                         applyLeadCollapsed(true);
@@ -1238,8 +1246,8 @@ function initFromConfig(config) {
                 } else {
                     startVal =
                         edge === 'lead'
-                            ? parseFloat(cs.getPropertyValue('--sim-grid-left')) || 288
-                            : parseFloat(cs.getPropertyValue('--sim-grid-right')) || 268;
+                            ? readComputedPx(cs, '--sim-grid-left', 288)
+                            : readComputedPx(cs, '--sim-grid-right', 268);
                 }
                 handle.classList.add('is-dragging');
                 document.addEventListener('pointermove', onMove);
