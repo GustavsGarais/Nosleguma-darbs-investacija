@@ -484,6 +484,10 @@
     "sim.tooltip.simulation_parameters": "Read-only list of what this scenario assumes. Use Edit simulation to change amounts, growth, inflation, or risk.",
     "sim.help.simulation_controls": "Help: simulation controls",
     "sim.tooltip.simulation_controls": "Duration, speed, and market regime shape modeled returns. Second scenario compares alternate paths. Edit the simulation to change starting assumptions.",
+    "sim.help.market_regime": "Help: Market regime",
+    "sim.tooltip.market_regime": "Market regime changes the simulated market mood: drift (average direction), volatility (swing size), and rare shocks. Your scenario inputs stay the same—only the path pattern changes. Try Balanced vs Stress test to see drawdowns.",
+    "sim.help.second_scenario": "Help: Second scenario",
+    "sim.tooltip.second_scenario": "Overlays a second path on the same chart: extra monthly contributions, or the same returns in reverse order (sequence-of-returns risk). Use it to compare decisions—not to predict real markets.",
     "sim.help.coaching_tips": "Help: live tips",
     "sim.tooltip.coaching_tips": "Hints update from your preset and risk settings as you step or run. They describe model behavior, not financial advice.",
     "sim.help.trading_hands_on": "Help: hands-on trading",
@@ -493,6 +497,8 @@
     "sim.terminal.coaching_title": "Live tips",
     "sim.terminal.hands_on_title": "Hands-on trading",
     "sim.terminal.drag_resize_panels": "Drag to resize side panels",
+    "sim.terminal.show_controls": "Show controls",
+    "sim.terminal.hide_controls": "Hide",
     "sim.terminal.mode_auto": "Auto mode",
     "sim.terminal.mode_hands": "Hands-on",
     "sim.terminal.portfolio_value": "Portfolio value",
@@ -683,7 +689,6 @@
     "The annual inflation percentage (0-100). Example: 2% inflation. This helps you see the real purchasing power of your investment over time, accounting for price increases.": "The annual inflation percentage (0-100). Example: 2% inflation. This helps you see the real purchasing power of your investment over time, accounting for price increases.",
     "Number of investors in this scenario. More investors can amplify crowd behavior (profit-taking and panic waves), especially with high Market Influence.": "Number of investors in this scenario. More investors can amplify crowd behavior (profit-taking and panic waves), especially with high Market Influence.",
     "Use Step or Run in the bar above: each month reprices your holdings and redraws the chart.": "Use Step or Run in the bar above: each month reprices your holdings and redraws the chart.",
-    "Hands-on mode uses Step in the toolbar: each day reprices your portfolio and redraws the chart. Use the trading desk to buy or sell, then tap Step.": "Hands-on mode uses Step in the toolbar: each day reprices your portfolio and redraws the chart. Use the trading desk to buy or sell, then tap Step.",
     "Add to position": "Add to position",
     "Custom amount": "Custom amount",
     "Add": "Add",
@@ -884,7 +889,12 @@
 
     "ID": "ID",
 
-    "Resolved at": "Resolved at"
+    "Resolved at": "Resolved at",
+
+    "Account email": "Account email",
+    "This email is fixed for this reset link. It cannot be changed here. To reset a different account, request a new link for that address.": "This email is fixed for this reset link. It cannot be changed here. To reset a different account, request a new link for that address.",
+    "This password reset link is invalid or incomplete.": "This password reset link is invalid or incomplete.",
+    "Your reset session expired. Please request a new link.": "Your reset session expired. Please request a new link."
 }
 
 

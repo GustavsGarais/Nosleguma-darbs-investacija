@@ -19,7 +19,7 @@ function mulberry32(seed) {
 }
 
 function randn(rng) {
-  // Box–Muller
+  // Box–Muller nejaušo skaitļu ģenerēšana
   let u = 0;
   let v = 0;
   while (u === 0) u = rng();
@@ -34,7 +34,7 @@ function simulatePath({ initial, monthly, months, meanMonthly, volMonthly, seed 
   series[0] = value;
 
   for (let m = 1; m <= months; m += 1) {
-    // Contribute at start of month, then return.
+    // Iemaksa mēneša sākumā, tad atdeve.
     value += monthly;
     const shock = randn(rng) * volMonthly;
     const r = meanMonthly + shock;
@@ -85,7 +85,7 @@ function percentile(values, p) {
 }
 
 function getRegime(name) {
-  // Illustrative monthly parameters (not market data)
+  // Ilustratīvi mēneša parametri (nav tirgus dati)
   switch (name) {
     case 'growth':
       return { meanMonthly: 0.008, volMonthly: 0.035 };
@@ -110,7 +110,7 @@ function computeMiniSim(root) {
 
   const { meanMonthly, volMonthly } = getRegime(regimeName);
 
-  // Main line is the median of multiple runs to avoid a “random looking” first impression.
+  // Galvenā līnija ir vairāku skrējienu mediāna, lai pirmais iespaids neizskatītos pārāk nejaušs.
   const runs = 30;
   const endings = [];
   const paths = [];
@@ -140,7 +140,7 @@ function computeMiniSim(root) {
   if (outContrib) outContrib.textContent = fmtMoney(totalContrib);
   if (outRange) outRange.textContent = `${fmtMoney(endLow)} – ${fmtMoney(endHigh)}`;
 
-  // Build representative paths: low/median/high based on end value ranking
+  // Veido reprezentatīvus ceļus: zems/medians/augsts pēc gala vērtību rangēšanas
   const ranked = paths
     .map((p, idx) => ({ p, end: endings[idx] }))
     .sort((a, b) => a.end - b.end);

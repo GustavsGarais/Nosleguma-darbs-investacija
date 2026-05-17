@@ -1,5 +1,5 @@
 /**
- * Simulation runner dashboard layout.
+ * Simulācijas skrējēja informācijas paneļa izkārtojums.
  */
 .sim-run-shell {
 	display: grid;
@@ -91,7 +91,7 @@
 	white-space: nowrap;
 }
 
-/* Hands-on: hide Run; put Step first and style it as the primary action (time advances after trades). */
+/* Praktiskais režīms: paslēpt „Palaist”; „Solis” pirmais un kā galvenā darbība (laiks pēc darījumiem). */
 .sim-dash-toolbar--playground #btn-run {
 	display: none !important;
 }
@@ -116,7 +116,7 @@
 	min-height: 0;
 }
 
-/* Left: controls + optional trading desk stacked (desktop); toolbar can hide whole column. */
+/* Kreisā puse: vadības + opcionālais tirdzniecības panelis viena virs otra (desktop); rīkjosla var paslēpt kolonnu. */
 .sim-dash-lead {
 	display: flex;
 	flex-direction: column;
@@ -131,7 +131,7 @@
 		max-width 0.25s ease;
 }
 
-/* Vertical stack: Controls rail on top, Trading desk below — one narrow column instead of two side-by-side. */
+/* Vertikālais steks: vadību josla augšā, tirdzniecības panelis apakšā — viena šaura kolonna, nevis divas blakus. */
 .sim-dash-flyout-stack {
 	display: flex;
 	flex-direction: column;
@@ -141,7 +141,7 @@
 	min-width: 0;
 }
 
-/* Chart column only (flyouts live in .sim-dash-lead stack). */
+/* Tikai diagrammas kolonna (flyout elementi ir .sim-dash-lead stekā). */
 .sim-dash-work {
 	display: flex;
 	flex-direction: row;
@@ -170,7 +170,7 @@
 	min-width: 0;
 }
 
-/* Left hover / focus flyout: rail + panel read as one card when open */
+/* Kreisais flyout uz hover/fokusu: sānu josla + panelis izskatās kā viena karte, kad atvērts */
 .sim-controls-flyout {
 	--sim-flyout-rail: 46px;
 	--sim-flyout-panel: 300px;
@@ -200,11 +200,11 @@
 	border-color: var(--c-border);
 	background: var(--c-surface);
 	box-shadow: var(--shadow-1, 0 8px 28px rgba(0, 0, 0, 0.1));
-	/* Keep visible so <select> dropdowns are not clipped by the flyout */
+	/* Atstāt redzamu, lai <select> izvēlnes neapgriež flyout */
 	overflow: visible;
 }
 
-/* Tutorial: force-open flyouts when a step targets controls inside the panel. */
+/* Apmācība: piespiedu atvēršana flyoutiem, kad solis mērķē vadības laukus panelī. */
 .sim-controls-flyout[data-tutorial-open="true"] {
 	align-items: stretch;
 	border-color: var(--c-border);
@@ -233,7 +233,7 @@
 	transition: border-radius 0.2s ease, border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-/* Collapsed: compact pill — not stretched to chart column height */
+/* Sakļauts: kompakta „tablete” — nestiepjas līdz diagrammas kolonnas augstumam */
 .sim-controls-flyout:not(:hover):not(:focus-within) .sim-controls-flyout__rail {
 	max-height: min(220px, calc(100vh - 120px));
 }
@@ -277,7 +277,7 @@
 	white-space: nowrap;
 }
 
-/* Hands-on trading desk: reuse Controls flyout pattern; wider panel + secondary rail tint */
+/* Praktiskais tirdzniecības panelis: atkārtoti izmanto vadību flyout modeli; platāks panelis + sekundārās joslas tonis */
 .sim-playground-flyout {
 	--sim-flyout-panel: max(276px, min(380px, 34vw));
 }
@@ -296,7 +296,7 @@
 }
 
 /*
- * Desktop: left column = stacked flyouts; chart fills remaining width. Desk can grow below controls.
+ * Desktop: kreisā kolonna = flyouti viens virs otra; diagramma aizpilda atlikušo platumu. Panelis var augt zem vadībām.
  */
 @media (min-width: 1101px) {
 	.sim-dash-body {
@@ -355,8 +355,8 @@
 		min-height: min(56vh, 520px);
 	}
 
-	/* NOTE: previously we hid Controls when hovering Trading desk. With overlay panels this causes hover/flex feedback
-	 * (flicker), so we keep Controls visible for stable interactions. */
+	/* PIEZĪME: agrāk paslēpām Vadības, uzbraucot Tirdzniecības panelim. Ar pārklājuma paneļiem tas izraisa hover/flex mirgošanu,
+	 * tāpēc Vadības paliek redzamas stabilai mijiedarbībai. */
 }
 
 .sim-dash-chartCard {
@@ -389,7 +389,7 @@
 	min-width: min(100%, 200px);
 }
 
-/* Tighter chart eyebrow — reads like a terminal KPI label, not a second page title */
+/* Šaurāka diagrammas „uzacis” — lasās kā termināļa KPI, nevis otrs lapas virsraksts */
 .sim-dash-chartTitle--compact {
 	margin: 0 0 10px;
 	font-size: 0.72rem;
@@ -473,7 +473,7 @@
 	scrollbar-gutter: stable;
 }
 
-/* Playground “custom amount” row: never clip the Add button */
+/* Praktiskais „pats apjoms” rinda: nekad neapgriezt pogu „Pievienot” */
 .sim-playground-amount-row {
 	display: flex;
 	flex-wrap: wrap;
@@ -492,7 +492,7 @@
 	flex: 0 0 auto;
 }
 
-/* Classic mode: remove trading flyout from layout (see also [hidden] on #playground-panel). */
+/* Klasiskais režīms: izņemt tirdzniecības flyout no izkārtojuma (skat. arī [hidden] uz #playground-panel). */
 #playground-panel[hidden] {
 	display: none !important;
 }
@@ -692,7 +692,7 @@
 	max-width: 100%;
 }
 
-/* Left rail “settings deck” — closer to a dense control column than a generic auth card */
+/* Kreisā vadību „klājs” — tuvāk blīvai vadību kolonnai nekā vispārējai auth kartei */
 .sim-run-shell .sim-dash-settings-panel {
 	padding: 14px 14px 16px;
 	border: 1px solid color-mix(in srgb, var(--c-primary) 22%, var(--c-border));
@@ -713,6 +713,19 @@
 	gap: 8px;
 	margin-bottom: 10px;
 	min-width: 0;
+}
+
+.sim-dash-settings-panel__headActions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-shrink: 0;
+}
+
+.sim-terminal-hide-controls {
+	font-size: 11px;
+	padding: 4px 8px;
+	white-space: nowrap;
 }
 
 .sim-dash-settings-panel__heading {
@@ -774,7 +787,7 @@
 	border: 1px solid color-mix(in srgb, var(--c-border) 70%, var(--c-secondary) 30%);
 }
 
-/* Narrow hands-on column: hide numeric HUD + trade grids (no squished figures). */
+/* Šaura praktiskā kolonna: paslēpt skaitlisko HUD un darījumu režģus (lai cipari nesaspiežas). */
 .sim-run-shell--terminal #playground-panel.sim-dash-hands-on {
 	container-type: inline-size;
 	container-name: sim-hands-on;
@@ -814,7 +827,7 @@
 	gap: 6px;
 }
 
-/* Collapsible, denser KPI block on the simulation page */
+/* Simulācijas lapā: salokāms, blīvāks KPI bloks */
 details.sim-kpi-panel.auth-card {
 	padding: 0;
 	overflow: visible;
@@ -837,7 +850,7 @@ details.sim-kpi-panel.auth-card {
 	flex-shrink: 0;
 }
 
-/* Section help: clear “?” affordance + tooltip above neighbours */
+/* Sadaļas palīdzība: skaidrs „?” + rīka padoms virs kaimiņiem */
 .sim-run-section-help {
 	display: inline-flex;
 	align-items: center;
@@ -949,7 +962,7 @@ details.sim-kpi-panel.auth-card {
 	font-size: clamp(22px, 2.4vw, 30px);
 	font-weight: 800;
 	line-height: 1.15;
-	/* Prefer body/UI fonts so €, −, and digits render consistently (display fonts may lack full Latin-1 Supplement). */
+	/* Priekšroka ķermena/UI fontiem, lai €, − un cipari renderējas vienādi (dekoratīviem fontiem var trūkt Latin-1 Supplement). */
 	font-family: var(--font-family-body, "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif);
 	font-variant-numeric: tabular-nums;
 }
@@ -963,7 +976,7 @@ details.sim-kpi-panel.auth-card {
 	font-variant-numeric: tabular-nums;
 }
 
-/* MoM / gain hint: only the arrow is tinted (numbers stay readable on --c-on-surface-2). */
+/* Mēneša pret mēnesi / peļņas norāde: tonēta tikai bultiņa (cipari paliek lasāmi uz --c-on-surface-2). */
 .sim-deltaArrow {
 	display: inline-block;
 	font-weight: 800;
@@ -988,7 +1001,7 @@ html[data-theme="dark"] .sim-deltaArrow--down {
 	color: #f87171;
 }
 
-/* Collapsible blocks below chart (events log, simulation parameters) — match app elevated panels */
+/* Salokāmi bloki zem diagrammas (notikumu žurnāls, simulācijas parametri) — kā pārējie paceltie paneļi */
 .sim-accordion {
 	border-radius: var(--r-lg);
 	overflow: visible;
@@ -1067,7 +1080,7 @@ html[data-theme="dark"] .sim-deltaArrow--down {
 	opacity: 0.88;
 }
 
-/* Event log list */
+/* Notikumu žurnāla saraksts */
 .sim-event-log {
 	margin: 0;
 	padding-left: 0;
@@ -1091,7 +1104,7 @@ html[data-theme="dark"] .sim-event-log li {
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
-/* Simulation parameters grid (read-only chips under accordion) */
+/* Simulācijas parametru režģis (tikai lasāmas „čips” zem salokāmā bloka) */
 .sim-param-grid {
 	display: grid;
 	grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -1267,7 +1280,7 @@ html[data-theme="dark"] .sim-param-tile {
 	}
 }
 
-/* ─── Simulation run: trading-terminal layout (show page) ─── */
+/* ─── Simulācijas skrējiens: tirdzniecības termināļa izkārtojums (show lapa) ─── */
 .sim-run-shell--terminal {
 	--sim-grid-left: 288px;
 	--sim-grid-right: 268px;
@@ -1275,9 +1288,50 @@ html[data-theme="dark"] .sim-param-tile {
 
 .sim-run-shell--terminal .sim-dash-body {
 	display: grid;
-	grid-template-columns: minmax(272px, var(--sim-grid-left)) 6px minmax(0, 1fr) 6px minmax(200px, var(--sim-grid-right));
+	grid-template-columns: minmax(200px, var(--sim-grid-left)) 6px minmax(0, 1fr) 6px minmax(200px, var(--sim-grid-right));
 	gap: 16px 10px;
 	align-items: start;
+}
+
+/* Kreisā kolonna paslēpta, kad kreiso starpliku velk ļoti šauru un atlaiž (skat. simulation-runner.js). */
+.sim-run-shell--terminal.sim-run-shell--terminal-lead-collapsed .sim-dash-lead,
+.sim-run-shell--terminal.sim-run-shell--terminal-lead-collapsed .sim-dash-resize--lead {
+	display: none !important;
+}
+
+.sim-run-shell--terminal.sim-run-shell--terminal-lead-collapsed .sim-dash-body {
+	grid-template-columns: minmax(0, 1fr) 6px minmax(200px, var(--sim-grid-right));
+}
+
+.sim-terminal-show-controls {
+	position: absolute;
+	left: 6px;
+	top: 4px;
+	z-index: 8;
+	max-width: calc(100% - 12px);
+	white-space: nowrap;
+}
+
+.sim-run-shell--terminal.sim-run-shell--terminal-lead-collapsed .sim-dash-terminal-center {
+	padding-top: 42px;
+}
+
+/* Velkot šauri: paslēpt vadības saturu, lai nepaliek “pusredzams” panelis */
+.sim-run-shell--terminal.sim-run-shell--terminal-lead-drag-narrow:not(.sim-run-shell--terminal-lead-collapsed) .sim-dash-lead {
+	visibility: hidden;
+	overflow: hidden;
+	opacity: 0;
+	pointer-events: none;
+	min-width: 0 !important;
+	max-width: 0 !important;
+	width: 0 !important;
+	padding: 0;
+	margin: 0;
+	border: none;
+}
+
+.sim-run-shell--terminal.sim-run-shell--terminal-lead-drag-narrow:not(.sim-run-shell--terminal-lead-collapsed) .sim-dash-resize--lead {
+	opacity: 0.35;
 }
 
 .sim-dash-resize {
@@ -1351,7 +1405,7 @@ html[data-theme="dark"] .sim-param-tile {
 	box-shadow: 0 0 0 1px color-mix(in srgb, var(--c-primary) 35%, transparent);
 }
 
-/* Terminal simulation: toolbar as a stable grid — avoids status / actions / links colliding on one flex row */
+/* Termināļa simulācija: rīkjosla kā stabils režģis — novērš statusu/darbību/saišu sadursmi vienā flex rindā */
 .sim-run-shell--terminal .sim-dash-toolbar {
 	display: grid;
 	grid-template-columns: minmax(0, 1.1fr) auto minmax(0, 1.5fr) auto;
@@ -1451,9 +1505,9 @@ html[data-theme="dark"] .sim-param-tile {
 }
 
 /*
- * Terminal (3-col grid): do not let the main chart participate in unbounded flex growth.
- * Desktop rules use flex:1 + height:auto on .sim-run-chartWrap so it “fills” the card — with
- * grid align-self stretch + Chart.js sizing from clientHeight, the center column can inflate the row.
+ * Terminālis (3 kolonnu režģis): neļaut galvenajai diagrammai piedalīties neierobežotā flex augšanā.
+ * Desktop noteikumi lieto flex:1 + height:auto uz .sim-run-chartWrap, lai „aizpildītu” karti — ar
+ * grid align-self: stretch un Chart.js izmēru no clientHeight centrālā kolonna var pūst rindu.
  */
 .sim-run-shell--terminal .sim-dash-chartCol {
 	flex: 0 1 auto;
@@ -1477,6 +1531,7 @@ html[data-theme="dark"] .sim-param-tile {
 	align-self: start;
 	width: 100%;
 	min-width: 0;
+	position: relative;
 }
 
 .sim-chart-hero {
@@ -1707,7 +1762,7 @@ html[data-theme="dark"] .sim-param-tile {
 	margin-top: 4px;
 }
 
-/* Terminal: never use collapsed flyout + absolute panel here — it escapes the grid cell and covers the chart. */
+/* Terminālis: šeit nelietot sakļautu flyout + absolūtu paneli — tas izlīst no režģa šūnas un pārklāj diagrammu. */
 .sim-run-shell--terminal .sim-dash-flyout-stack {
 	width: 100%;
 	max-width: 100%;
@@ -1754,18 +1809,81 @@ html[data-theme="dark"] .sim-param-tile {
 }
 
 .sim-run-shell--terminal .sim-dash-controls__scroller {
-	display: grid;
+	display: flex;
+	flex-direction: column;
 	gap: 14px;
 	min-height: 0;
 	max-height: calc(100vh - var(--nav-h, 64px) - 32px);
+	overflow: visible;
+	padding-right: 2px;
+}
+
+.sim-run-shell--terminal .sim-dash-settings-panel__fields,
+.sim-run-shell--terminal .sim-playground-panel__inner {
+	flex: 1 1 auto;
+	min-height: 0;
+	max-height: min(52vh, 440px);
 	overflow-x: visible;
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	-webkit-overflow-scrolling: touch;
-	padding-right: 2px;
 }
 
-/* “?” help: show tooltip *below* the control so it stays in the scroll column (above was clipped by the scroller). */
+/* Run-page ? tooltips: JS floating layer (simulation-runner.js) — hide pseudo tooltips that clip in panels */
+.sim-run-section-help[data-tooltip]::after,
+.sim-run-section-help[data-tooltip]::before {
+	content: none !important;
+	display: none !important;
+}
+
+.sim-help-tooltip-floating {
+	position: fixed;
+	z-index: 10050;
+	max-width: min(320px, calc(100vw - 24px));
+	padding: 12px 14px;
+	border-radius: 10px;
+	background: #ffffff;
+	color: var(--c-on-surface);
+	border: 1px solid color-mix(in srgb, #7c3aed 28%, var(--c-border));
+	box-shadow: var(--shadow-2);
+	font-size: 13px;
+	line-height: 1.55;
+	font-weight: 500;
+	pointer-events: none;
+}
+
+[data-theme="dark"] .sim-help-tooltip-floating {
+	background: #1a1433;
+	color: #ffffff;
+	border-color: color-mix(in srgb, #7c3aed 55%, var(--c-border));
+}
+
+.sim-field-label {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px;
+	font-weight: 700;
+	min-width: 0;
+}
+
+.sim-dash-settings-panel__fields .sim-help-wrap {
+	flex-shrink: 0;
+	position: relative;
+	z-index: 2;
+}
+
+.sim-run-shell--terminal .sim-dash-settings-panel {
+	overflow: visible;
+}
+
+.sim-run-shell--terminal .sim-dash-settings-panel__head {
+	overflow: visible;
+	position: relative;
+	z-index: 12;
+}
+
+/* Legacy pseudo rules (fallback if JS disabled) — kept for reference; disabled above for .sim-run-section-help */
 .sim-run-shell--terminal .sim-dash-controls .info-bubble.sim-run-section-help::after {
 	top: calc(100% + 10px);
 	bottom: auto;
@@ -1775,6 +1893,12 @@ html[data-theme="dark"] .sim-param-tile {
 	width: min(320px, calc(100vw - 40px));
 	max-width: min(320px, calc(100vw - 40px));
 	z-index: 400;
+	background: #ffffff !important;
+	color: var(--c-on-surface) !important;
+	border: 1px solid color-mix(in srgb, #7c3aed 28%, var(--c-border));
+	box-shadow: var(--shadow-2);
+	opacity: 1 !important;
+	isolation: isolate;
 }
 
 .sim-run-shell--terminal .sim-dash-controls .info-bubble.sim-run-section-help:hover::after,
@@ -1794,12 +1918,18 @@ html[data-theme="dark"] .sim-param-tile {
 	z-index: 401;
 }
 
+[data-theme="dark"] .sim-run-shell--terminal .sim-dash-controls .info-bubble.sim-run-section-help::after {
+	background: #1a1433 !important;
+	color: #ffffff !important;
+	border-color: color-mix(in srgb, #7c3aed 55%, var(--c-border));
+}
+
 [data-theme="dark"] .sim-run-shell--terminal .sim-dash-controls .info-bubble.sim-run-section-help::before {
-	border-bottom-color: color-mix(in srgb, #7c3aed 78%, #0b1220);
+	border-bottom-color: #1a1433;
 	border-top-color: transparent;
 }
 
-/* Keep help targets from shrinking / sitting under the next card in flex heads */
+/* Lai palīdzības mērķi nesaruktu / nesēdētu zem nākamās kartes flex galviņās */
 .sim-run-shell--terminal .sim-dash-settings-panel__head .sim-help-wrap,
 .sim-run-shell--terminal .sim-dash-hands-on__head .sim-help-wrap,
 .sim-run-shell--terminal .sim-playground-actions__titleRow .sim-help-wrap {
@@ -1862,7 +1992,7 @@ html[data-theme="dark"] .sim-param-tile {
 	}
 }
 
-/* Edit simulation (dashboard) — denser layout, uses horizontal space */
+/* Simulācijas rediģēšana (informācijas panelis) — blīvāks izkārtojums, izmanto horizontālo vietu */
 .sim-edit-card {
 	max-width: 980px;
 	margin-inline: auto;
@@ -1944,7 +2074,7 @@ html[data-theme="dark"] .sim-param-tile {
 	align-items: start;
 }
 
-/* If there's an odd number of fields, let the last one span full width. */
+/* Ja lauku skaits nepāra, pēdējam ļaut aizņemt pilnu platumu. */
 .sim-edit-grid > label:last-child {
 	grid-column: 1 / -1;
 }

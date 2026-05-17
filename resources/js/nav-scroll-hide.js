@@ -1,5 +1,5 @@
 /**
- * Hides the sticky top nav while scrolling down; reveals it on scroll up or near page top.
+ * Paslēpj līmējo augšējo navigāciju, ritinot uz leju; parāda, ritinot uz augšu vai tuvu lapas augšai.
  */
 (function initNavScrollHide() {
     const nav = document.getElementById('main-navigation');

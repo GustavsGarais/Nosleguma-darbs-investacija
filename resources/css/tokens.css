@@ -1,6 +1,6 @@
 /**
- * Single source of design tokens (light + dark).
- * Replaces duplicate :root blocks from legacy public CSS files.
+ * Vienots dizaina tokenu avots (gaismā + tumšā).
+ * Aizstāj dublētus :root blokus no vecajiem publiskajiem CSS failiem.
  */
 :root {
 	--c-surface: #ffffff;
@@ -30,10 +30,10 @@
 	--font-family-body: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
 		"Helvetica Neue", Arial, "Noto Sans", sans-serif;
 	--font-family-heading: "Orbitron", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-		"Helvetica Neue", Arial; /* Orbitron: see components/fonts.blade.php */
+		"Helvetica Neue", Arial; /* Orbitron: skat. components/fonts.blade.php */
 	--section-gap: clamp(2rem, 5vw, 6rem);
 	--content-max-width: 84rem;
-	/* Aliases for older rules that still reference --color-* */
+	/* Vecāku noteikumu aliasi, kas joprojām lieto --color-* */
 	--color-primary: var(--c-primary);
 	--color-secondary: var(--c-secondary);
 	--color-surface: var(--c-surface);
@@ -42,10 +42,10 @@
 	--color-on-primary: #ffffff;
 	--color-border: var(--c-border);
 	--color-accent: var(--c-accent);
-	/* Simulation chart: portfolio line segment colors (see simulation-runner.js). */
+	/* Simulācijas diagramma: portfeļa līnijas segmentu krāsas (skat. simulation-runner.js). */
 	--sim-chart-trend-up: var(--c-primary);
 	--sim-chart-trend-down: #dc2626;
-	/* Page background + elevated panels (site body, simulation cards, nav) */
+	/* Lapas fons + pacelti paneļi (site body, simulācijas kartes, navigācija) */
 	--app-panel-gradient: linear-gradient(
 		125deg,
 		color-mix(in srgb, var(--c-primary) 16%, var(--c-surface)) 0%,

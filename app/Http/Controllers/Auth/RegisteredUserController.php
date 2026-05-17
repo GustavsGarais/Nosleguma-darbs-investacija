@@ -55,6 +55,6 @@ class RegisteredUserController extends Controller
         // Match login flow behavior (prevents session issues on some environments)
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->route('verification.notice');
     }
 }

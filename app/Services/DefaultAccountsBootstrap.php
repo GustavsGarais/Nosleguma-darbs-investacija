@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Creates fixed demo accounts once per environment (guarded by cache + DB check).
- * Enable with BOOTSTRAP_DEFAULT_ACCOUNTS=true in .env (e.g. Coolify / classroom deploy).
+ * Izveido fiksētos demo kontus vienreiz vidē (aizsargāti ar kešu + DB pārbaudi).
+ * Ieslēdz ar BOOTSTRAP_DEFAULT_ACCOUNTS=true .env (piem., Coolify / klase).
  */
 final class DefaultAccountsBootstrap
 {
@@ -80,9 +80,9 @@ final class DefaultAccountsBootstrap
         try {
             Cache::lock(self::LOCK_KEY, 30)->block(5, $run);
         } catch (LockTimeoutException) {
-            // Another worker is creating accounts; skip this request.
+            // Cits workeris veido kontus; šo pieprasījumu izlaiž.
         } catch (\Throwable) {
-            // Cache store may not support locks; still ensure accounts exist.
+            // Keša krātuve var neatbalstīt lock; tomēr nodrošina, ka konti pastāv.
             $run();
         }
     }

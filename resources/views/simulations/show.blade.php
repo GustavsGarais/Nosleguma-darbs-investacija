@@ -66,7 +66,6 @@
             'simModePlayground' => __('Hands-on portfolio lab'),
             'simulationMode' => __('Simulation mode'),
             'playgroundHelp' => __('Buy adds money into the investment. Sell moves part of the investment back to your cash wallet. The orange line is profit/loss compared to how much you put in (it can go below 0 = loss).'),
-            'playgroundNextStep' => __('Hands-on mode uses Step in the toolbar: each day reprices your portfolio and redraws the chart. Use the trading desk to buy or sell, then tap Step.'),
             'playgroundBuyHint' => __('Add to position'),
             'playgroundCustomAdd' => __('Custom amount'),
             'playgroundSellHint' => __('Sell part of holdings (priced at current month)'),
@@ -182,17 +181,26 @@
             <div class="sim-dash-controlsBlock sim-dash-settings-panel">
                 <div class="sim-dash-settings-panel__head">
                     <h3 class="sim-dash-settings-panel__heading">{{ __('Simulation Controls') }}</h3>
-                    @include('simulations.partials.section-help', [
-                        'tooltip' => __('sim.tooltip.simulation_controls'),
-                        'label' => __('sim.help.simulation_controls'),
-                    ])
+                    <div class="sim-dash-settings-panel__headActions">
+                        @include('simulations.partials.section-help', [
+                            'tooltip' => __('sim.tooltip.simulation_controls'),
+                            'label' => __('sim.help.simulation_controls'),
+                        ])
+                        <button
+                            type="button"
+                            id="sim-terminal-hide-controls"
+                            class="btn btn-outline btn-sm sim-terminal-hide-controls"
+                            title="{{ __('sim.terminal.hide_controls') }}"
+                            aria-label="{{ __('sim.terminal.hide_controls') }}"
+                        >{{ __('sim.terminal.hide_controls') }}</button>
+                    </div>
                 </div>
                 <fieldset class="sr-only" aria-hidden="true" tabindex="-1">
                     <legend>{{ __('Simulation mode') }}</legend>
                     <input type="radio" name="sim-mode" id="mode-classic" value="classic" @checked($defaultRunnerMode === 'classic') />
                     <input type="radio" name="sim-mode" id="mode-playground" value="playground" @checked($defaultRunnerMode === 'playground') />
                 </fieldset>
-                <div style="display:grid; gap:10px;">
+                <div class="sim-dash-settings-panel__fields" style="display:grid; gap:10px;">
                     <label style="display:grid; gap:6px;">
                         <span style="font-weight:700;">{{ __('Duration (days)') }}</span>
                         <input id="months-input" type="number" min="365" max="7300" step="365" value="3650" class="footer-email-input" />
@@ -202,7 +210,13 @@
                         <input id="speed-input" type="number" min="0.1" max="10" step="0.1" value="0.25" class="footer-email-input" />
                     </label>
                     <label style="display:grid; gap:6px;">
-                        <span style="font-weight:700;">{{ __('Market Regime') }}</span>
+                        <span class="sim-field-label">
+                            <span>{{ __('Market Regime') }}</span>
+                            @include('simulations.partials.section-help', [
+                                'tooltip' => __('sim.tooltip.market_regime'),
+                                'label' => __('sim.help.market_regime'),
+                            ])
+                        </span>
                         <select id="preset-select" class="footer-email-input">
                             <option value="balanced">{{ __('Balanced (default)') }}</option>
                             <option value="growth">{{ __('Growth / Bullish') }}</option>
@@ -213,7 +227,13 @@
                     </label>
                     <div id="classic-secondary-wrap">
                     <label style="display:grid; gap:6px;">
-                        <span style="font-weight:700;">{{ __('Second scenario') }}</span>
+                        <span class="sim-field-label">
+                            <span>{{ __('Second scenario') }}</span>
+                            @include('simulations.partials.section-help', [
+                                'tooltip' => __('sim.tooltip.second_scenario'),
+                                'label' => __('sim.help.second_scenario'),
+                            ])
+                        </span>
                         <select id="secondary-scenario" class="footer-email-input">
                             <option value="none">{{ __('None (single path)') }}</option>
                             <option value="compare">{{ __('Invest €100 / month more') }}</option>
@@ -236,7 +256,6 @@
                         'label' => __('sim.help.trading_hands_on'),
                     ])
                 </div>
-                <p id="playground-next-step" class="sim-dash-hands-on__hint" role="status" aria-live="polite"></p>
                 <div class="sim-playground-panel__inner">
                     <div class="sim-playground-hud" aria-live="polite">
                         <div class="sim-playground-hud__tile">
@@ -305,6 +324,14 @@
         ></div>
 
         <div class="sim-dash-work sim-dash-terminal-center">
+            <button
+                type="button"
+                id="sim-terminal-show-controls"
+                class="btn btn-outline btn-sm sim-terminal-show-controls"
+                hidden
+                aria-expanded="false"
+                aria-controls="sim-dash-lead"
+            >{{ __('sim.terminal.show_controls') }}</button>
             <div class="sim-dash-chartCol">
             <div class="sim-dash-chartCard" aria-label="Chart">
                 <div class="sim-chart-hero">

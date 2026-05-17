@@ -42,7 +42,7 @@ class SimulationController extends Controller
             'name' => 'required|string|max:30',
             'initial_investment' => 'required|numeric|min:0',
             'monthly_contribution' => 'required|numeric|min:0',
-            // UI uses percent (0-100). Stored as decimal (0-1).
+            // Lietotājvide rāda procentus (0–100). Datubāzē glabā kā decimāldalu (0–1).
             'growth_rate' => 'required|numeric|min:0|max:100',
             'risk_appetite' => 'required|numeric|min:0|max:100',
             'market_influence' => 'required|numeric|min:0|max:100',
@@ -93,7 +93,7 @@ class SimulationController extends Controller
             'name' => 'required|string|max:30',
             'initial_investment' => 'required|numeric|min:0',
             'monthly_contribution' => 'required|numeric|min:0',
-            // UI uses percent (0-100). Stored as decimal (0-1).
+            // Lietotājvide rāda procentus (0–100). Datubāzē glabā kā decimāldalu (0–1).
             'growth_rate' => 'required|numeric|min:0|max:100',
             'risk_appetite' => 'required|numeric|min:0|max:100',
             'market_influence' => 'required|numeric|min:0|max:100',
@@ -145,7 +145,7 @@ class SimulationController extends Controller
                 'total_gain' => 'required|numeric',
                 'horizon_months' => 'nullable|integer|min:1|max:7300',
                 'currency' => 'nullable|string|in:EUR,USD,GBP,JPY',
-                // Client sends one entry per step. In the daily timestep build, a 20y max horizon is 7300 days.
+                // Klients sūta vienu ierakstu uz soli. Ikdienas soļu būvē līdz 20 g. horizontam ir 7300 dienas.
                 'history' => 'nullable|array|max:7301',
                 'history.*.month' => 'required|integer|min:0|max:7300',
                 'history.*.value' => 'required|numeric',
@@ -193,7 +193,7 @@ class SimulationController extends Controller
     }
 
     /**
-     * Persist interactive runner UI state (mode, control values, simulation path) per simulation.
+     * Saglabā interaktīvā skrējēja UI stāvokli (režīms, vadības vērtības, ceļš) katrai simulācijai.
      */
     public function runnerState(Request $request, Simulation $simulation)
     {

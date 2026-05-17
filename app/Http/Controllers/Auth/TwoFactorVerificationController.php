@@ -91,6 +91,10 @@ class TwoFactorVerificationController extends Controller
         Auth::login($user, $remember || $request->boolean('remember'));
         $request->session()->regenerate();
 
+        if (! $user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice');
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 }

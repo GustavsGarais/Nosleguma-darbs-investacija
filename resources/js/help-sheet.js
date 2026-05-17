@@ -5,7 +5,7 @@ function setOpen(sheet, open) {
     document.documentElement.classList.toggle('helpSheet--noScroll', open);
     if (open) {
         const panel = sheet.querySelector('.helpSheet__panel');
-        // Focus after CSS paint so transitions don’t steal focus.
+        // Fokuss pēc CSS zīmēšanas, lai pārejas neaizņemtu fokusu.
         requestAnimationFrame(() => panel?.focus());
     }
 }

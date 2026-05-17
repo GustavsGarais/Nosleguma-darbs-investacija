@@ -12,21 +12,21 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Reģistrē lietotnes servisus.
      */
     public function register(): void
     {
-        //
+        // Nav papildu reģistrācijas.
     }
 
     /**
-     * Bootstrap any application services.
+     * Palaiž lietotnes servisus (boot).
      */
     public function boot(): void
     {
-        // Match generated URLs (forms, route(), JSON for fetch) to the browser address.
-        // Otherwise APP_URL like http://localhost without :8080, or 127.0.0.1 vs localhost,
-        // makes fetch() cross-origin: session cookies are not sent → CSRF token mismatch → 419.
+        // Ģenerēto URL (formas, route(), JSON fetch) sakrīt ar pārlūka adresi.
+        // Pretējā gadījumā APP_URL kā http://localhost bez :8080 vai 127.0.0.1 vs localhost
+        // padara fetch() starp izcelsmēm: sesijas sīkdatnes nesūtās → CSRF neatbilstība → 419.
         if (! $this->app->runningInConsole()) {
             $root = $this->app->make('request')->getSchemeAndHttpHost();
             if ($root !== '') {

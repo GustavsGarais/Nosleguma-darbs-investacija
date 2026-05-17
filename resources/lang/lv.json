@@ -509,6 +509,10 @@
     "sim.tooltip.simulation_parameters": "Šī scenārija pieņēmumu saraksts tikai lasīšanai. Lai mainītu summas, izaugsmi, inflāciju vai risku, atver Rediģēt simulāciju.",
     "sim.help.simulation_controls": "Palīdzība: simulācijas kontroles",
     "sim.tooltip.simulation_controls": "Ilgums, ātrums un tirgus režīms veido modelētos ienākumus. Otrais scenārijs salīdzina ceļus. Sākuma pieņēmumus maini, rediģējot simulāciju.",
+    "sim.help.market_regime": "Palīdzība: tirgus režīms",
+    "sim.tooltip.market_regime": "Tirgus režīms maina simulētās tirgus “noskaņu”: tendenci, svārstīgumu un retus šokus. Scenārija ievades paliek tie pašas—mainās tikai ceļa raksts. Pamēģini Līdzsvarots pret Stresa tests, lai redzētu kritumus.",
+    "sim.help.second_scenario": "Palīdzība: otrais scenārijs",
+    "sim.tooltip.second_scenario": "Uzliek otro līniju tajā pašā grafikā: piemēram, lielākas ikmēneša iemaksas vai tās pašas atdeves apgrieztā secībā (atdeves secības risks). Lieto salīdzināšanai, ne tirgus prognozēm.",
     "sim.help.coaching_tips": "Palīdzība: dinamiskie padomi",
     "sim.tooltip.coaching_tips": "Padomi atjaunojas no tava režīma un riska iestatījumiem, soli pa solim vai palaižot. Tas ir modeļa skaidrojums, ne finanšu padoms.",
     "sim.help.trading_hands_on": "Palīdzība: praktiskā tirdzniecība",
@@ -518,6 +522,8 @@
     "sim.terminal.coaching_title": "Dinamiskie padomi",
     "sim.terminal.hands_on_title": "Praktiskā tirdzniecība",
     "sim.terminal.drag_resize_panels": "Velc, lai mainītu sānu paneļu platumu",
+    "sim.terminal.show_controls": "Rādīt vadības paneli",
+    "sim.terminal.hide_controls": "Paslēpt",
     "sim.terminal.mode_auto": "Auto režīms",
     "sim.terminal.mode_hands": "Praktisks",
     "sim.terminal.portfolio_value": "Portfeļa vērtība",
@@ -692,7 +698,6 @@
     "The annual inflation percentage (0-100). Example: 2% inflation. This helps you see the real purchasing power of your investment over time, accounting for price increases.": "Gada inflācijas procents (0–100). Piemērs: 2%. Tas palīdz redzēt ieguldījuma reālo pirktspēju laika gaitā, ņemot vērā cenu kāpumu.",
     "Number of investors in this scenario. More investors can amplify crowd behavior (profit-taking and panic waves), especially with high Market Influence.": "Investoru skaits scenārijā. Vairāk investoru var pastiprināt “pūļa” uzvedību (peļņas fiksēšanu un panikas viļņus), īpaši pie augstas Tirgus ietekmes.",
     "Use Step or Run in the bar above: each month reprices your holdings and redraws the chart.": "Lietojiet augšējā joslā „Solis” vai „Palaist”: katru mēnesi tiek pārrēķinātas pozīcijas un atsvaidzināta diagramma.",
-    "Hands-on mode uses Step in the toolbar: each day reprices your portfolio and redraws the chart. Use the trading desk to buy or sell, then tap Step.": "Praktiskajā režīmā izmanto „Soli” rīkjoslā: katru dienu tiek pārrēķināts portfelis un atsvaidzināta diagramma. Vispirms pērc vai pārdod tirdzniecības panelī, tad piespiež „Solis”.",
     "Add to position": "Pievienot pozīcijai",
     "Custom amount": "Pats apjoms",
     "Add": "Pievienot",
@@ -892,5 +897,10 @@
 
     "ID": "ID",
 
-    "Resolved at": "Atrisināts"
+    "Resolved at": "Atrisināts",
+
+    "Account email": "Konta e-pasts",
+    "This email is fixed for this reset link. It cannot be changed here. To reset a different account, request a new link for that address.": "Šis e-pasts ir piesaistīts šai atjaunošanas saitei un to šeit nevar mainīt. Citam kontam pieprasi jaunu saiti uz attiecīgo adresi.",
+    "This password reset link is invalid or incomplete.": "Paroles atjaunošanas saite ir nederīga vai nepilnīga.",
+    "Your reset session expired. Please request a new link.": "Atjaunošanas sesija beigusies. Pieprasi jaunu saiti."
 }

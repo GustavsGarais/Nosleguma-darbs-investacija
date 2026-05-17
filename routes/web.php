@@ -24,7 +24,7 @@ Route::get('/quick-tour', function () {
 
 Route::post('/language', [LanguageController::class, 'switch'])->name('language.switch');
 
-// Support hub: tickets (auth) + public account / 2FA recovery
+// Atbalsta centrs: biļetes (autentificētiem) + publiska konta / 2FA atjaunošana
 Route::get('/support', [SupportHubController::class, 'index'])
     ->middleware('throttle:two-factor-recovery-support-page')
     ->name('support.index');
@@ -41,46 +41,46 @@ Route::get('/password-reset/report-unauthorized/{user}', ReportUnauthorizedPassw
     ->middleware(['signed', 'throttle:12,1'])
     ->name('password.reset.report-unauthorized');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return redirect()->route('simulations.index');
     })->name('dashboard');
 
-    // Simulation routes
+    // Simulāciju maršruti
     Route::resource('simulations', SimulationController::class);
     Route::post('/simulations/{simulation}/snapshot', [SimulationController::class, 'snapshot'])->name('simulations.snapshot');
     Route::post('/simulations/{simulation}/runner-state', [SimulationController::class, 'runnerState'])->name('simulations.runner-state');
 
-    // Settings
+    // Iestatījumi
     Route::get('/settings', [ProfileController::class, 'edit'])->name('settings');
     Route::patch('/settings/profile', [ProfileController::class, 'update'])->name('settings.profile');
     Route::patch('/settings/currency', [ProfileController::class, 'updateCurrency'])->name('settings.currency');
     Route::patch('/settings/password', [\App\Http\Controllers\Auth\PasswordController::class, 'update'])->name('settings.password');
     Route::delete('/settings', [ProfileController::class, 'destroy'])->name('settings.destroy');
 
-    // Two-Factor Authentication (setup / enable / disable / recovery codes)
+    // Divfaktoru autentifikācija (iestatīšana / ieslēgšana / izslēgšana / atkopšanas kodi)
     Route::get('/settings/two-factor', [\App\Http\Controllers\TwoFactorController::class, 'show'])->name('settings.two-factor');
     Route::post('/settings/two-factor', [\App\Http\Controllers\TwoFactorController::class, 'enable'])->name('two-factor.enable');
     Route::post('/settings/two-factor/disable', [\App\Http\Controllers\TwoFactorController::class, 'disable'])->name('two-factor.disable');
     Route::post('/settings/two-factor/recovery-codes', [\App\Http\Controllers\TwoFactorController::class, 'regenerateRecoveryCodes'])->name('two-factor.recovery-codes');
 
-    // Support tickets (user-facing; form lives on /support)
+    // Atbalsta biļetes (lietotājam; forma ir /support)
     Route::post('/support/ticket', [SupportTicketController::class, 'store'])->name('support.ticket.store');
     Route::get('/tickets', [SupportTicketController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/{ticket}', [SupportTicketController::class, 'show'])->name('tickets.show');
 
-    // Tutorial route
+    // Apmācības maršruts
     Route::post('/tutorial/complete', [DashboardController::class, 'completeTutorial'])->name('tutorial.complete');
 
-    // (Market feature removed)
+    // (Tirgus funkcija noņemta)
 });
 
-// Admin routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+// Administratora maršruti
+Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/audit-log', [AdminAuditLogController::class, 'index'])->name('audit.index');
 
-    // User management
+    // Lietotāju pārvaldība
     Route::get('/users', [AdminController::class, 'users'])->name('users.index');
     Route::get('/users/{user}', [AdminController::class, 'showUser'])->name('users.show');
     Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
@@ -88,12 +88,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
     Route::post('/users/{user}/disable-2fa', [AdminController::class, 'disableTwoFactor'])->name('users.disableTwoFactor');
 
-    // Email blocking
+    // E-pasta bloķēšana
     Route::get('/blocked-emails', [BlockedEmailController::class, 'index'])->name('blocked-emails.index');
     Route::post('/blocked-emails', [BlockedEmailController::class, 'store'])->name('blocked-emails.store');
     Route::delete('/blocked-emails/{blockedEmail}', [BlockedEmailController::class, 'destroy'])->name('blocked-emails.delete');
 
-    // Support tickets management
+    // Atbalsta biļešu administrēšana
     Route::get('/tickets', [AdminSupportTicketController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/{ticket}', [AdminSupportTicketController::class, 'show'])->name('tickets.show');
     Route::patch('/tickets/{ticket}/status', [AdminSupportTicketController::class, 'updateStatus'])->name('tickets.updateStatus');

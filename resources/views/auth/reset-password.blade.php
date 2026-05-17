@@ -24,10 +24,15 @@
             @csrf
             <input type="hidden" name="token" value="{{ $token }}">
 
-            <label style="display:grid; gap:6px;">
-                <span style="font-weight:700; color: var(--c-on-surface);">{{ __('Email') }}</span>
-                <input type="email" name="email" value="{{ old('email', $email ?? '') }}" required class="footer-email-input" autocomplete="email" />
-            </label>
+            <div style="display:grid; gap:6px;">
+                <span style="font-weight:700; color: var(--c-on-surface);">{{ __('Account email') }}</span>
+                <p style="margin:0; padding:10px 12px; border:1px solid var(--c-border); border-radius:10px; background: color-mix(in srgb, var(--c-surface) 96%, var(--c-primary) 4%); color: var(--c-on-surface);">
+                    {{ $email }}
+                </p>
+                <p style="margin:0; font-size:13px; color: var(--c-on-surface-2); line-height:1.5;">
+                    {{ __('This email is fixed for this reset link. It cannot be changed here. To reset a different account, request a new link for that address.') }}
+                </p>
+            </div>
 
             <x-password-input name="password" id="reset_password" :label="__('Password')" autocomplete="new-password" />
 

@@ -1,9 +1,9 @@
 /**
- * Shared layout & components (navigation, hero, footer, auth, forms).
- * Depends on tokens.css for --c-*, --space-*, etc.
+ * Kopīgais izkārtojums un komponentes (navigācija, hero, kājene, autentifikācija, formas).
+ * Atkarīgs no tokens.css (--c-*, --space-* utt.).
  */
 
-/* Base */
+/* Pamats */
 body {
 	font-family: var(--font-family-body);
 	color: var(--c-on-surface);
@@ -13,7 +13,7 @@ body {
 }
 * { box-sizing: border-box; }
 
-/* Ambient background (fills “empty” space around cards) */
+/* Gaisma ap kartēm (“tukšās” vietas aizpildīšana) */
 body::before,
 body::after {
 	content: "";
@@ -31,7 +31,7 @@ body::before {
 	filter: blur(0px);
 }
 body::after {
-	/* subtle texture so large areas don’t feel flat */
+	/* Neliela tekstūra, lai lielas virsmas neizjustas kā plakanas */
 	background-image:
 		linear-gradient(transparent, transparent),
 		radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.035) 1px, transparent 0);
@@ -59,7 +59,7 @@ body::after {
 	border: 0;
 }
 
-/* Home / logo: block default link color so gradient + icon colors stay controlled */
+/* Sākums / logotips: bloķē noklusējuma saites krāsu, lai gradienta un ikonu krāsas būtu kontrolējamas */
 a.navigation__brand,
 a.navigation__brand:visited {
 	color: inherit;
@@ -74,7 +74,7 @@ a.navigation__brand:focus-visible {
 	border-radius: 10px;
 }
 
-/* Content links: browser default blue fails on dark backgrounds */
+/* Satura saites: pārlūka noklusējuma zilā uz tumša fona nestrādā */
 main a:any-link:not(.btn) {
 	color: var(--c-link);
 	text-decoration-color: color-mix(in srgb, var(--c-link) 42%, transparent);
@@ -88,7 +88,7 @@ main a:any-link:not(.btn):focus-visible {
 	border-radius: 4px;
 }
 
-/* Pagination keeps row styling (see .pagination rules below) */
+/* Lapošana saglabā rindas stilu (skat. .pagination zemāk) */
 main .pagination a:any-link,
 main .pagination a:visited {
 	color: var(--c-on-surface);
@@ -98,7 +98,7 @@ main .pagination a:hover {
 	color: var(--c-primary);
 }
 
-/* Simulation list (and similar): row title links — explicit theme colors in light/dark */
+/* Simulāciju saraksts (un līdzīgi): rindas virsraksta saites — skaidras tēmas krāsas gaišā/tumšā */
 a.sim-name-link:any-link,
 a.sim-name-link:visited {
 	color: var(--c-link);
@@ -140,13 +140,13 @@ a.sim-name-link:focus-visible {
 	background: color-mix(in srgb, var(--c-primary) 28%, var(--c-surface));
 }
 
-/* Match homepage hero CTAs (larger tap target) */
+/* Kā sākumlapas hero CTA (lielāks pieskāriena mērķis) */
 .btn-lg { padding: 12px 18px; min-height: 48px; font-size: 1.05rem; border-radius: 10px; }
 
-/* Normalize <a> vs <button> rendering */
+/* Vienotot <a> un <button> attēlojumu */
 .btn { appearance: none; -webkit-appearance: none; }
 
-/* Home ticker (Investify-style “market strip”) */
+/* Sākumlapas lente (“tirgus josla” stilā) */
 .home-ticker {
 	margin: 0 auto;
 	padding: 22px 0 0;
@@ -184,7 +184,7 @@ a.sim-name-link:focus-visible {
 	position: absolute;
 	inset: 0;
 	pointer-events: none;
-	/* Side fades so the moving text feels less “busy” at edges */
+	/* Malu izgaismošana, lai kustīgais teksts malās nejustos pārāk “troksnis” */
 	background:
 		linear-gradient(90deg,
 			color-mix(in srgb, var(--c-surface) 92%, transparent) 0%,
@@ -237,7 +237,7 @@ a.sim-name-link:focus-visible {
 	.home-ticker__track { animation: none; }
 }
 
-/* Home screenshots + reviews */
+/* Sākumlapas ekrānuzņēmumi + atsauksmes */
 .home-shots {
 	margin-top: 14px;
 	display: grid;
@@ -308,17 +308,17 @@ a.sim-name-link:focus-visible {
 	}
 }
 
-/* Small/compact buttons (tables, actions) */
+/* Mazas pogas (tabulas, darbības) */
 .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; line-height: 1.1; }
 
-/* Force equal height for small buttons on simulations list (Edit/Delete) */
+/* Vienāds augstums mazām pogām simulāciju sarakstā (Rediģēt/Dzēst) */
 .simulations-page .btn-sm {
   height: 36px;
   min-height: 36px;
   line-height: 1;
 }
 
-/* Numeric inputs with +/- controls (create/edit forms) */
+/* Skaitliskie lauki ar +/- vadībām (izveides/rediģēšanas formas) */
 .num-input-group,
 .accel-input {
   display: flex;
@@ -326,14 +326,14 @@ a.sim-name-link:focus-visible {
   align-items: center;
 }
 
-/* Create Simulation: keep form readable on wide screens */
+/* Simulācijas izveide: forma lasāma arī platos ekrānos */
 .sim-create-card {
   max-width: 980px;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* Info tooltip bubble used in create/edit forms (solid, readable) */
+/* Informācijas rīka burbulis izveides/rediģēšanas formās (necaurspīdīgs, lasāms) */
 .info-bubble {
   position: relative;
   display: inline-flex;
@@ -350,7 +350,7 @@ a.sim-name-link:focus-visible {
   max-width: min(340px, 70vw);
   padding: 10px 12px;
   border-radius: 10px;
-  /* Light theme: white bubble with subtle purple accent */
+  /* Gaišā tēma: balts burbulis ar viegli violetu akcentu */
   background: var(--c-surface);
   color: var(--c-on-surface);
   border: 1px solid color-mix(in srgb, #7c3aed 28%, var(--c-border));
@@ -359,15 +359,15 @@ a.sim-name-link:focus-visible {
   line-height: 1.5;
   letter-spacing: 0.01em;
   z-index: 50;
-  /* Always opaque; we toggle visibility instead of opacity to avoid “transparent” rendering. */
+  /* Vienmēr necaurspīdīgs; redzamību pārslēdzam, nevis opacity, lai izvairītos no “caurspīdīga” renderējuma. */
   opacity: 1;
-  /* Ensure tooltip never looks “see-through” due to blending/backdrop effects. */
+  /* Lai rīka padoms neizskatās “caur” sajaukšanas/fona filtru dēļ */
   mix-blend-mode: normal;
   filter: none;
   backdrop-filter: none;
   visibility: hidden;
   pointer-events: none;
-  /* Avoid semi-transparent fade-in; show solid instantly */
+  /* Bez caurspīgas ieiešanas animācijas; uzreiz pilns */
   transition: transform 0.12s ease;
 }
 
@@ -395,13 +395,21 @@ a.sim-name-link:focus-visible {
 .info-bubble:hover::after,
 .info-bubble:focus-within::after {
   transform: translateX(-50%) translateY(0);
-  /* Force full opacity/solid fill on hover/focus (some browsers render this pseudo as translucent otherwise). */
+  /* Hover/fokusā pilns necaurspīdīgs fons (daži pārlūki pseudo-elementu citādi renderē puscaurspīgu). */
   opacity: 1 !important;
+  background: #ffffff !important;
   background: var(--c-surface) !important;
   color: var(--c-on-surface) !important;
+  isolation: isolate;
 }
 
-/* Dark theme: purple bubble */
+/* Never dim the trigger — opacity on .info-bubble makes ::after tooltips semi-transparent too. */
+.info-bubble:hover,
+.info-bubble:focus-within {
+  opacity: 1;
+}
+
+/* Tumšā tēma: violetais burbulis */
 [data-theme="dark"] .info-bubble::after {
   background: color-mix(in srgb, #7c3aed 78%, #0b1220);
   color: #ffffff;
@@ -420,7 +428,7 @@ a.sim-name-link:focus-visible {
   padding: 10px 12px;
 }
 
-/* Make +/- buttons consistent */
+/* Vienotot +/- pogas */
 .num-input-group .accel-minus,
 .num-input-group .accel-plus,
 .accel-input .accel-minus,
@@ -429,7 +437,7 @@ a.sim-name-link:focus-visible {
   padding: 0;
 }
 
-/* Mobile: one-column grid + bigger tap targets */
+/* Mobilais: vienas kolonnas režģis + lielāki pieskāriena mērķi */
 @media (max-width: 640px) {
   .create-sim-grid {
     grid-template-columns: 1fr !important;
@@ -449,7 +457,7 @@ a.sim-name-link:focus-visible {
   }
 }
 
-/* Hide number spinners for numeric controls */
+/* Paslēpt skaitļu lauku spinnerus */
 .num-input-group input[type="number"]::-webkit-outer-spin-button,
 .num-input-group input[type="number"]::-webkit-inner-spin-button,
 .accel-input input[type="number"]::-webkit-outer-spin-button,
@@ -463,12 +471,12 @@ a.sim-name-link:focus-visible {
   appearance: textfield;
 }
 
-/* Link-styled button */
+/* Poga kā saite */
 .btn-link { background: transparent; color: var(--c-primary); border: 0; padding: 0; text-decoration: none; font-weight: 600; }
 .btn-link:hover { text-decoration: underline; color: var(--c-primary); }
 .btn-link:focus-visible { outline: 2px solid var(--c-primary); outline-offset: 2px; border-radius: 6px; }
 
-/* Tutorial: block page scroll while overlay is open (reduces highlight / spotlight drift) */
+/* Apmācība: bloķēt lapas ritināšanu, kamēr pārklājums atvērts (samazina izcelšanas/plankuma dreifēšanu) */
 html.tutorial-scroll-lock,
 html.tutorial-scroll-lock body {
 	overflow: hidden;
@@ -476,7 +484,7 @@ html.tutorial-scroll-lock body {
 	overscroll-behavior: none;
 }
 
-/* Tutorial close button (fix dark-mode white square) */
+/* Apmācības aizvēršanas poga (labojums tumšajā režīmā — balts kvadrāts) */
 .tutorial-close {
   appearance: none;
   -webkit-appearance: none;
@@ -502,7 +510,7 @@ html.tutorial-scroll-lock body {
   outline-offset: 2px;
 }
 
-/* Global flash alerts (session success / error / validation) */
+/* Globālie flash paziņojumi (sesijas veiksmes/kļūdas/validācija) */
 .flash-stack {
 	max-width: var(--maxw);
 	margin: 0 auto;
@@ -544,7 +552,7 @@ html.tutorial-scroll-lock body {
 	text-align: left;
 }
 
-/* Navigation */
+/* Navigācija */
 .navigation {
 	position: sticky;
 	top: 0;
@@ -612,15 +620,15 @@ html.tutorial-scroll-lock body {
 }
 .navigation__actions { display:flex; align-items:center; gap:12px; }
 
-/* Desktop navigation panel layout */
+/* Darbvirsmas navigācijas paneļa izkārtojums */
 .navigation__panel { display:flex; align-items:center; gap:18px; }
 
 @media (max-width: 991px) {
-	/* Mobile navigation panel overrides (keeps previous grid box) */
+	/* Mobilā navigācijas paneļa pārrakstījumi (saglabā iepriekšējo režģa kasti) */
 	.navigation__panel { display:grid; gap: 10px; }
 }
 
-/* Mobile navigation panel */
+/* Mobilā navigācijas panelis */
 @media (max-width: 991px) {
 	.navigation__menu { z-index: 9999; max-height: calc(100vh - 60px); overflow-y: auto; padding: 16px; }
 	.navigation__panel { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 12px; box-shadow: var(--shadow-2); padding: 14px; display: grid; gap: 10px; }
@@ -638,24 +646,24 @@ html.tutorial-scroll-lock body {
 	.navigation__actions .btn { width:100%; justify-content:center; }
 }
 
-/* Mobile navigation panel overlay always on top */
+/* Mobilā navigācijas pārklājums vienmēr virspusē */
 @media (max-width: 991px) {
 	.navigation__menu { position: fixed; inset: var(--nav-h) 0 0 0; z-index: 3000; max-height: calc(100vh - var(--nav-h)); overflow-y: auto; padding: 16px; background: color-mix(in srgb, var(--c-surface) 96%, transparent); }
 	.navigation__panel { position: relative; z-index: 3001; background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 12px; box-shadow: var(--shadow-2); padding: 14px; display: grid; gap: 10px; }
 }
 
-/* Force right alignment of menu on desktop */
+/* Izlīdzināt izvēlni pa labi uz darbvirsmu */
 .navigation__menu { margin-left: auto; }
 @media (max-width: 991px) {
 	.navigation__menu { margin-left: 0; }
 }
 
-/* Hero section minimal to keep layout sane */
+/* Hero: minimāls, lai izkārtojums paliek stabils */
 .hero {
 	max-width: 1200px;
 	margin: 24px auto;
 	padding: 44px var(--space-xl);
-	/* Keep hero large, but leave room for ticker on first view. */
+	/* Liels hero, bet atstāj vietu lentei pirmajā skatā */
 	min-height: clamp(520px, calc(100vh - var(--nav-h) - 220px), 760px);
 	border-radius: var(--r-lg);
 	overflow: hidden;
@@ -679,7 +687,7 @@ html.tutorial-scroll-lock body {
 	gap: var(--space-2xl);
 }
 
-/* Home hero without the outer "card" box (keeps inner layout) */
+/* Sākumlapas hero bez ārējās “kartes” kastes (saglabā iekšējo izkārtojumu) */
 .hero.hero--frameless {
 	max-width: var(--maxw);
 	margin: 10px auto 18px;
@@ -718,11 +726,11 @@ html.tutorial-scroll-lock body {
 .controls > * { flex: 0 0 auto; }
 .controls .quick-signin { margin-left: auto; }
 .theme-toggle { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--c-border); border-radius:999px; color: var(--c-on-surface-2); background: color-mix(in srgb, var(--c-surface) 90%, transparent); transition: all 0.2s ease; }
-/* Icons follow text color in both themes */
+/* Ikonas seko teksta krāsai abās tēmās */
 .theme-toggle svg, .theme-toggle svg * { stroke: currentColor; fill: none; }
-/* Pressed/active state */
+/* Nospiests/aktīvs stāvoklis */
 .theme-toggle[aria-pressed="true"] { background: var(--c-primary); border-color: var(--c-primary); color: #ffffff; }
-/* Ensure theme toggle buttons adapt properly in light mode */
+/* Tēmas pārslēga pogas pareizi gaišajā režīmā */
 [data-theme="dark"] .theme-toggle:not([aria-pressed="true"]) { color: var(--c-on-surface-2); }
 
 .cta-cluster { display:flex; flex-wrap:wrap; gap:10px; }
@@ -748,7 +756,7 @@ html.tutorial-scroll-lock body {
 	font-weight: 700;
 }
 
-/* Hero highlights: compact (less “boxy” than cards) */
+/* Hero akcenti: kompakti (mazāk “kastīti” nekā kartēm) */
 .home-hero-points {
 	margin-top: 16px;
 	display: flex;
@@ -825,7 +833,7 @@ html.tutorial-scroll-lock body {
 	mix-blend-mode: overlay;
 }
 
-/* Regulatory badge alignment */
+/* Regulatora žetona izlīdzināšana */
 .regulatory-badge { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:8px; background: color-mix(in srgb, var(--c-surface) 92%, var(--c-primary) 8%); border:1px solid var(--c-border); color: var(--c-on-surface); }
 .regulatory-badge svg { width:18px; height:18px; display:block; }
 
@@ -840,17 +848,17 @@ html.tutorial-scroll-lock body {
 
 @media (max-width: 991px) { .home-hero-point__text { white-space: normal; } }
 
-/* Ensure hero content sits under nav overlay when open */
+/* Hero saturs zem navigācijas pārklājuma, kad atvērts */
 .hero, .visual-stack, main { position: relative; z-index: 1; }
 
-/* Homepage sections under hero */
+/* Sākumlapas sekcijas zem hero */
 .home-section {
 	max-width: var(--maxw);
 	margin: 0 auto;
 	padding: 0 var(--space-xl);
 }
 
-/* Keep hero + ticker in a composed “scene” */
+/* Hero + lente kā viena “aina” */
 .home-ambient {
 	position: relative;
 	z-index: 1;
@@ -923,7 +931,7 @@ html.tutorial-scroll-lock body {
 	line-height: 1.7;
 }
 
-/* Homepage: interactive preview */
+/* Sākumlapa: interaktīvs priekšskatījums */
 .home-preview {
 	display: grid;
 	grid-template-columns: 1.2fr 0.8fr;
@@ -931,15 +939,15 @@ html.tutorial-scroll-lock body {
 	align-items: start;
 }
 .home-section--preview {
-	/* Add breathing room between hero and preview card. */
+	/* Elpa starp hero un priekšskatījuma karti */
 	margin-top: clamp(52px, 9vh, 160px);
 }
 .home-section--preview .home-section__inner {
-	/* Use section margin-top instead (prevents double spacing). */
+	/* Vietā tam izmantot sekcijas margin-top (novērš dubultu atstarpi) */
 	margin-top: 0;
 }
 .home-preview__left .home-section__subtitle {
-	/* Prevent “stretched” looking paragraphs on wide screens. */
+	/* Novērst “izstieptu” rindkopu izskatu platos ekrānos */
 	max-width: 60ch;
 	text-wrap: pretty;
 }
@@ -1041,7 +1049,7 @@ html.tutorial-scroll-lock body {
 	.home-mini__spark { justify-content: flex-start; }
 }
 
-/* Homepage: trust/disclaimer strip */
+/* Sākumlapa: uzticamības/atrunas josla */
 .home-trust {
 	margin-top: 14px;
 	display: grid;
@@ -1071,7 +1079,7 @@ html.tutorial-scroll-lock body {
 }
 .home-cards {
 	display: grid;
-	/* Auto-fit keeps a clean row when space allows (4 on wide screens). */
+	/* auto-fit dod tīru rindu, kad ir vieta (4 platos ekrānos) */
 	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 	gap: 14px;
 }
@@ -1111,7 +1119,7 @@ html.tutorial-scroll-lock body {
 	position: relative;
 }
 .home-steps--enhanced::before {
-	/* Removed: was a horizontal connector line behind steps (looked like a cut-through). */
+	/* Noņemts: horizontāla savienojošā līnija aiz soļiem (izskatījās kā griezums cauri) */
 	content: none !important;
 	display: none !important;
 }
@@ -1154,7 +1162,7 @@ html.tutorial-scroll-lock body {
 	color: color-mix(in srgb, var(--c-on-surface) 78%, var(--c-primary) 22%);
 }
 .home-faq__grid {
-	/* Use columns so expanding one item doesn't resize its neighbor. */
+	/* Kolonnas, lai viena vienuma paplašināšana nemainītu kaimiņa platumu */
 	column-count: 2;
 	column-gap: 10px;
 }
@@ -1246,7 +1254,7 @@ html.tutorial-scroll-lock body {
 	.home-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-/* Footer */
+/* Kājene */
 .footer-container { margin-top: var(--space-3xl); background: var(--c-surface); border-top:1px solid var(--c-border); }
 .footer-content-wrapper { max-width: var(--maxw); margin:0 auto; padding: var(--space-3xl) var(--space-xl); }
 .footer-top-section { display:grid; grid-template-columns: 1.2fr 1fr; gap: var(--space-2xl); padding-bottom: var(--space-2xl); border-bottom:1px solid var(--c-border); }
@@ -1270,7 +1278,7 @@ html.tutorial-scroll-lock body {
 .footer-input-group { display:flex; gap:10px; }
 .footer-email-input { flex:1; border:1px solid var(--c-border); border-radius:10px; padding:10px 12px; background: color-mix(in srgb, var(--c-surface) 96%, transparent); color: var(--c-on-surface); min-height:40px; }
 
-/* Admin sidebar: full width controls so long locale labels (e.g. Latviešu) are not clipped */
+/* Admin sānjosla: pilna platuma vadības, lai garas lokalizācijas etiķetes (piem. Latviešu) netiktu apgrieztas */
 .admin-sidebar-header .admin-select {
   max-width: 100%;
   width: 100%;
@@ -1312,7 +1320,7 @@ html.tutorial-scroll-lock body {
 	.footer-bottom-content { grid-template-columns: 1fr; text-align:center; }
 }
 
-/* User dashboard: full-width content; app nav lives in the global top bar menu */
+/* Lietotāja informācijas panelis: saturs pilnā platumā; lietotnes nav ir globālajā augšējā joslā */
 .dashboard-shell {
   display: block;
   width: 100%;
@@ -1325,7 +1333,7 @@ html.tutorial-scroll-lock body {
   max-width: 100%;
 }
 
-/* Help side-sheet (global) — same mint-cream face + primary rail as dashboard panels */
+/* Palīdzības sānu lapa (globāli) — tā pati “mint-cream” virsma + primārā josla kā informācijas paneļos */
 .helpSheet__btn {
   width: 38px;
   height: 38px;
@@ -1490,7 +1498,7 @@ html.tutorial-scroll-lock body {
 
 .helpSheet--noScroll { overflow: hidden; }
 
-/* Same horizontal band as .navigation__container (--maxw 1280px, 16px gutters); avoids a separate narrow centered column */
+/* Tā pati horizontālā josla kā .navigation__container (--maxw 1280px, 16px atkāpes); izvairās no šauras atsevišķas kolonnas */
 .dashboard-content-inner {
   width: 100%;
   max-width: var(--maxw);
@@ -1499,7 +1507,7 @@ html.tutorial-scroll-lock body {
   box-sizing: border-box;
 }
 
-/* Auth pages + dashboard panels: mint-cream face, primary accent, soft halo */
+/* Autentifikācijas lapas + informācijas paneļi: “mint-cream” virsma, primārais akcents, maigs halo */
 .auth-page { max-width: 560px; margin: 48px auto; padding: 0 var(--space-xl); }
 .auth-card {
 	border-radius: var(--r-lg);
@@ -1511,7 +1519,7 @@ html.tutorial-scroll-lock body {
 	background-clip: padding-box;
 	box-shadow: var(--app-card-shadow);
 }
-/* Nested panels (e.g. KPI tiles inside a tour card, control blocks) */
+/* Iegultie paneļi (piem. KPI flīzes ekskursijas kartē, vadības bloki) */
 .auth-card.auth-card--inset,
 .auth-card .auth-card {
 	border: 1px solid color-mix(in srgb, var(--c-primary) 18%, var(--c-border));
@@ -1541,7 +1549,7 @@ html.tutorial-scroll-lock body {
 .password-field__wrap .password-field__input {
 	width: 100%;
 	box-sizing: border-box;
-	/* Room for in-field eye control (icon sits inside the same border as typed text) */
+	/* Vieta acs ikonai laukā (ikona tajā pašā apmalē kā ievadītais teksts) */
 	padding-right: 2.5rem;
 }
 .password-field__toggle {
@@ -1588,7 +1596,7 @@ html.tutorial-scroll-lock body {
 	min-width: 0;
 }
 
-/* Quick Tour: avoid inheriting heavy .hero layout/accent */
+/* Ātrā ekskursija: nemantot smago .hero izkārtojumu/akcentu */
 .quick-tour{
 	width: calc(100% - 32px);
 	max-width: var(--maxw);
@@ -1613,13 +1621,13 @@ html.tutorial-scroll-lock body {
 	box-shadow: var(--app-card-shadow);
 }
 .quick-tour__inner{ max-width: 1440px; margin: 0 auto; display: grid; gap: 24px; }
-/* Remove the strong left accent inside Quick Tour cards */
+/* Noņemt spēcīgo kreiso akcentu Ātrās ekskursijas kartēs */
 .quick-tour .auth-card{ border-left-width: 1px; }
 
-/* (Quick Tour inputs use inline layout like the simulation page.) */
+/* (Ātrās ekskursijas lauki — inline izkārtojums kā simulācijas lapā.) */
 .quick-tour__fields{
 	display: grid;
-	/* Match Simulation controls feel: fixed-ish input widths, centered */
+	/* Līdzīgi simulācijas vadībām: fiksēti lauku platumi, centrēti */
 	grid-template-columns: repeat(4, minmax(220px, 280px));
 	gap: 12px;
 	justify-content: center;
@@ -1631,7 +1639,7 @@ html.tutorial-scroll-lock body {
 	.quick-tour__fields{ grid-template-columns: 1fr; }
 }
 
-/* Simulations index: list toolbar + table (card shell = .auth-card globally) */
+/* Simulāciju saraksts: rīkjosla + tabula (kartes čaula globāli = .auth-card) */
 .simulations-page {
   position: relative;
   z-index: 0;
@@ -1640,7 +1648,7 @@ html.tutorial-scroll-lock body {
   gap: 22px;
   padding-bottom: 8px;
 }
-/* Frameless welcome band — matches homepage .hero.hero--frameless (no card box) */
+/* Bez rāmja sagaidīšanas josla — kā sākumlapas .hero.hero--frameless (bez kartes kastes) */
 .simulations-page .sim-dash-welcome--frameless {
   margin-top: 8px;
   margin-bottom: 0;
@@ -1713,8 +1721,8 @@ html.tutorial-scroll-lock body {
   min-width: 0;
 }
 
-/* Simulations index: card grid (dashboard-style cards) */
-/* Up to 4 cards per row on wide dashboards (matches design); single card uses one column only */
+/* Simulāciju saraksts: karšu režģis (informācijas paneļa stila kartes) */
+/* Līdz 4 kartēm rindā platos informācijas paneļos; viena karte aizņem vienu kolonnu */
 .simulations-page .sim-cardGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1741,7 +1749,7 @@ html.tutorial-scroll-lock body {
 
 .simulations-page .sim-card {
   position: relative;
-  min-width: 0; /* allow grid items to shrink below min-content */
+  min-width: 0; /* ļaut režģa vienumiem sarūt zem min-content */
   display: grid;
   grid-template-rows: auto 1fr auto;
   border-radius: 16px;
@@ -1954,7 +1962,7 @@ html.tutorial-scroll-lock body {
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--c-surface) 75%, transparent);
 }
 
-/* Ticket detail: inner blocks on ticket show (matches dashboard/support prose panels) */
+/* Piekļūšanas biļetes detaļas: iekšējie bloki (kā informācijas/atbalsta paneļu proza) */
 .ticket-detail__meta {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -1983,7 +1991,7 @@ html.tutorial-scroll-lock body {
   border-left: 3px solid var(--c-primary);
 }
 
-/* Laravel Pagination Styles - Theme Aware */
+/* Laravel lapošanas stili — sensitīvi pret tēmu */
 .pagination { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; }
 .pagination li { display: inline-block; }
 .pagination a,

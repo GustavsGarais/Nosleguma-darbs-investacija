@@ -9,7 +9,7 @@ function asNumber(value, fallback = 0) {
     return Number.isFinite(num) ? num : fallback;
 }
 
-/** Stable fingerprint when simulation settings change (invalidates saved runner state). */
+/** Stabils “pirkstu nospiedums”, kad mainās simulācijas iestatījumi (padara saglabāto skrējēja stāvokli nederīgu). */
 function runnerSettingsFingerprint(settingsObj) {
     const r = (x) => Math.round(Number(x) * 1e9) / 1e9;
     const s = settingsObj;
@@ -32,7 +32,7 @@ function gaussianRandom() {
     return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
 }
 
-/** Fat tails + typical month clustering */
+/** Biežākas ekstrēmas vērtības + tipiska mēnešu grupēšanās */
 function realisticReturn(monthlyBase, volatility) {
     const roll = Math.random();
     if (roll < 0.03) {
@@ -45,23 +45,23 @@ function realisticReturn(monthlyBase, volatility) {
 }
 
 /**
- * Other market participants: AR(1) sentiment plus random waves of buying/selling.
- * Feeds into monthly returns so the path is not a one-way grind upward.
+ * Citi tirgus dalībnieki: AR(1) noskaņojums plus nejauši pirkšanas/pārdošanas viļņi.
+ * Ietekmē mēneša atdevi, lai ceļš nebūtu tikai vienvirziena kāpšana uz augšu.
  */
 function evolveCrowdSentiment(prev, settings, lastMonthlyReturn) {
     const investors = Math.max(1, Math.floor(Number(settings?.investors) || 1));
-    // 1 investor => ~0, 100 investors => ~1 (log-scaled so 10->0.5, 100->1)
+    // Investoru skaits: 1 → ~0, 100 → ~1 (logaritmiski: 10 → 0,5, 100 → 1)
     const investorFactor = Math.max(0, Math.min(1, Math.log10(investors) / 2));
     const market = Math.max(0, Math.min(1, Number(settings?.marketInfluence) || 0));
     const risk = Math.max(0, Math.min(1, Number(settings?.riskAppetite) || 0));
 
-    // With more investors + higher market influence, sentiment moves are larger and more frequent.
+    // Jo vairāk investoru un augstāka tirgus ietekme, jo lielākas un biežākas noskaņojuma kustības.
     const amp = 0.004 + investorFactor * market * (0.006 + 0.006 * risk);
     const persistence = 0.9 - investorFactor * market * 0.12;
 
     let s = persistence * prev + gaussianRandom() * amp;
 
-    // Occasional waves (panic / euphoria), scaled by market influence.
+    // Reizēm viļņi (panika / eiforija), mērogo pēc tirgus ietekmes.
     const waveBase = 0.055 + market * 0.08;
     if (Math.random() < waveBase) {
         const panic = 0.008 + Math.random() * (0.025 + 0.03 * market);
@@ -72,8 +72,8 @@ function evolveCrowdSentiment(prev, settings, lastMonthlyReturn) {
         s += hype * (0.6 + 0.8 * investorFactor);
     }
 
-    // Mean reversion pressure that strengthens with more participants:
-    // after a strong up month -> profit taking, after a strong down month -> dip buying.
+    // Vidējās atgriešanās spiediens, kas pastiprinās ar dalībnieku skaitu:
+    // pēc spēcīga augšup mēneša -> peļņas fiksēšana, pēc kritiena -> pirkšana “dibenā”.
     const mr = Math.tanh((Number(lastMonthlyReturn) || 0) * 18);
     s -= mr * (0.002 + 0.006 * investorFactor) * (0.35 + 0.65 * market);
 
@@ -122,7 +122,88 @@ Chart.register(overlayPlugin, zoomPlugin);
 
 Chart.defaults.font.family = "'DM Sans', 'Segoe UI', system-ui, sans-serif";
 
+/** Floating tooltips for run-page ? icons — avoids clipping inside scroll panels. */
+function initSimRunHelpTooltips() {
+    const triggers = document.querySelectorAll('.sim-run-section-help[data-tooltip]');
+    if (!triggers.length) return;
+
+    let tip = document.getElementById('sim-help-tooltip-floating');
+    if (!tip) {
+        tip = document.createElement('div');
+        tip.id = 'sim-help-tooltip-floating';
+        tip.className = 'sim-help-tooltip-floating';
+        tip.setAttribute('role', 'tooltip');
+        tip.hidden = true;
+        document.body.appendChild(tip);
+    }
+
+    let active = null;
+
+    const hide = () => {
+        tip.hidden = true;
+        active = null;
+    };
+
+    const place = (anchor) => {
+        const text = anchor.getAttribute('data-tooltip');
+        if (!text) return hide();
+        tip.textContent = text;
+        tip.hidden = false;
+        tip.style.visibility = 'hidden';
+        tip.style.left = '0';
+        tip.style.top = '0';
+
+        const margin = 10;
+        const rect = anchor.getBoundingClientRect();
+        const tr = tip.getBoundingClientRect();
+        let top = rect.bottom + margin;
+        let left = rect.left + rect.width / 2 - tr.width / 2;
+
+        if (left + tr.width > window.innerWidth - margin) {
+            left = window.innerWidth - tr.width - margin;
+        }
+        if (left < margin) left = margin;
+
+        if (top + tr.height > window.innerHeight - margin) {
+            top = rect.top - tr.height - margin;
+        }
+        if (top < margin) top = margin;
+
+        tip.style.left = `${Math.round(left)}px`;
+        tip.style.top = `${Math.round(top)}px`;
+        tip.style.visibility = 'visible';
+    };
+
+    const show = (anchor) => {
+        active = anchor;
+        place(anchor);
+    };
+
+    triggers.forEach((el) => {
+        el.addEventListener('mouseenter', () => show(el));
+        el.addEventListener('focus', () => show(el));
+        el.addEventListener('mouseleave', () => {
+            if (active === el) hide();
+        });
+        el.addEventListener('blur', () => {
+            if (active === el) hide();
+        });
+    });
+
+    window.addEventListener(
+        'scroll',
+        () => {
+            if (active) place(active);
+        },
+        true,
+    );
+    window.addEventListener('resize', () => {
+        if (active) place(active);
+    });
+}
+
 function initFromConfig(config) {
+    initSimRunHelpTooltips();
     const {
         snapshotUrl,
         runnerStateUrl,
@@ -183,8 +264,8 @@ function initFromConfig(config) {
         return;
     }
 
-    // Keep canvas CSS size tied to wrapper; avoids “zoom/crop” when the drawing buffer resizes
-    // but the element's CSS box doesn't (common with flex + animated side panels).
+    // Canvas CSS izmērs piesaistīts ietvaram; novērš “zoom/crop”, kad mainās zīmēšanas buferis,
+    // bet elementa CSS kaste paliek tā pat (bieži pie flex + animētiem sānu paneļiem).
     chartCanvas.style.display = 'block';
     chartCanvas.style.width = '100%';
     chartCanvas.style.height = '100%';
@@ -227,7 +308,7 @@ function initFromConfig(config) {
                 return { ...defaultRates, ...parsed.rates };
             }
         } catch (e) {
-            /* ignore */
+            /* ignorēt */
         }
         return { ...defaultRates };
     }
@@ -252,7 +333,7 @@ function initFromConfig(config) {
                 return stored;
             }
         } catch (e) {
-            /* ignore */
+            /* ignorēt */
         }
         return 'EUR';
     }
@@ -332,7 +413,7 @@ function initFromConfig(config) {
         },
     };
 
-    // Monthly timestep: annual rates -> monthly rates (12-month year).
+    // Mēneša solis: gada likmes → mēneša likmes (12 mēnešu gads).
     const baseMonthlyReturnRate = Math.pow(1 + settings.growthRate, 1 / 12) - 1;
     const monthlyInflationRate = Math.pow(1 + settings.inflationRate, 1 / 12) - 1;
     const volatilityInfluence = (settings.riskAppetite + settings.marketInfluence) / 2;
@@ -341,7 +422,7 @@ function initFromConfig(config) {
     const annualFeeRate = 0.002;
     const monthlyFeeRate = annualFeeRate / 12;
 
-    // User input is "monthly contribution" and is applied once per monthly step.
+    // Lietotāja ievade ir “mēneša iemaksa”; tiek piemērota vienreiz katrā mēneša solī.
     const monthlyContribution = settings.monthlyContribution;
 
     let isRunning = false;
@@ -374,7 +455,7 @@ function initFromConfig(config) {
 
     let chartResizeSettleGen = 0;
 
-    /** Re-run resize on every animation frame until the host width is stable (covers ~280ms flyout transitions). */
+    /** Atkārtoti izmēra katrā animācijas kadrā, kamēr konteinera platums stabilizējas (~280 ms “flyout” pārejām). */
     function runChartResizeSettlingLoop(durationMs = 540) {
         chartResizeSettleGen += 1;
         const gen = chartResizeSettleGen;
@@ -400,7 +481,7 @@ function initFromConfig(config) {
         requestAnimationFrame(tick);
     }
 
-    /** Flyouts + flex use CSS width transitions; one-shot resize often reads a stale box — settle until layout stops moving. */
+    /** Flyout + flex izmanto CSS platumu pārejas; viens resize bieži nolasa novecojušu kasti — gaidīt, līdz izkārtojums apstājas. */
     function scheduleChartResizeAfterLayout() {
         runChartResizeSettlingLoop(540);
     }
@@ -438,10 +519,6 @@ function initFromConfig(config) {
                 initAllocationDoughnut();
             }
             updateAllocationChart();
-        }
-        const playgroundNextStepEl = document.getElementById('playground-next-step');
-        if (playgroundNextStepEl) {
-            playgroundNextStepEl.textContent = i18n.playgroundNextStep || '';
         }
         if (isPlaygroundMode && secondarySelect && secondarySelect.value !== 'none') {
             secondarySelect.value = 'none';
@@ -584,7 +661,7 @@ function initFromConfig(config) {
             ],
         },
         options: {
-            // Manual sizing only: Chart's built-in ResizeObserver on the canvas parent races with flex + CSS transitions.
+            // Tikai manuāls izmērs: Chart.js iebūvētais ResizeObserver uz canvas vecāk sacenšas ar flex + CSS pārejām.
             responsive: false,
             maintainAspectRatio: false,
             interaction: {
@@ -927,14 +1004,14 @@ function initFromConfig(config) {
         if (height < 2) {
             height = Math.max(0, Math.floor(wrap.getBoundingClientRect().height));
         }
-        /* Guard: bad flex/grid frames can report a huge box; Chart.resize would then lock in a runaway layout. */
+        /* Drošinātājs: slikti flex/grid kadri var dot milzīgu kasti; Chart.resize tad “iesalda” nepamatoti lielu izkārtojumu. */
         const cap = Math.max(280, Math.floor(window.innerHeight * 0.72));
         height = Math.min(height, cap);
         if (width < 2 || height < 2) return null;
         return { width, height };
     }
 
-    /** Pin chart pixel size to `.sim-run-chartWrap` (required while `responsive: false`). */
+    /** Diagrammas pikseļu izmērs piesaistīts `.sim-run-chartWrap` (nepieciešams, kamēr `responsive: false`). */
     function forceChartResize() {
         chart.stop();
         const size = readChartHostSize();
@@ -962,7 +1039,7 @@ function initFromConfig(config) {
         chart.options.scales.y.title.color = titleColor;
         chart.options.scales.y.grid.color = gridColor;
 
-        // Tooltip: keep readable on both themes.
+        // Rīka padoms: lasāms abās tēmās.
         chart.options.plugins.tooltip.backgroundColor = isDark
             ? 'rgba(17, 24, 39, 0.92)'
             : 'rgba(15, 23, 42, 0.92)';
@@ -984,7 +1061,7 @@ function initFromConfig(config) {
     forceChartResize();
     applyChartTheme();
 
-    // React to theme changes (light/dark toggle).
+    // Reaģē uz tēmas maiņu (gaismas/tumsas pārslēgs).
     if (typeof MutationObserver !== 'undefined') {
         const mo = new MutationObserver((mutations) => {
             for (const m of mutations) {
@@ -1018,7 +1095,7 @@ function initFromConfig(config) {
         };
     };
 
-    /** Coalesce ResizeObserver storms during CSS width transitions; flyouts need the trailing sync too. */
+    /** Apvieno ResizeObserver “vētras” CSS platumu pārejās; flyoutiem nepieciešama arī beigu sinhronizācija. */
     const roOnFlexLayout = roDebounce(scheduleChartSyncAfterFlyoutLayout);
 
     if (dashBody && typeof ResizeObserver !== 'undefined') {
@@ -1032,7 +1109,7 @@ function initFromConfig(config) {
         roWork.observe(dashWork);
     }
 
-    // Flyouts animate width; lead vs chart column split can change without the viewport changing.
+    // Flyout animē platumu; kreisās kolonnas un diagrammas sadalījums var mainīties bez viewport izmaiņām.
     if (dashLead && typeof ResizeObserver !== 'undefined') {
         new ResizeObserver(roOnFlexLayout).observe(dashLead);
     }
@@ -1054,24 +1131,76 @@ function initFromConfig(config) {
         chartRo.observe(chartWrap);
     }
 
-    // Moving the pointer onto the chart usually means a flyout just collapsed — settle size immediately.
+    // Peles kursors virs diagrammas parasti nozīmē, ka flyout tikko sakļāvies — uzreiz pārlabot izmēru.
     dashWork?.addEventListener('pointerenter', () => scheduleChartResizeAfterLayout());
 
-    /** Draggable grid gutters: persist column widths for the trading-terminal layout. */
+    /** Velkama režģa starplikas: saglabā platumus; kreiso starpliku velkot ļoti šauru un atlaižot, paslēpj vadības paneli. */
     (function initTerminalColumnResize() {
         const shell = document.querySelector('.sim-run-shell--terminal');
         if (!shell) return;
         const LS_L = 'simTermGridLeft';
         const LS_R = 'simTermGridRight';
+        const LS_COLLAPSED = 'simTermLeadCollapsed';
+        const EXPANDED_MIN = 200;
+        const EXPANDED_MAX = 440;
+        const LEAD_DRAG_MIN = 64;
+        const LEAD_COLLAPSE_BELOW = 200;
+        const LEAD_HIDE_WHILE_DRAGGING = 220;
+        const RAIL_MIN = 200;
+        const RAIL_MAX = 400;
+        const expandBtn = document.getElementById('sim-terminal-show-controls');
+        const hideBtn = document.getElementById('sim-terminal-hide-controls');
         const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
-        let leftPx = parseInt(localStorage.getItem(LS_L), 10);
+
+        function setLeadDragPreview(narrow) {
+            shell.classList.toggle('sim-run-shell--terminal-lead-drag-narrow', Boolean(narrow));
+        }
+
+        function applyLeadCollapsed(collapsed) {
+            const c = Boolean(collapsed);
+            shell.classList.toggle('sim-run-shell--terminal-lead-collapsed', c);
+            setLeadDragPreview(false);
+            localStorage.setItem(LS_COLLAPSED, c ? '1' : '0');
+            if (expandBtn) {
+                expandBtn.hidden = !c;
+                expandBtn.setAttribute('aria-expanded', c ? 'false' : 'true');
+            }
+            if (hideBtn) {
+                hideBtn.hidden = c;
+            }
+            if (!c) {
+                let l = parseInt(localStorage.getItem(LS_L), 10);
+                if (!Number.isFinite(l)) l = 288;
+                l = clamp(l, EXPANDED_MIN, EXPANDED_MAX);
+                shell.style.setProperty('--sim-grid-left', `${l}px`);
+                localStorage.setItem(LS_L, String(Math.round(l)));
+            }
+            scheduleChartResizeAfterLayout();
+        }
+
         let rightPx = parseInt(localStorage.getItem(LS_R), 10);
-        if (!Number.isFinite(leftPx)) leftPx = 288;
         if (!Number.isFinite(rightPx)) rightPx = 268;
-        leftPx = clamp(leftPx, 272, 440);
-        rightPx = clamp(rightPx, 200, 400);
-        shell.style.setProperty('--sim-grid-left', `${leftPx}px`);
+        rightPx = clamp(rightPx, RAIL_MIN, RAIL_MAX);
         shell.style.setProperty('--sim-grid-right', `${rightPx}px`);
+        localStorage.setItem(LS_R, String(Math.round(rightPx)));
+
+        const collapsed = localStorage.getItem(LS_COLLAPSED) === '1';
+        if (!collapsed) {
+            let leftPx = parseInt(localStorage.getItem(LS_L), 10);
+            if (!Number.isFinite(leftPx)) leftPx = 288;
+            leftPx = clamp(leftPx, EXPANDED_MIN, EXPANDED_MAX);
+            shell.style.setProperty('--sim-grid-left', `${leftPx}px`);
+            localStorage.setItem(LS_L, String(Math.round(leftPx)));
+        }
+        applyLeadCollapsed(collapsed);
+
+        expandBtn?.addEventListener('click', () => {
+            applyLeadCollapsed(false);
+        });
+
+        hideBtn?.addEventListener('click', () => {
+            applyLeadCollapsed(true);
+        });
 
         const bind = (handle, edge) => {
             if (!handle) return;
@@ -1080,10 +1209,11 @@ function initFromConfig(config) {
             const onMove = (ev) => {
                 const dx = ev.clientX - startX;
                 if (edge === 'lead') {
-                    const next = clamp(startVal + dx, 272, 440);
+                    const next = clamp(startVal + dx, LEAD_DRAG_MIN, EXPANDED_MAX);
                     shell.style.setProperty('--sim-grid-left', `${next}px`);
+                    setLeadDragPreview(next < LEAD_HIDE_WHILE_DRAGGING);
                 } else {
-                    const next = clamp(startVal - dx, 200, 400);
+                    const next = clamp(startVal - dx, RAIL_MIN, RAIL_MAX);
                     shell.style.setProperty('--sim-grid-right', `${next}px`);
                 }
                 scheduleChartResizeAfterLayout();
@@ -1092,13 +1222,30 @@ function initFromConfig(config) {
                 document.removeEventListener('pointermove', onMove);
                 document.removeEventListener('pointerup', onUp);
                 handle.classList.remove('is-dragging');
+                setLeadDragPreview(false);
                 const l = parseFloat(String(shell.style.getPropertyValue('--sim-grid-left')).replace(/px/g, '')) || 288;
                 const r = parseFloat(String(shell.style.getPropertyValue('--sim-grid-right')).replace(/px/g, '')) || 268;
-                localStorage.setItem(LS_L, String(Math.round(l)));
-                localStorage.setItem(LS_R, String(Math.round(r)));
+                if (edge === 'lead') {
+                    if (l < LEAD_COLLAPSE_BELOW) {
+                        applyLeadCollapsed(true);
+                    } else {
+                        const clamped = clamp(l, EXPANDED_MIN, EXPANDED_MAX);
+                        shell.style.setProperty('--sim-grid-left', `${clamped}px`);
+                        localStorage.setItem(LS_L, String(Math.round(clamped)));
+                        applyLeadCollapsed(false);
+                    }
+                } else {
+                    const clampedR = clamp(r, RAIL_MIN, RAIL_MAX);
+                    shell.style.setProperty('--sim-grid-right', `${clampedR}px`);
+                    localStorage.setItem(LS_R, String(Math.round(clampedR)));
+                }
             };
             handle.addEventListener('pointerdown', (ev) => {
                 if (ev.button !== 0) return;
+                if (edge === 'lead' && shell.classList.contains('sim-run-shell--terminal-lead-collapsed')) {
+                    applyLeadCollapsed(false);
+                    return;
+                }
                 ev.preventDefault();
                 handle.setPointerCapture?.(ev.pointerId);
                 startX = ev.clientX;
@@ -1116,7 +1263,7 @@ function initFromConfig(config) {
         bind(document.querySelector('[data-sim-resize-edge="rail"]'), 'rail');
     })();
 
-    /** Flyouts open/close in CSS — transitionend / leaving focus catches collapse after width animation. */
+    /** Flyout atvēršana/aizvēršana CSS — transitionend / fokusa zaudējums noķer sakļaušanu pēc platumu animācijas. */
     (function bindChartSyncToFlyoutLayout() {
         const layoutRoots = [dashLead, leadFlyoutEl, playgroundPanel].filter(Boolean);
         const flyoutSurfaces = [leadFlyoutEl, playgroundPanel].filter(Boolean);
@@ -1887,7 +2034,7 @@ function initFromConfig(config) {
     }
 
     function startSimulation() {
-        // Single button toggles run/pause.
+        // Viens pārslēdzējs: palaist/pauze.
         if (isRunning) {
             pauseSimulation();
             return;
