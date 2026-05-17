@@ -58,7 +58,7 @@
                             </td>
                             <td style="color: var(--admin-text-muted);">{{ $user->simulations_count }}</td>
                             <td style="color: var(--admin-text-muted); font-size: 13px;">
-                                {{ $user->created_at->translatedFormat('d MMM Y') }}
+                                {{ $user->created_at->translatedFormat('d M Y') }}
                             </td>
                             <td>
                                 <div style="display: flex; gap: 8px;">

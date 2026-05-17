@@ -36,7 +36,7 @@
                                 </span>
                             </td>
                             <td style="padding:12px 8px; color:var(--c-on-surface-2); font-size:13px;">
-                                {{ $ticket->created_at->translatedFormat('d MMM Y') }}
+                                {{ $ticket->created_at->translatedFormat('d M Y') }}
                             </td>
                             <td style="padding:12px 8px;">
                                 <a href="{{ route('tickets.show', $ticket) }}" class="btn btn-secondary btn-sm">{{ __('View') }}</a>

@@ -34,7 +34,7 @@
                 </div>
                 <div>
                     <p style="margin:0 0 4px; font-size:13px; color:var(--c-on-surface-2);">{{ __('Submitted') }}</p>
-                    <p style="margin:0; font-weight:600;">{{ $ticket->created_at->translatedFormat('d MMMM Y') }}</p>
+                    <p style="margin:0; font-weight:600;">{{ $ticket->created_at->translatedFormat('d F Y') }}</p>
                     <p style="margin:4px 0 0; font-size:12px; color:var(--c-on-surface-2);">{{ $ticket->created_at->diffForHumans() }}</p>
                 </div>
             </div>

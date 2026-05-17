@@ -127,12 +127,12 @@
                 </div>
                 <div>
                     <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">{{ __('Created') }}</p>
-                    <span style="font-size: 13px;">{{ $ticket->created_at->translatedFormat('d MMM Y HH:mm') }}</span>
+                    <span style="font-size: 13px;">{{ $ticket->created_at->translatedFormat('d M Y H:i') }}</span>
                 </div>
                 @if($ticket->resolved_at)
                     <div>
                         <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">{{ __('Resolved at') }}</p>
-                        <span style="font-size: 13px;">{{ $ticket->resolved_at->translatedFormat('d MMM Y HH:mm') }}</span>
+                        <span style="font-size: 13px;">{{ $ticket->resolved_at->translatedFormat('d M Y H:i') }}</span>
                     </div>
                 @endif
             </div>

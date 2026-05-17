@@ -116,7 +116,7 @@
                                 @endif
                             </td>
                             <td style="color: var(--admin-text-muted); font-size: 13px;">
-                                {{ $ticket->created_at->translatedFormat('d MMM Y') }}
+                                {{ $ticket->created_at->translatedFormat('d M Y') }}
                             </td>
                             <td>
                                 <a href="{{ route('admin.tickets.show', $ticket) }}" class="admin-btn admin-btn-secondary" style="padding: 6px 12px; font-size: 13px;">{{ __('View') }}</a>

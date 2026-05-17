@@ -39,7 +39,7 @@
                 </div>
                 <div>
                     <p style="margin: 0 0 4px; font-size: 13px; color: var(--admin-text-muted);">{{ __('Member since') }}</p>
-                    <p style="margin: 0; font-weight: 600;">{{ $user->created_at->translatedFormat('d MMMM Y') }}</p>
+                    <p style="margin: 0; font-weight: 600;">{{ $user->created_at->translatedFormat('d F Y') }}</p>
                     <p style="margin: 4px 0 0; font-size: 12px; color: var(--admin-text-muted);">{{ $user->created_at->diffForHumans() }}</p>
                 </div>
             </div>
@@ -123,7 +123,7 @@
                                 </span>
                             </td>
                             <td style="color: var(--admin-text-muted); font-size: 13px;">
-                                {{ $ticket->created_at->translatedFormat('d MMM Y') }}
+                                {{ $ticket->created_at->translatedFormat('d M Y') }}
                             </td>
                             <td>
                                 <a href="{{ route('admin.tickets.show', $ticket) }}" class="admin-btn admin-btn-secondary" style="padding: 6px 12px; font-size: 13px;">{{ __('View') }}</a>
