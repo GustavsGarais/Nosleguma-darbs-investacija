@@ -1134,13 +1134,13 @@ function initFromConfig(config) {
     // Peles kursors virs diagrammas parasti nozīmē, ka flyout tikko sakļāvies — uzreiz pārlabot izmēru.
     dashWork?.addEventListener('pointerenter', () => scheduleChartResizeAfterLayout());
 
-    /** Velkama režģa starplikas: saglabā platumus; kreiso starpliku velkot ļoti šauru un atlaižot, paslēpj vadības paneli. */
+    /** Velkama režģa starplika: kreisā kolonna (vadības) var pilnībā paslēpties; diagramma un kopsavilkums vienmēr redzami. */
     (function initTerminalColumnResize() {
         const shell = document.querySelector('.sim-run-shell--terminal');
         if (!shell) return;
         const LS_L = 'simTermGridLeft';
         const LS_R = 'simTermGridRight';
-        const LS_COLLAPSED = 'simTermLeadCollapsed';
+        const LS_LEAD_COLLAPSED = 'simTermLeadCollapsed';
         const EXPANDED_MIN = 200;
         const EXPANDED_MAX = 440;
         const LEAD_DRAG_MIN = 0;
@@ -1166,7 +1166,7 @@ function initFromConfig(config) {
             const c = Boolean(collapsed);
             shell.classList.toggle('sim-run-shell--terminal-lead-collapsed', c);
             setLeadDragPreview(false);
-            localStorage.setItem(LS_COLLAPSED, c ? '1' : '0');
+            localStorage.setItem(LS_LEAD_COLLAPSED, c ? '1' : '0');
             if (c) {
                 shell.style.setProperty('--sim-grid-left', '0px');
             } else {
@@ -1179,21 +1179,24 @@ function initFromConfig(config) {
             scheduleChartResizeAfterLayout();
         }
 
-        let rightPx = parseInt(localStorage.getItem(LS_R), 10);
-        if (!Number.isFinite(rightPx)) rightPx = 268;
-        rightPx = clamp(rightPx, RAIL_MIN, RAIL_MAX);
-        shell.style.setProperty('--sim-grid-right', `${rightPx}px`);
-        localStorage.setItem(LS_R, String(Math.round(rightPx)));
-
-        const collapsed = localStorage.getItem(LS_COLLAPSED) === '1';
-        if (!collapsed) {
+        const leadCollapsed = localStorage.getItem(LS_LEAD_COLLAPSED) === '1'
+            || localStorage.getItem('simTermLeadCollapsed') === '1';
+        if (!leadCollapsed) {
             let leftPx = parseInt(localStorage.getItem(LS_L), 10);
             if (!Number.isFinite(leftPx)) leftPx = 288;
             leftPx = clamp(leftPx, EXPANDED_MIN, EXPANDED_MAX);
             shell.style.setProperty('--sim-grid-left', `${leftPx}px`);
             localStorage.setItem(LS_L, String(Math.round(leftPx)));
         }
-        applyLeadCollapsed(collapsed);
+        applyLeadCollapsed(leadCollapsed);
+
+        localStorage.removeItem('simTermRailCollapsed');
+        shell.classList.remove('sim-run-shell--terminal-rail-collapsed');
+        let rightPx = parseInt(localStorage.getItem(LS_R), 10);
+        if (!Number.isFinite(rightPx)) rightPx = 268;
+        rightPx = clamp(rightPx, RAIL_MIN, RAIL_MAX);
+        shell.style.setProperty('--sim-grid-right', `${rightPx}px`);
+        localStorage.setItem(LS_R, String(Math.round(rightPx)));
 
         const bind = (handle, edge) => {
             if (!handle) return;

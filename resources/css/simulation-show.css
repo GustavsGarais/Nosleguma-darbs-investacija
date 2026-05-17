@@ -1287,12 +1287,12 @@ html[data-theme="dark"] .sim-param-tile {
 	align-items: start;
 }
 
-/* Kreisā kolonna paslēpta; starplika paliek redzama — velc pa labi, lai atvērtu (simulation-runner.js). */
+/* Tikai kreisās vadības kolonnas var pilnībā paslēpt; diagramma un kopsavilkums paliek redzami. */
 .sim-run-shell--terminal.sim-run-shell--terminal-lead-collapsed .sim-dash-lead {
 	display: none !important;
 }
 
-/* Velkot šauri: paslēpt vadības saturu, lai nepaliek “pusredzams” panelis */
+/* Velkot kreiso starpliku šauri: paslēpt vadības saturu līdz atlaišanai */
 .sim-run-shell--terminal.sim-run-shell--terminal-lead-drag-narrow:not(.sim-run-shell--terminal-lead-collapsed) .sim-dash-lead {
 	visibility: hidden;
 	overflow: hidden;
@@ -1308,6 +1308,14 @@ html[data-theme="dark"] .sim-param-tile {
 
 .sim-run-shell--terminal.sim-run-shell--terminal-lead-drag-narrow:not(.sim-run-shell--terminal-lead-collapsed) .sim-dash-resize--lead {
 	opacity: 0.35;
+}
+
+.sim-run-shell--terminal .sim-dash-body {
+	overflow: hidden;
+}
+
+.sim-run-shell--terminal .sim-dash-terminal-center {
+	min-width: 0;
 }
 
 .sim-dash-resize {
