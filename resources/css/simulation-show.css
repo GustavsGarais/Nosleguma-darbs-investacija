@@ -1683,52 +1683,38 @@ html[data-theme="dark"] .sim-param-tile {
 	color: var(--c-on-surface-2);
 }
 
-/* Summary rail: label + ? stay on one row (flex group, not separate inline boxes) */
-.sim-dash-rail .sim-rail-kpi .sim-kpiLabel {
+.sim-dash-rail .sim-kpiLabel,
+.sim-dash-rail .sim-rail-perf__term {
 	overflow-wrap: normal;
 	word-break: normal;
 	hyphens: manual;
 }
 
-.sim-rail-label-inline {
-	display: inline-flex;
-	align-items: center;
-	flex-wrap: nowrap;
-	gap: 4px;
-	max-width: 100%;
-	vertical-align: top;
-}
-
-.sim-rail-label-inline__text {
-	flex: 1 1 auto;
-	min-width: 0;
+/* Summary rail: ? directly after label text (inline, not on its own line) */
+.sim-dash-rail .sim-rail-kpi__labelInline {
+	display: inline;
 	line-height: 1.35;
 }
 
-.sim-rail-perf__term {
-	display: block;
-	margin: 0;
-	max-width: min(100%, 14rem);
+.sim-dash-rail .sim-rail-kpi__labelInline .sim-help-wrap {
+	display: inline-flex;
+	vertical-align: middle;
+	margin-left: 4px;
+	flex-shrink: 0;
+	position: relative;
+	z-index: 5;
+}
+
+.sim-dash-rail .sim-rail-perf__term .sim-rail-kpi__labelInline {
+	max-width: 100%;
 }
 
 .sim-run-shell--terminal .sim-dash-rail .sim-rail-card {
 	overflow: visible;
 }
 
-.sim-run-shell--terminal .sim-dash-rail .sim-help-wrap {
-	flex-shrink: 0;
-	position: relative;
-	z-index: 5;
-}
-
-/* Right rail: compact ? that stays beside the label text */
-.sim-dash-rail .sim-rail-label-inline .sim-help-wrap {
-	display: inline-flex;
-	flex-shrink: 0;
-	vertical-align: middle;
-}
-
-.sim-dash-rail .sim-rail-label-inline .sim-run-section-help {
+/* Right rail: compact ? (override global 28px min-size that forced a line break) */
+.sim-dash-rail .sim-rail-kpi__labelInline .sim-run-section-help {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -1736,9 +1722,10 @@ html[data-theme="dark"] .sim-param-tile {
 	min-height: 0;
 	width: auto;
 	height: auto;
+	vertical-align: middle;
 }
 
-.sim-dash-rail .sim-rail-label-inline .sim-run-section-help__glyph {
+.sim-dash-rail .sim-rail-kpi__labelInline .sim-run-section-help__glyph {
 	width: 15px;
 	height: 15px;
 	font-size: 9px;

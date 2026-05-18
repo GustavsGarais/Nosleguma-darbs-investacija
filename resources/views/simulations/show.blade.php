@@ -555,6 +555,37 @@
 @include('components.currency-script')
 @endsection
 
+@push('styles')
+<style>
+/* Rail KPI ?: inline with label (works even before Vite rebuild) */
+.sim-dash-rail .sim-rail-kpi__labelInline { display: inline; line-height: 1.35; }
+.sim-dash-rail .sim-rail-kpi__labelInline .sim-help-wrap {
+	display: inline-flex;
+	vertical-align: middle;
+	margin-left: 4px;
+	flex-shrink: 0;
+	position: relative;
+	z-index: 5;
+}
+.sim-dash-rail .sim-rail-kpi__labelInline .sim-run-section-help {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	min-height: 0;
+	width: auto;
+	height: auto;
+	vertical-align: middle;
+}
+.sim-dash-rail .sim-rail-kpi__labelInline .sim-run-section-help__glyph {
+	width: 15px;
+	height: 15px;
+	font-size: 9px;
+	font-weight: 900;
+}
+</style>
+@endpush
+
 @push('scripts')
     @vite(['resources/js/simulation-runner.js'])
 @endpush
