@@ -93,6 +93,21 @@
 	font-size: 9px;
 	font-weight: 900;
 }
+/* Kreisais panelis: ritināt līdz Praktiskā tirdzniecība / Pārdot */
+.sim-run-shell--terminal .sim-terminal-lead-pane {
+	max-height: calc(100vh - var(--nav-h, 64px) - 24px);
+	overflow-y: auto;
+}
+.sim-run-shell--terminal .sim-dash-controls__scroller {
+	overflow-y: auto;
+	flex: 1 1 auto;
+	min-height: 0;
+}
+.sim-run-shell--terminal .sim-dash-settings-panel__fields,
+.sim-run-shell--terminal .sim-playground-panel__inner {
+	max-height: none;
+	overflow: visible;
+}
 </style>
 <section class="sim-run-shell sim-run-shell--terminal" aria-label="Simulation details">
     <div class="sim-dash-toolbar" aria-label="{{ __('Simulation actions') }}">
