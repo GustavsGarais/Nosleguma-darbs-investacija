@@ -557,27 +557,27 @@
 
 @push('styles')
 <style>
-/* Rail KPI ?: inline with label (works even before Vite rebuild) */
-.sim-dash-rail .sim-rail-kpi__labelInline { display: inline; line-height: 1.35; }
-.sim-dash-rail .sim-rail-kpi__labelInline .sim-help-wrap {
-	display: inline-flex;
-	vertical-align: middle;
-	margin-left: 4px;
-	flex-shrink: 0;
-	position: relative;
-	z-index: 5;
-}
-.sim-dash-rail .sim-rail-kpi__labelInline .sim-run-section-help {
-	display: inline-flex;
+/* Rail KPI ?: same flex row as Simulation Controls (sim-field-label) */
+.sim-dash-rail .sim-rail-kpi__fieldLabel {
+	display: flex;
 	align-items: center;
-	justify-content: center;
+	flex-wrap: nowrap;
+	gap: 4px;
+	min-width: 0;
+	max-width: 100%;
+}
+.sim-dash-rail .sim-rail-kpi__fieldLabel > span:first-child {
+	flex: 0 1 auto;
+	min-width: 0;
+}
+.sim-dash-rail .sim-rail-kpi__fieldLabel .sim-help-wrap {
+	flex: 0 0 auto;
+}
+.sim-dash-rail .sim-rail-kpi__fieldLabel .sim-run-section-help {
 	min-width: 0;
 	min-height: 0;
-	width: auto;
-	height: auto;
-	vertical-align: middle;
 }
-.sim-dash-rail .sim-rail-kpi__labelInline .sim-run-section-help__glyph {
+.sim-dash-rail .sim-rail-kpi__fieldLabel .sim-run-section-help__glyph {
 	width: 15px;
 	height: 15px;
 	font-size: 9px;

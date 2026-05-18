@@ -1,4 +1,7 @@
-<span class="sim-rail-kpi__labelInline">{{ $text }}@include('simulations.partials.section-help', [
-    'tooltip' => $tooltip,
-    'label' => $helpLabel,
-])</span>
+<span class="sim-field-label sim-rail-kpi__fieldLabel">
+    <span>{{ $text }}</span>
+    @include('simulations.partials.section-help', [
+        'tooltip' => $tooltip,
+        'label' => $helpLabel,
+    ])
+</span>
