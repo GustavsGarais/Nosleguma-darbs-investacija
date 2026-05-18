@@ -1690,20 +1690,22 @@ html[data-theme="dark"] .sim-param-tile {
 	hyphens: manual;
 }
 
-/* Same row layout as Simulation Controls (sim-field-label + flex) */
-.sim-dash-rail .sim-rail-kpi__fieldLabel {
+/* Label + ? on one row (matches Simulation Controls; nowrap so ? never drops below) */
+.sim-dash-rail .sim-rail-kpi__labelRow {
+	display: flex;
+	align-items: center;
 	flex-wrap: nowrap;
 	gap: 4px;
 	max-width: 100%;
 }
 
-.sim-dash-rail .sim-rail-kpi__fieldLabel > span:first-child {
+.sim-dash-rail .sim-rail-kpi__labelRow > span:first-child {
 	flex: 0 1 auto;
 	min-width: 0;
 	line-height: 1.35;
 }
 
-.sim-dash-rail .sim-rail-kpi__fieldLabel .sim-help-wrap {
+.sim-dash-rail .sim-rail-kpi__labelRow .sim-help-wrap {
 	flex: 0 0 auto;
 }
 
@@ -1711,19 +1713,18 @@ html[data-theme="dark"] .sim-param-tile {
 	overflow: visible;
 }
 
-.sim-run-shell--terminal .sim-dash-rail .sim-rail-kpi__fieldLabel .sim-help-wrap {
+.sim-run-shell--terminal .sim-dash-rail .sim-rail-kpi__labelRow .sim-help-wrap {
 	flex-shrink: 0;
 	position: relative;
 	z-index: 5;
 }
 
-/* Right rail: compact ? (override global 28px min-size that forced a line break) */
-.sim-dash-rail .sim-rail-kpi__fieldLabel .sim-run-section-help {
+.sim-dash-rail .sim-rail-kpi__labelRow .sim-run-section-help {
 	min-width: 0;
 	min-height: 0;
 }
 
-.sim-dash-rail .sim-rail-kpi__fieldLabel .sim-run-section-help__glyph {
+.sim-dash-rail .sim-rail-kpi__labelRow .sim-run-section-help__glyph {
 	width: 15px;
 	height: 15px;
 	font-size: 9px;
