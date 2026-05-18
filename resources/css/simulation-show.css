@@ -1290,7 +1290,7 @@ html[data-theme="dark"] .sim-param-tile {
 		6px
 		minmax(200px, var(--sim-grid-right));
 	gap: 16px 8px;
-	align-items: stretch;
+	align-items: start;
 }
 
 /* Kreisā vadības josla — saturs tiek apgriezts; starplika (kolonna 2) vienmēr paliek redzama (draw.io stils). */
@@ -1321,17 +1321,24 @@ html[data-theme="dark"] .sim-param-tile {
 .sim-dash-resize {
 	display: none;
 	width: 6px;
-	min-height: 200px;
+	min-height: 0;
 	margin: 0;
 	border-radius: 6px;
 	cursor: col-resize;
 	touch-action: none;
-	align-self: stretch;
+	align-self: start;
 	justify-self: stretch;
 	background: color-mix(in srgb, var(--c-primary) 10%, var(--c-border));
-	transition: background 0.15s ease;
+	transition: background 0.15s ease, height 0.12s ease;
 	z-index: 4;
 	position: relative;
+	flex-shrink: 0;
+}
+
+.sim-run-shell--terminal .sim-dash-resize--lead,
+.sim-run-shell--terminal .sim-dash-resize--rail {
+	/* Augstumu iestata JS pēc diagrammas kartes — nevis pēc augstākā kopsavilkuma */
+	max-height: min(72vh, 680px);
 }
 
 .sim-dash-resize--lead {
@@ -1653,6 +1660,20 @@ html[data-theme="dark"] .sim-param-tile {
 	box-shadow: var(--app-card-shadow);
 }
 
+.sim-rail-card__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin: 0 0 10px;
+}
+
+.sim-rail-card__head .sim-rail-card__title {
+	margin: 0;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
 .sim-rail-card__title {
 	margin: 0 0 10px;
 	font-size: 0.72rem;
@@ -1660,6 +1681,56 @@ html[data-theme="dark"] .sim-param-tile {
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
 	color: var(--c-on-surface-2);
+}
+
+.sim-rail-kpi .sim-field-label {
+	margin: 0 0 4px;
+	font-size: inherit;
+	font-weight: 700;
+}
+
+.sim-rail-perf__term {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 4px;
+	max-width: 72%;
+}
+
+.sim-run-shell--terminal .sim-dash-rail .sim-rail-card {
+	overflow: visible;
+}
+
+.sim-run-shell--terminal .sim-dash-rail .sim-help-wrap {
+	flex-shrink: 0;
+	position: relative;
+	z-index: 5;
+}
+
+/* Right rail: keep ? icons visible in the narrow column */
+.sim-run-shell--terminal .sim-dash-rail .sim-run-section-help {
+	min-width: 22px;
+	min-height: 22px;
+}
+
+.sim-run-shell--terminal .sim-dash-rail .sim-run-section-help__glyph {
+	width: 18px;
+	height: 18px;
+	font-size: 11px;
+}
+
+.sim-run-shell--terminal .sim-rail-kpi .sim-field-label {
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 4px;
+}
+
+.sim-run-shell--terminal .sim-rail-card__head .sim-help-wrap {
+	z-index: 8;
+}
+
+.sim-run-shell--terminal .sim-rail-perf__term .sim-help-wrap {
+	flex-shrink: 0;
 }
 
 .sim-rail-kpiGrid {
@@ -1728,8 +1799,12 @@ html[data-theme="dark"] .sim-param-tile {
 	border-radius: 12px;
 }
 
-.sim-run-shell--terminal .sim-rail-card__title {
+.sim-run-shell--terminal .sim-rail-card__head {
 	margin: 0 0 6px;
+}
+
+.sim-run-shell--terminal .sim-rail-card__title {
+	margin: 0;
 	font-size: 0.65rem;
 	letter-spacing: 0.1em;
 }

@@ -241,7 +241,6 @@ function initFromConfig(config) {
     const realValueEl = document.getElementById('real-value');
     const drawdownEl = document.getElementById('drawdown');
     const cagrEl = document.getElementById('cagr');
-    const eventLogEl = document.getElementById('event-log');
     const saveStatusEl = document.getElementById('save-status');
 
     const meta = {
@@ -434,7 +433,6 @@ function initFromConfig(config) {
     let peakValue = settings.initialInvestment;
     let maxDrawdown = 0;
     let activePresetKey = 'balanced';
-    let eventLog = [];
     let lastMonthlyReturn = baseMonthlyReturnRate;
 
     let sharedSmoothedReturns = null;
@@ -572,7 +570,7 @@ function initFromConfig(config) {
                     borderWidth: 2,
                     borderDash: [8, 4],
                     fill: false,
-                    tension: 0.35,
+                    tension: 0.25,
                     pointRadius: 0,
                     pointHoverRadius: 5,
                     order: 3,
@@ -664,6 +662,11 @@ function initFromConfig(config) {
             // Tikai manuāls izmērs: Chart.js iebūvētais ResizeObserver uz canvas vecāk sacenšas ar flex + CSS pārejām.
             responsive: false,
             maintainAspectRatio: false,
+            elements: {
+                line: {
+                    cubicInterpolationMode: 'monotone',
+                },
+            },
             interaction: {
                 mode: 'index',
                 intersect: false,
@@ -866,10 +869,11 @@ function initFromConfig(config) {
         const sharpeEl = document.getElementById('sim-perf-sharpe');
         const tradesEl = document.getElementById('sim-perf-trades');
         const winEl = document.getElementById('sim-perf-winrate');
+        const perfNa = '\u2014';
         if (!rets.length) {
-            if (bestEl) bestEl.textContent = '—';
-            if (worstEl) worstEl.textContent = '—';
-            if (sharpeEl) sharpeEl.textContent = terminal.railSharpeNa || '—';
+            if (bestEl) bestEl.textContent = perfNa;
+            if (worstEl) worstEl.textContent = perfNa;
+            if (sharpeEl) sharpeEl.textContent = perfNa;
         } else {
             const mx = Math.max(...rets);
             const mn = Math.min(...rets);
@@ -1011,6 +1015,21 @@ function initFromConfig(config) {
         return { width, height };
     }
 
+    /** Starpliku augstums = diagrammas karte (nevis visa labā kolonna). */
+    function syncTerminalSplitterHeights() {
+        const shell = document.querySelector('.sim-run-shell--terminal');
+        if (!shell) return;
+        const chartCard = shell.querySelector('.sim-dash-chartCard');
+        const leadSplit = document.getElementById('sim-terminal-lead-splitter');
+        const railSplit = shell.querySelector('.sim-dash-resize--rail');
+        if (!chartCard) return;
+        const h = Math.round(chartCard.getBoundingClientRect().height);
+        if (h < 120) return;
+        const px = `${h}px`;
+        if (leadSplit) leadSplit.style.height = px;
+        if (railSplit) railSplit.style.height = px;
+    }
+
     /** Diagrammas pikseļu izmērs piesaistīts `.sim-run-chartWrap` (nepieciešams, kamēr `responsive: false`). */
     function forceChartResize() {
         chart.stop();
@@ -1021,6 +1040,7 @@ function initFromConfig(config) {
             chart.resize();
         }
         chart.update('none');
+        syncTerminalSplitterHeights();
     }
 
     function applyChartTheme() {
@@ -1272,6 +1292,10 @@ function initFromConfig(config) {
         };
         bind(leadSplitter, 'lead');
         bind(document.querySelector('[data-sim-resize-edge="rail"]'), 'rail');
+        syncTerminalSplitterHeights();
+        window.addEventListener('resize', () => {
+            window.requestAnimationFrame(syncTerminalSplitterHeights);
+        });
     })();
 
     /** Flyout atvēršana/aizvēršana CSS — transitionend / fokusa zaudējums noķer sakļaušanu pēc platumu animācijas. */
@@ -1372,22 +1396,9 @@ function initFromConfig(config) {
         let r =
             realisticReturn(monthlyBase, vol) +
             crowdSentiment * (0.55 + settings.marketInfluence * 0.35);
-        if (r <= -0.12 || r >= 0.15) {
-            pushEvent(i18n.fatTailEvent.replace(':pct', (r * 100).toFixed(1)));
-        }
-        if (crowdSentiment < -0.055 && Math.random() < 0.22) {
-            pushEvent(
-                i18n.crowdSelling.replace(':pct', Math.abs(crowdSentiment * 100).toFixed(1)),
-            );
-        } else if (crowdSentiment > 0.045 && Math.random() < 0.18) {
-            pushEvent(i18n.crowdBuying.replace(':pct', (crowdSentiment * 100).toFixed(1)));
-        }
         if (activePresetKey === 'shock' && Math.random() < preset.shockChance) {
             const extra = preset.shockImpact();
             r += extra * (0.65 + settings.marketInfluence * 0.7);
-            pushEvent(
-                i18n.marketShock.replace(':pct', (extra * 100).toFixed(1)).replace(':label', preset.label),
-            );
         }
         r = Math.max(-0.85, Math.min(r, 0.25));
         const smoothed = 0.55 * lastMonthlyReturn + 0.45 * r;
@@ -1501,8 +1512,6 @@ function initFromConfig(config) {
         );
         replaceLastPlaygroundRow(row);
         peakValue = Math.max(peakValue, row.value);
-        const msg = (i18n.playgroundBought || 'Added :amount').replace(':amount', formatCurrency(B));
-        pushEvent(msg);
         playgroundBuys += 1;
         rebuildChartData('none');
         updateSummary();
@@ -1533,11 +1542,6 @@ function initFromConfig(config) {
         replaceLastPlaygroundRow(row);
         const drawdown = (row.value - peakValue) / (peakValue || 1);
         maxDrawdown = Math.min(maxDrawdown, drawdown);
-        const pct = Math.round(f * 100);
-        const msg = (i18n.playgroundSold || '')
-            .replace(':pct', String(pct))
-            .replace(':gain', formatCurrency(tradeGain));
-        pushEvent(msg);
         playgroundSells += 1;
         if (tradeGain >= 0) playgroundSellWins += 1;
         rebuildChartData('none');
@@ -1571,13 +1575,9 @@ function initFromConfig(config) {
 
         if (next.value > peakValue) {
             peakValue = next.value;
-            pushEvent(i18n.newHigh.replace(':month', String(next.month)));
         }
         const dd = (next.value - peakValue) / (peakValue || 1);
         maxDrawdown = Math.min(maxDrawdown, dd);
-        if (dd < -0.1 && dd.toFixed(2) === maxDrawdown.toFixed(2)) {
-            pushEvent(i18n.drawdownCoaching.replace(':pct', Math.abs(dd * 100).toFixed(1)));
-        }
     }
 
     function updatePlaygroundTradingDesk() {
@@ -1627,7 +1627,6 @@ function initFromConfig(config) {
         currentMonth = 0;
         peakValue = settings.initialInvestment;
         maxDrawdown = 0;
-        eventLog = [];
         crashMonths = new Set();
         playgroundBuys = 0;
         playgroundSells = 0;
@@ -1660,7 +1659,6 @@ function initFromConfig(config) {
         rebuildChartData('resize');
         safeResetChartZoom();
         updateSummary();
-        renderEvents();
         chart.$pauseMonth = null;
         chart.$crashMonths = [];
         syncModeUi();
@@ -1825,7 +1823,6 @@ function initFromConfig(config) {
         rebuildChartData('resize');
         safeResetChartZoom();
         updateSummary();
-        renderEvents();
         chart.$pauseMonth = currentMonth > 0 ? currentMonth : null;
         chart.$crashMonths = Array.from(crashMonths).sort((a, b) => a - b);
         const maxM = parseInt(monthsInput.value, 10) || 120;
@@ -1875,14 +1872,10 @@ function initFromConfig(config) {
 
         if (nextEntry.value > peakValue) {
             peakValue = nextEntry.value;
-            pushEvent(i18n.newHigh.replace(':month', String(nextEntry.month)));
         }
 
         const drawdown = (nextEntry.value - peakValue) / peakValue;
         maxDrawdown = Math.min(maxDrawdown, drawdown);
-        if (drawdown < -0.1 && drawdown.toFixed(2) === maxDrawdown.toFixed(2)) {
-            pushEvent(i18n.drawdownCoaching.replace(':pct', Math.abs(drawdown * 100).toFixed(1)));
-        }
     }
 
     function rebuildChartData(animation = 'none') {
@@ -2027,21 +2020,6 @@ function initFromConfig(config) {
         updatePerfPanel();
 
         schedulePersistRunnerState();
-    }
-
-    function pushEvent(text) {
-        eventLog.unshift({ text, time: new Date() });
-        eventLog = eventLog.slice(0, 8);
-        renderEvents();
-    }
-
-    function renderEvents() {
-        if (!eventLogEl) return;
-        if (!eventLog.length) {
-            eventLogEl.innerHTML = `<li>${i18n.noEvents}</li>`;
-            return;
-        }
-        eventLogEl.innerHTML = eventLog.map((ev) => `<li>${ev.text}</li>`).join('');
     }
 
     function startSimulation() {
@@ -2244,7 +2222,6 @@ function initFromConfig(config) {
         }
         crowdSentiment = 0;
         lastMonthlyReturn = baseMonthlyReturnRate;
-        eventLog = [];
         crashMonths = new Set();
         const horizonFromSnap =
             savedSnapshot && typeof savedSnapshot.horizon_months === 'number'
@@ -2264,7 +2241,6 @@ function initFromConfig(config) {
         rebuildChartData('resize');
         safeResetChartZoom();
         updateSummary();
-        renderEvents();
         chart.$pauseMonth = last.month;
         chart.$crashMonths = [];
         syncModeUi();
