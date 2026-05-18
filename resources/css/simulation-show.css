@@ -1683,48 +1683,32 @@ html[data-theme="dark"] .sim-param-tile {
 	color: var(--c-on-surface-2);
 }
 
-/* KPI labels: ? sits inline right after the text (wraps with the words, not on its own row) */
-.sim-rail-kpi .sim-field-label {
-	display: block;
-	margin: 0 0 4px;
-	font-size: inherit;
-	font-weight: 700;
-	line-height: 1.35;
+/* Summary rail: label + ? stay on one row (flex group, not separate inline boxes) */
+.sim-dash-rail .sim-rail-kpi .sim-kpiLabel {
+	overflow-wrap: normal;
+	word-break: normal;
+	hyphens: manual;
 }
 
-.sim-rail-kpi .sim-field-label > span {
-	display: inline;
-	vertical-align: middle;
-}
-
-.sim-rail-kpi .sim-field-label .sim-help-wrap {
-	display: inline-flex;
-	vertical-align: middle;
-	margin-left: 4px;
-	position: relative;
-	top: -1px;
-}
-
-.sim-rail-perf__term {
+.sim-rail-label-inline {
 	display: inline-flex;
 	align-items: center;
 	flex-wrap: nowrap;
-	gap: 0;
-	margin: 0;
-	line-height: 1.35;
-	max-width: min(100%, 14rem);
+	gap: 4px;
+	max-width: 100%;
+	vertical-align: top;
 }
 
-.sim-rail-perf__term > span {
-	display: inline;
-	flex: 0 1 auto;
+.sim-rail-label-inline__text {
+	flex: 1 1 auto;
 	min-width: 0;
+	line-height: 1.35;
 }
 
-.sim-rail-perf__term .sim-help-wrap {
-	display: inline-flex;
-	flex-shrink: 0;
-	margin-left: 4px;
+.sim-rail-perf__term {
+	display: block;
+	margin: 0;
+	max-width: min(100%, 14rem);
 }
 
 .sim-run-shell--terminal .sim-dash-rail .sim-rail-card {
@@ -1737,33 +1721,34 @@ html[data-theme="dark"] .sim-param-tile {
 	z-index: 5;
 }
 
-/* Right rail: keep ? icons visible in the narrow column */
-.sim-run-shell--terminal .sim-dash-rail .sim-run-section-help {
-	min-width: 22px;
-	min-height: 22px;
+/* Right rail: compact ? that stays beside the label text */
+.sim-dash-rail .sim-rail-label-inline .sim-help-wrap {
+	display: inline-flex;
+	flex-shrink: 0;
+	vertical-align: middle;
 }
 
-.sim-run-shell--terminal .sim-dash-rail .sim-run-section-help__glyph {
-	width: 18px;
-	height: 18px;
-	font-size: 11px;
+.sim-dash-rail .sim-rail-label-inline .sim-run-section-help {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	min-height: 0;
+	width: auto;
+	height: auto;
 }
 
-.sim-run-shell--terminal .sim-rail-kpi .sim-field-label .sim-help-wrap {
-	margin-left: 3px;
-}
-
-.sim-run-shell--terminal .sim-rail-perf__term .sim-help-wrap {
-	margin-left: 3px;
+.sim-dash-rail .sim-rail-label-inline .sim-run-section-help__glyph {
+	width: 15px;
+	height: 15px;
+	font-size: 9px;
+	font-weight: 900;
 }
 
 .sim-run-shell--terminal .sim-rail-card__head .sim-help-wrap {
 	z-index: 8;
 }
 
-.sim-run-shell--terminal .sim-rail-perf__term .sim-help-wrap {
-	flex-shrink: 0;
-}
 
 .sim-rail-kpiGrid {
 	display: grid;

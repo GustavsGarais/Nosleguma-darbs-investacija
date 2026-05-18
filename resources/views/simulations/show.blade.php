@@ -363,55 +363,55 @@
                 </div>
                 <div class="sim-rail-kpiGrid">
                     <div class="sim-rail-kpi">
-                        <p class="sim-kpiLabel sim-field-label">
-                            <span>{{ __('Total Contributed') }}</span>
-                            @include('simulations.partials.section-help', [
+                        <p class="sim-kpiLabel">
+                            @include('simulations.partials.rail-label-with-help', [
+                                'text' => __('Total Contributed'),
                                 'tooltip' => __('sim.tooltip.total_contributed'),
-                                'label' => __('sim.help.total_contributed'),
+                                'helpLabel' => __('sim.help.total_contributed'),
                             ])
                         </p>
                         <p id="total-contributed" class="sim-kpiValue">&euro;{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
                         <p id="total-contributed-meta" class="sim-kpiMeta"></p>
                     </div>
                     <div class="sim-rail-kpi">
-                        <p class="sim-kpiLabel sim-field-label">
-                            <span>{{ __('Total Gain') }}</span>
-                            @include('simulations.partials.section-help', [
+                        <p class="sim-kpiLabel">
+                            @include('simulations.partials.rail-label-with-help', [
+                                'text' => __('Total Gain'),
                                 'tooltip' => __('sim.tooltip.total_gain'),
-                                'label' => __('sim.help.total_gain'),
+                                'helpLabel' => __('sim.help.total_gain'),
                             ])
                         </p>
                         <p id="total-gain" class="sim-kpiValue" style="color: var(--c-primary);">&euro;0.00</p>
                         <p id="total-gain-meta" class="sim-kpiMeta"></p>
                     </div>
                     <div class="sim-rail-kpi">
-                        <p class="sim-kpiLabel sim-field-label">
-                            <span>{{ __('Real Value (Inflation Adj.)') }}</span>
-                            @include('simulations.partials.section-help', [
+                        <p class="sim-kpiLabel">
+                            @include('simulations.partials.rail-label-with-help', [
+                                'text' => __('Real Value (Inflation Adj.)'),
                                 'tooltip' => __('sim.tooltip.real_value'),
-                                'label' => __('sim.help.real_value'),
+                                'helpLabel' => __('sim.help.real_value'),
                             ])
                         </p>
                         <p id="real-value" class="sim-kpiValue" style="color: var(--c-secondary);">&euro;{{ number_format($simulation->settings['initialInvestment'], 2) }}</p>
                         <p id="real-value-meta" class="sim-kpiMeta"></p>
                     </div>
                     <div class="sim-rail-kpi">
-                        <p class="sim-kpiLabel sim-field-label">
-                            <span>{{ __('Max Drawdown') }}</span>
-                            @include('simulations.partials.section-help', [
+                        <p class="sim-kpiLabel">
+                            @include('simulations.partials.rail-label-with-help', [
+                                'text' => __('Max Drawdown'),
                                 'tooltip' => __('sim.tooltip.max_drawdown'),
-                                'label' => __('sim.help.max_drawdown'),
+                                'helpLabel' => __('sim.help.max_drawdown'),
                             ])
                         </p>
                         <p id="drawdown" class="sim-kpiValue" style="color:#ef4444;">0%</p>
                         <p id="drawdown-meta" class="sim-kpiMeta"></p>
                     </div>
                     <div class="sim-rail-kpi">
-                        <p class="sim-kpiLabel sim-field-label">
-                            <span>{{ __('Projected CAGR') }}</span>
-                            @include('simulations.partials.section-help', [
+                        <p class="sim-kpiLabel">
+                            @include('simulations.partials.rail-label-with-help', [
+                                'text' => __('Projected CAGR'),
                                 'tooltip' => __('sim.tooltip.projected_cagr'),
-                                'label' => __('sim.help.projected_cagr'),
+                                'helpLabel' => __('sim.help.projected_cagr'),
                             ])
                         </p>
                         <p id="cagr" class="sim-kpiValue">0%</p>
@@ -447,50 +447,50 @@
                 <dl class="sim-rail-perf">
                     <div>
                         <dt class="sim-rail-perf__term">
-                            <span>{{ __('sim.terminal.best_step') }}</span>
-                            @include('simulations.partials.section-help', [
+                            @include('simulations.partials.rail-label-with-help', [
+                                'text' => __('sim.terminal.best_step'),
                                 'tooltip' => __('sim.tooltip.best_step'),
-                                'label' => __('sim.help.best_step'),
+                                'helpLabel' => __('sim.help.best_step'),
                             ])
                         </dt>
                         <dd id="sim-perf-best">&mdash;</dd>
                     </div>
                     <div>
                         <dt class="sim-rail-perf__term">
-                            <span>{{ __('sim.terminal.worst_step') }}</span>
-                            @include('simulations.partials.section-help', [
+                            @include('simulations.partials.rail-label-with-help', [
+                                'text' => __('sim.terminal.worst_step'),
                                 'tooltip' => __('sim.tooltip.worst_step'),
-                                'label' => __('sim.help.worst_step'),
+                                'helpLabel' => __('sim.help.worst_step'),
                             ])
                         </dt>
                         <dd id="sim-perf-worst">&mdash;</dd>
                     </div>
                     <div>
                         <dt class="sim-rail-perf__term">
-                            <span>{{ __('sim.terminal.sharpe') }}</span>
-                            @include('simulations.partials.section-help', [
+                            @include('simulations.partials.rail-label-with-help', [
+                                'text' => __('sim.terminal.sharpe'),
                                 'tooltip' => __('sim.tooltip.sharpe'),
-                                'label' => __('sim.help.sharpe'),
+                                'helpLabel' => __('sim.help.sharpe'),
                             ])
                         </dt>
                         <dd id="sim-perf-sharpe">&mdash;</dd>
                     </div>
                     <div>
                         <dt class="sim-rail-perf__term">
-                            <span>{{ __('sim.terminal.total_trades') }}</span>
-                            @include('simulations.partials.section-help', [
+                            @include('simulations.partials.rail-label-with-help', [
+                                'text' => __('sim.terminal.total_trades'),
                                 'tooltip' => __('sim.tooltip.total_trades'),
-                                'label' => __('sim.help.total_trades'),
+                                'helpLabel' => __('sim.help.total_trades'),
                             ])
                         </dt>
                         <dd id="sim-perf-trades">0</dd>
                     </div>
                     <div>
                         <dt class="sim-rail-perf__term">
-                            <span>{{ __('sim.terminal.win_rate') }}</span>
-                            @include('simulations.partials.section-help', [
+                            @include('simulations.partials.rail-label-with-help', [
+                                'text' => __('sim.terminal.win_rate'),
                                 'tooltip' => __('sim.tooltip.win_rate'),
-                                'label' => __('sim.help.win_rate'),
+                                'helpLabel' => __('sim.help.win_rate'),
                             ])
                         </dt>
                         <dd id="sim-perf-winrate">&mdash;</dd>
