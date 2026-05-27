@@ -834,8 +834,18 @@
 	}
 }
 
-.sim-run-shell--terminal-lead-drag-narrow:not(.sim-run-shell--terminal-lead-collapsed) #playground-panel:not([hidden]) {
+/* Velkot uz aizvēršanu (pele tuvu kreisajai malai): paslēpt saturu, atstāt starpliku */
+.sim-run-shell--terminal-lead-drag-collapse:not(.sim-run-shell--terminal-lead-collapsed) .sim-terminal-lead-pane {
+	opacity: 0.35;
+	pointer-events: none;
+}
+
+.sim-run-shell--terminal-lead-drag-collapse:not(.sim-run-shell--terminal-lead-collapsed) #playground-panel:not([hidden]) {
 	visibility: hidden;
+}
+
+.sim-dash-resize--lead.is-dragging.is-collapse-intent {
+	background: color-mix(in srgb, var(--c-secondary) 35%, var(--c-border));
 }
 
 .sim-playground-actions__titleRow {

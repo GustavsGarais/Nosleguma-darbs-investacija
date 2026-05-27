@@ -1227,11 +1227,39 @@ function initFromConfig(config) {
         const EXPANDED_MIN_HANDS_ON = 340;
         const EXPANDED_MAX = 440;
         const LEAD_DRAG_MIN = 0;
-        const LEAD_SNAP_COLLAPSED = 72;
+        /** Zem šī platuma (px) un tuvu kreisajai malai → pilnībā paslēpt. */
+        const LEAD_SNAP_COLLAPSED = 48;
         const LEAD_OPEN_DRAG_THRESHOLD = 8;
+        /** Peles X attālumam no paneļa kreisās malas, lai uzskatītu par „aizvērt”. */
+        const LEAD_COLLAPSE_EDGE_PX = 36;
+        const dashBody = shell.querySelector('.sim-dash-body');
+        const leadPaneEl = document.getElementById('sim-terminal-lead-pane');
         const getLeadExpandedMin = () => {
             const pg = document.getElementById('playground-panel');
             return pg && !pg.hidden ? EXPANDED_MIN_HANDS_ON : EXPANDED_MIN_CLASSIC;
+        };
+        const leadPaneLeftX = () => {
+            if (leadPaneEl && !shell.classList.contains('sim-run-shell--terminal-lead-collapsed')) {
+                return leadPaneEl.getBoundingClientRect().left;
+            }
+            return dashBody?.getBoundingClientRect().left ?? 0;
+        };
+        const widthFromPointerX = (clientX) => {
+            const bodyLeft = dashBody?.getBoundingClientRect().left ?? 0;
+            return Math.round(clientX - bodyLeft - 6);
+        };
+        const pointerNearLeadLeftEdge = (clientX) =>
+            clientX <= leadPaneLeftX() + LEAD_COLLAPSE_EDGE_PX;
+        const resolveLeadDragEnd = (clientX, widthPx) => {
+            const expandedMin = getLeadExpandedMin();
+            const nearEdge = pointerNearLeadLeftEdge(clientX);
+            if (nearEdge || widthPx <= LEAD_SNAP_COLLAPSED) {
+                return { collapsed: true, width: 0 };
+            }
+            if (widthPx < expandedMin) {
+                return { collapsed: false, width: expandedMin };
+            }
+            return { collapsed: false, width: clamp(widthPx, expandedMin, EXPANDED_MAX) };
         };
         const RAIL_MIN = 200;
         const RAIL_MAX = 400;
@@ -1245,8 +1273,13 @@ function initFromConfig(config) {
             return Number.isFinite(n) ? n : fallback;
         };
 
-        function setLeadDragPreview(narrow) {
-            shell.classList.toggle('sim-run-shell--terminal-lead-drag-narrow', Boolean(narrow));
+        function setLeadDragPreview(intent) {
+            const collapse = intent === 'collapse';
+            const minimize = intent === 'minimize';
+            shell.classList.toggle('sim-run-shell--terminal-lead-drag-collapse', collapse);
+            shell.classList.toggle('sim-run-shell--terminal-lead-drag-minimize', minimize);
+            shell.classList.toggle('sim-run-shell--terminal-lead-drag-narrow', collapse || minimize);
+            leadSplitter?.classList.toggle('is-collapse-intent', collapse);
         }
 
         function applyLeadCollapsed(collapsed) {
@@ -1266,18 +1299,6 @@ function initFromConfig(config) {
                 localStorage.setItem(LS_L, String(Math.round(l)));
             }
             scheduleChartResizeAfterLayout();
-        }
-
-        function snapLeadWidth(px) {
-            const expandedMin = getLeadExpandedMin();
-            if (px <= LEAD_SNAP_COLLAPSED) {
-                return { width: 0, collapsed: true };
-            }
-            if (px < expandedMin) {
-                return { width: 0, collapsed: true };
-            }
-            const open = clamp(px, expandedMin, EXPANDED_MAX);
-            return { width: open, collapsed: false };
         }
 
         window.__simEnforceLeadMinWidth = () => {
@@ -1315,7 +1336,9 @@ function initFromConfig(config) {
             if (!handle) return;
             let startX = 0;
             let startVal = 0;
+            let lastPointerX = 0;
             const onMove = (ev) => {
+                lastPointerX = ev.clientX;
                 const dx = ev.clientX - startX;
                 if (edge === 'lead') {
                     if (
@@ -1323,12 +1346,19 @@ function initFromConfig(config) {
                         dx > LEAD_OPEN_DRAG_THRESHOLD
                     ) {
                         applyLeadCollapsed(false);
-                        startVal = LEAD_SNAP_COLLAPSED + 1;
+                        startVal = getLeadExpandedMin();
                         startX = ev.clientX;
                     }
-                    const next = clamp(startVal + (ev.clientX - startX), LEAD_DRAG_MIN, EXPANDED_MAX);
+                    const next = clamp(widthFromPointerX(ev.clientX), LEAD_DRAG_MIN, EXPANDED_MAX);
                     shell.style.setProperty('--sim-grid-left', `${next}px`);
-                    setLeadDragPreview(next < getLeadExpandedMin());
+                    const expandedMin = getLeadExpandedMin();
+                    if (pointerNearLeadLeftEdge(ev.clientX) || next <= LEAD_SNAP_COLLAPSED) {
+                        setLeadDragPreview('collapse');
+                    } else if (next < expandedMin) {
+                        setLeadDragPreview('minimize');
+                    } else {
+                        setLeadDragPreview(null);
+                    }
                 } else {
                     const next = clamp(startVal - dx, RAIL_MIN, RAIL_MAX);
                     shell.style.setProperty('--sim-grid-right', `${next}px`);
@@ -1339,10 +1369,10 @@ function initFromConfig(config) {
                 document.removeEventListener('pointermove', onMove);
                 document.removeEventListener('pointerup', onUp);
                 handle.classList.remove('is-dragging');
-                setLeadDragPreview(false);
+                setLeadDragPreview(null);
                 if (edge === 'lead') {
-                    const l = readInlinePx('--sim-grid-left', 0);
-                    const snap = snapLeadWidth(l);
+                    const l = readInlinePx('--sim-grid-left', widthFromPointerX(lastPointerX));
+                    const snap = resolveLeadDragEnd(lastPointerX, l);
                     if (snap.collapsed) {
                         applyLeadCollapsed(true);
                     } else {
