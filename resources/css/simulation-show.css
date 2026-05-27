@@ -722,6 +722,12 @@
 	flex-shrink: 0;
 }
 
+.sim-terminal-hide-controls {
+	font-size: 11px;
+	padding: 4px 8px;
+	white-space: nowrap;
+}
+
 .sim-dash-settings-panel__heading {
 	margin: 0;
 	font-size: 0.68rem;
@@ -1297,8 +1303,29 @@ html[data-theme="dark"] .sim-param-tile {
 	contain: layout style;
 }
 
+.sim-run-shell--terminal.sim-run-shell--terminal-lead-collapsed .sim-dash-body {
+	grid-template-columns:
+		var(--sim-splitter-lead)
+		minmax(240px, 1fr)
+		6px
+		minmax(200px, var(--sim-grid-right));
+}
+
 .sim-run-shell--terminal-lead-collapsed .sim-terminal-lead-pane {
-	pointer-events: none;
+	display: none;
+}
+
+.sim-terminal-show-controls {
+	position: absolute;
+	left: 6px;
+	top: 4px;
+	z-index: 8;
+	max-width: calc(100% - 12px);
+	white-space: nowrap;
+}
+
+.sim-run-shell--terminal.sim-run-shell--terminal-lead-collapsed .sim-dash-terminal-center {
+	padding-top: 42px;
 }
 
 .sim-run-shell--terminal .sim-dash-work,
@@ -1307,6 +1334,7 @@ html[data-theme="dark"] .sim-param-tile {
 }
 
 .sim-run-shell--terminal .sim-dash-terminal-center {
+	position: relative;
 	min-width: 0;
 	width: 100%;
 }
@@ -1882,6 +1910,13 @@ html[data-theme="dark"] .sim-param-tile {
 	height: 100%;
 }
 
+.sim-run-shell--terminal .sim-controls-flyout--lead:hover,
+.sim-run-shell--terminal .sim-controls-flyout--lead:focus-within {
+	border-color: transparent;
+	background: transparent;
+	box-shadow: none;
+}
+
 .sim-run-shell--terminal .sim-controls-flyout--lead .sim-controls-flyout__rail {
 	display: none;
 }
@@ -1907,6 +1942,7 @@ html[data-theme="dark"] .sim-param-tile {
 	display: flex;
 	flex-direction: column;
 	gap: 0;
+	transition: none;
 }
 
 .sim-run-shell--terminal .sim-dash-controls__scroller {

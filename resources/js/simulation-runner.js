@@ -469,6 +469,7 @@ function initFromConfig(config) {
     let crowdSentiment = 0;
     let allocationChart = null;
     let activeRangeKey = '1m';
+    let chartUserZoomed = false;
     let playgroundBuys = 0;
     let playgroundSells = 0;
     let playgroundSellWins = 0;
@@ -740,12 +741,13 @@ function initFromConfig(config) {
                 },
                 zoom: {
                     limits: {
-                        x: { min: 'original', max: 'original', minRange: 4 },
+                        x: { min: 0, max: 'original', minRange: 14 },
                     },
                     pan: {
                         enabled: true,
                         mode: 'x',
                         onPanComplete: () => {
+                            chartUserZoomed = true;
                             syncChartYToVisibleWindow();
                             chart.update('none');
                         },
@@ -754,12 +756,12 @@ function initFromConfig(config) {
                         mode: 'x',
                         wheel: {
                             enabled: true,
-                            modifierKey: 'ctrl',
                         },
                         pinch: {
                             enabled: true,
                         },
                         onZoomComplete: () => {
+                            chartUserZoomed = true;
                             syncChartYToVisibleWindow();
                             chart.update('none');
                         },
@@ -768,13 +770,25 @@ function initFromConfig(config) {
             },
             scales: {
                 x: {
+                    type: 'linear',
+                    min: 0,
                     title: {
                         display: true,
                         text: i18n.xAxisDay || i18n.day || '',
                         font: { size: 13, weight: '600' },
                     },
                     grid: { display: false },
-                    ticks: {},
+                    ticks: {
+                        maxTicksLimit: 14,
+                        callback(value) {
+                            const idx = Math.round(Number(value));
+                            const labels = this.chart?.data?.labels;
+                            if (!labels?.length || idx < 0 || idx >= labels.length) {
+                                return '';
+                            }
+                            return String(labels[idx]);
+                        },
+                    },
                 },
                 y: {
                     beginAtZero: false,
@@ -804,8 +818,8 @@ function initFromConfig(config) {
         }
         const xScale = chart.scales.x;
         if (!xScale) return;
-        const rawMin = xScale.min;
-        const rawMax = xScale.max;
+        const rawMin = Number.isFinite(xScale.min) ? xScale.min : 0;
+        const rawMax = Number.isFinite(xScale.max) ? xScale.max : n - 1;
         const i0 = Math.max(0, Math.min(n - 1, Math.floor(Math.min(rawMin, rawMax))));
         const i1 = Math.max(0, Math.min(n - 1, Math.ceil(Math.max(rawMin, rawMax))));
         let lo = Infinity;
@@ -919,10 +933,14 @@ function initFromConfig(config) {
         }
     }
 
-    function applyActiveChartRange() {
+    function applyActiveChartRange(force = false) {
+        if (chartUserZoomed && !force) {
+            return;
+        }
         const n = chart.data.labels.length;
         if (n < 2) {
-            chart.resetZoom('none');
+            chart.options.scales.x.min = 0;
+            chart.options.scales.x.max = Math.max(0, n - 1);
             delete chart.options.scales.y.min;
             delete chart.options.scales.y.max;
             chart.update('none');
@@ -930,23 +948,16 @@ function initFromConfig(config) {
         }
         const spans = {
             all: n,
-            '12m': Math.max(2, Math.ceil(n * 0.35)),
-            '6m': Math.max(2, Math.ceil(n * 0.2)),
-            '3m': Math.max(2, Math.ceil(n * 0.12)),
-            '1m': Math.max(2, Math.ceil(n * 0.05)),
+            '12m': Math.max(30, Math.ceil(n * 0.35)),
+            '6m': Math.max(30, Math.ceil(n * 0.2)),
+            '3m': Math.max(14, Math.ceil(n * 0.12)),
+            '1m': Math.max(14, Math.ceil(n * 0.05)),
         };
         const span = spans[activeRangeKey] ?? n;
         const minIdx = Math.max(0, n - span);
         const maxIdx = n - 1;
-        try {
-            if (typeof chart.zoomScale === 'function') {
-                chart.zoomScale('x', { min: minIdx, max: maxIdx }, 'none');
-            } else {
-                chart.resetZoom('none');
-            }
-        } catch (e) {
-            chart.resetZoom('none');
-        }
+        chart.options.scales.x.min = minIdx;
+        chart.options.scales.x.max = maxIdx;
         syncChartYToVisibleWindow();
         chart.update('none');
     }
@@ -999,7 +1010,8 @@ function initFromConfig(config) {
             document.querySelectorAll('#sim-chart-range [data-range]').forEach((b) => {
                 b.classList.toggle('is-active', b === btn);
             });
-            applyActiveChartRange();
+            chartUserZoomed = false;
+            applyActiveChartRange(true);
         });
 
         document.getElementById('sim-mode-pill-classic')?.addEventListener('click', () => {
@@ -1017,13 +1029,25 @@ function initFromConfig(config) {
     }
 
     function safeResetChartZoom() {
-        chart.resetZoom('none');
+        chartUserZoomed = false;
+        const n = chart.data.labels.length;
+        delete chart.options.scales.x.min;
+        delete chart.options.scales.x.max;
+        if (n > 0) {
+            chart.options.scales.x.min = 0;
+            chart.options.scales.x.max = Math.max(0, n - 1);
+        }
+        delete chart.options.scales.y.min;
+        delete chart.options.scales.y.max;
+        if (typeof chart.resetZoom === 'function') {
+            chart.resetZoom('none');
+        }
     }
 
     const btnChartResetZoom = document.getElementById('sim-chart-reset-zoom');
     btnChartResetZoom?.addEventListener('click', () => {
         safeResetChartZoom();
-        window.setTimeout(() => applyActiveChartRange(), 0);
+        window.setTimeout(() => applyActiveChartRange(true), 0);
     });
 
     function readChartHostSize() {
@@ -1187,6 +1211,8 @@ function initFromConfig(config) {
         const shell = document.querySelector('.sim-run-shell--terminal');
         if (!shell) return;
         const leadSplitter = document.getElementById('sim-terminal-lead-splitter');
+        const expandBtn = document.getElementById('sim-terminal-show-controls');
+        const hideBtn = document.getElementById('sim-terminal-hide-controls');
         const LS_L = 'simTermGridLeft';
         const LS_R = 'simTermGridRight';
         const LS_LEAD_COLLAPSED = 'simTermLeadCollapsed';
@@ -1216,6 +1242,10 @@ function initFromConfig(config) {
             shell.classList.toggle('sim-run-shell--terminal-lead-collapsed', c);
             leadSplitter?.classList.toggle('is-collapsed', c);
             leadSplitter?.setAttribute('aria-expanded', c ? 'false' : 'true');
+            if (expandBtn) {
+                expandBtn.hidden = !c;
+                expandBtn.setAttribute('aria-expanded', c ? 'false' : 'true');
+            }
             setLeadDragPreview(false);
             localStorage.setItem(LS_LEAD_COLLAPSED, c ? '1' : '0');
             if (c) {
@@ -1248,6 +1278,18 @@ function initFromConfig(config) {
             localStorage.setItem(LS_L, String(Math.round(leftPx)));
         }
         applyLeadCollapsed(leadCollapsed);
+
+        expandBtn?.addEventListener('click', () => {
+            applyLeadCollapsed(false);
+        });
+
+        hideBtn?.addEventListener('click', () => {
+            applyLeadCollapsed(true);
+        });
+
+        leadSplitter?.addEventListener('dblclick', () => {
+            applyLeadCollapsed(!shell.classList.contains('sim-run-shell--terminal-lead-collapsed'));
+        });
 
         localStorage.removeItem('simTermRailCollapsed');
         let rightPx = parseInt(localStorage.getItem(LS_R), 10);
