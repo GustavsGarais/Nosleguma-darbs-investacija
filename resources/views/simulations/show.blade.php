@@ -47,27 +47,31 @@
             'secondaryCompare' => __('Invest €100 / month more'),
             'secondarySor' => __('Sequence-of-returns (reversed)'),
             'compareExtraHint' => __('Extra € per month vs your baseline.'),
+            'thisDay' => __('this day'),
             'thisMonth' => __('this month'),
             'vsContributed' => __('vs contributed'),
             'fromPeak' => __('from peak'),
             'onContributed' => __('on total contributed'),
-            'mom' => __('MoM'),
+            'mom' => __('DoD'),
+            'run' => __('Run'),
+            'pause' => __('Pause'),
             'cagr' => __('CAGR'),
             'compareExplainer' => __('Second line adds your extra monthly amount with the same monthly returns as the base scenario.'),
             'sorExplainer' => __('Blue line uses the same return magnitudes in reverse order — average return matches, ending wealth usually does not.'),
-            'simModeClassic' => __('Classic (auto monthly)'),
+            'simModeClassic' => __('Classic (auto daily)'),
             'simModePlayground' => __('Hands-on portfolio lab'),
             'simulationMode' => __('Simulation mode'),
             'playgroundHelp' => __('Buy adds money into the investment. Sell moves part of the investment back to your cash wallet. The orange line is profit/loss compared to how much you put in (it can go below 0 = loss).'),
             'playgroundBuyHint' => __('Add to position'),
             'playgroundCustomAdd' => __('Custom amount'),
-            'playgroundSellHint' => __('Sell part of holdings (priced at current month)'),
+            'playgroundSellHint' => __('Sell part of holdings (priced at current day)'),
             'chartNetWorth' => __('Net worth (cash + invested)'),
             'chartTotalPL' => __('Total gain/loss vs contributed'),
             'playgroundLesson' => __('Try selling after a peak versus after a dip to see how timing changes locked-in gains. This is a teaching model, not live trading.'),
             'playgroundRealizedLabel' => __('Realized P/L (closed trades)'),
             'modeLabel' => __('Mode'),
             'xAxisDay' => __('Day'),
+            'day' => __('Day'),
             'yAxisValue' => __('Value (:currency)'),
         ],
         'terminal' => [
@@ -84,32 +88,7 @@
 @section('title', $simulation->name)
 
 @section('dashboard_content')
-<style>
-.sim-dash-rail .sim-rail-kpi__labelRow .sim-help-wrap { flex: 0 0 auto; }
-.sim-dash-rail .sim-rail-kpi__labelRow .sim-run-section-help { min-width: 0; min-height: 0; }
-.sim-dash-rail .sim-rail-kpi__labelRow .sim-run-section-help__glyph {
-	width: 15px;
-	height: 15px;
-	font-size: 9px;
-	font-weight: 900;
-}
-/* Kreisais panelis: ritināt līdz Praktiskā tirdzniecība / Pārdot */
-.sim-run-shell--terminal .sim-terminal-lead-pane {
-	max-height: calc(100vh - var(--nav-h, 64px) - 24px);
-	overflow-y: auto;
-}
-.sim-run-shell--terminal .sim-dash-controls__scroller {
-	overflow-y: auto;
-	flex: 1 1 auto;
-	min-height: 0;
-}
-.sim-run-shell--terminal .sim-dash-settings-panel__fields,
-.sim-run-shell--terminal .sim-playground-panel__inner {
-	max-height: none;
-	overflow: visible;
-}
-</style>
-<section class="sim-run-shell sim-run-shell--terminal" aria-label="Simulation details">
+<section class="sim-run-shell sim-run-shell--terminal" aria-label="{{ __('Simulation details') }}">
     <div class="sim-dash-toolbar" aria-label="{{ __('Simulation actions') }}">
         <div class="sim-dash-toolbar-lead">
             <h1 class="sim-dash-toolbar__title">{{ $simulation->name }}</h1>
@@ -212,7 +191,7 @@
                 <div class="sim-dash-settings-panel__fields" style="display:grid; gap:10px;">
                     <label style="display:grid; gap:6px;">
                         <span style="font-weight:700;">{{ __('Duration (days)') }}</span>
-                        <input id="months-input" type="number" min="365" max="7300" step="365" value="3650" class="footer-email-input" />
+                        <input id="horizon-days-input" type="number" min="365" max="7300" step="365" value="3650" class="footer-email-input" />
                     </label>
                     <label style="display:grid; gap:6px;">
                         <span style="font-weight:700;">{{ __('Speed (seconds/step)') }}</span>
@@ -338,7 +317,7 @@
 
         <div class="sim-dash-work sim-dash-terminal-center">
             <div class="sim-dash-chartCol">
-            <div class="sim-dash-chartCard" aria-label="Chart">
+            <div class="sim-dash-chartCard" aria-label="{{ __('Chart') }}">
                 <div class="sim-chart-hero">
                     <div class="sim-chart-hero__main">
                         <p class="sim-chart-hero__eyebrow">{{ __('sim.terminal.portfolio_value') }}</p>
@@ -362,7 +341,7 @@
                 </div>
                 <h2 class="sim-dash-chartTitle sim-dash-chartTitle--compact">{{ __('Investment growth over time') }}</h2>
                 <div class="sim-run-chartWrap">
-                    <canvas id="sim-chart" aria-label="Simulation chart"></canvas>
+                    <canvas id="sim-chart" aria-label="{{ __('Simulation chart') }}"></canvas>
                 </div>
             </div>
             </div>

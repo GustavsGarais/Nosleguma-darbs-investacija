@@ -30,11 +30,12 @@
                      * simulation page after reset. Snapshot alone can be stale (e.g. old month 60 while UI is day 0).
                      */
                     $runnerHasProgress = is_array($runner)
-                        && isset($runner['currentMonth'], $runner['months'])
-                        && (int) $runner['months'] >= 1;
+                        && isset($runner['currentMonth'])
+                        && ((isset($runner['days']) && (int) $runner['days'] >= 1)
+                            || (isset($runner['months']) && (int) $runner['months'] >= 1));
                     if ($runnerHasProgress) {
                         $progressDay = (int) $runner['currentMonth'];
-                        $horizonMonths = max(1, min(7300, (int) $runner['months']));
+                        $horizonMonths = max(1, min(7300, (int) ($runner['days'] ?? $runner['months'] ?? 3650)));
                         $hasProgressDisplay = true;
                     } elseif ($hasSavedRun) {
                         $progressDay = (int) $snapshot['month'];

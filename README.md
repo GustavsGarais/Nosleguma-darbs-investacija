@@ -102,7 +102,7 @@
 
    **Īpašs e-pasts:** ja reģistrējas ar **`admin@school.demo`**, kontam automātiski tiek piešķirtas administratora tiesības (skat. `User` modeli).
 
-   **Coolify / Docker (šis repozitorijs, Nixpacks):** iestatiet vides mainīgo `BOOTSTRAP_DEFAULT_ACCOUNTS=true`, lai pēc `migrate` konteineris automātiski izpildītu `SchoolProjectAccountsSeeder` un izveidotu `admin@school.com` / `user@user.com`. Bez šī mainīgā demonstrācijas konti netiek pievienoti automātiski (var arī pēc izvietošanas: `php artisan db:seed --class=SchoolProjectAccountsSeeder`).
+   **Coolify / Docker (šis repozitorijs, Nixpacks):** Coolify **aizstāj** `.env` ar panela mainīgajiem — skat. pilnu sarakstu [`docs/COOLIFY.md`](docs/COOLIFY.md). UI/JS/CSS izmaiņas redzamas tikai pēc **git push** un redeploy (`npm run build` notiek serverī). Iestatiet `BOOTSTRAP_DEFAULT_ACCOUNTS=true`, lai pēc `migrate` konteineris automātiski izpildītu `SchoolProjectAccountsSeeder` un izveidotu `admin@school.com` / `user@user.com`. Bez šī mainīgā demonstrācijas konti netiek pievienoti automātiski (var arī pēc izvietošanas: `php artisan db:seed --class=SchoolProjectAccountsSeeder`).
 
    | E-pasts | Loma |
    |---------|------|

@@ -201,10 +201,11 @@ class SimulationController extends Controller
 
         try {
             $validated = $request->validate([
-                'v' => 'required|integer|in:1,2',
+                'v' => 'required|integer|in:1,2,3',
                 'settingsFingerprint' => 'required|string|max:512',
                 'mode' => 'required|string|in:classic,playground',
-                'months' => 'required|integer|min:1|max:7300',
+                'days' => 'nullable|integer|min:1|max:7300',
+                'months' => 'nullable|integer|min:1|max:7300',
                 'speed' => 'required|numeric|min:0.1|max:10',
                 'activePresetKey' => 'required|string|max:32',
                 'secondaryScenario' => 'required|string|in:none,compare,sor',
@@ -231,6 +232,17 @@ class SimulationController extends Controller
         } catch (ValidationException) {
             return redirect()->route('simulations.show', $simulation)
                 ->with('error', __('We could not save your simulation state. Please reload the page and try again.'));
+        }
+
+        if (empty($validated['days']) && empty($validated['months'])) {
+            return redirect()->route('simulations.show', $simulation)
+                ->with('error', __('We could not save your simulation state. Please reload the page and try again.'));
+        }
+        if (empty($validated['days'])) {
+            $validated['days'] = (int) $validated['months'];
+        }
+        if (empty($validated['months'])) {
+            $validated['months'] = (int) $validated['days'];
         }
 
         $data = $simulation->data ?? [];

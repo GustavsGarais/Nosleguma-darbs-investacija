@@ -76,9 +76,9 @@
                     </div>
                 </span>
                 <div class="accel-input">
-                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="Decrease">−</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="{{ __('Decrease') }}">−</button>
                     <input type="number" step="1" min="0" name="initial_investment" value="{{ old('initial_investment', $s['initialInvestment'] ?? 1000) }}" required class="footer-email-input" data-accel="int" />
-                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="Increase">+</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="{{ __('Increase') }}">+</button>
                 </div>
             </label>
             <label>
@@ -94,9 +94,9 @@
                     </div>
                 </span>
                 <div class="accel-input">
-                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="Decrease">−</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="{{ __('Decrease') }}">−</button>
                     <input type="number" step="1" min="0" name="monthly_contribution" value="{{ old('monthly_contribution', $s['monthlyContribution'] ?? 100) }}" required class="footer-email-input" data-accel="int" />
-                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="Increase">+</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="{{ __('Increase') }}">+</button>
                 </div>
             </label>
             <label>
@@ -112,9 +112,9 @@
                     </div>
                 </span>
                 <div class="accel-input">
-                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="Decrease">−</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="{{ __('Decrease') }}">−</button>
                     <input type="number" step="0.01" min="0" max="100" name="growth_rate" value="{{ old('growth_rate', round(($s['growthRate'] ?? 0.07) * 100, 2)) }}" required class="footer-email-input" data-accel="percent" />
-                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="Increase">+</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="{{ __('Increase') }}">+</button>
                 </div>
             </label>
             <label>
@@ -130,9 +130,9 @@
                     </div>
                 </span>
                 <div class="accel-input">
-                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="Decrease">−</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="{{ __('Decrease') }}">−</button>
                     <input type="number" step="0.01" min="0" max="100" name="risk_appetite" value="{{ old('risk_appetite', round(($s['riskAppetite'] ?? 0.5) * 100, 2)) }}" required class="footer-email-input" data-accel="percent" />
-                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="Increase">+</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="{{ __('Increase') }}">+</button>
                 </div>
             </label>
             <label>
@@ -148,9 +148,9 @@
                     </div>
                 </span>
                 <div class="accel-input">
-                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="Decrease">−</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="{{ __('Decrease') }}">−</button>
                     <input type="number" step="0.01" min="0" max="100" name="market_influence" value="{{ old('market_influence', round(($s['marketInfluence'] ?? 0.5) * 100, 2)) }}" required class="footer-email-input" data-accel="percent" />
-                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="Increase">+</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="{{ __('Increase') }}">+</button>
                 </div>
             </label>
             <label>
@@ -166,9 +166,9 @@
                     </div>
                 </span>
                 <div class="accel-input">
-                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="Decrease">−</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="{{ __('Decrease') }}">−</button>
                     <input type="number" step="0.01" min="0" max="100" name="inflation_rate" value="{{ old('inflation_rate', round(($s['inflationRate'] ?? 0.02) * 100, 2)) }}" required class="footer-email-input" data-accel="percent" />
-                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="Increase">+</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="{{ __('Increase') }}">+</button>
                 </div>
             </label>
             <label>
@@ -184,9 +184,9 @@
                     </div>
                 </span>
                 <div class="accel-input">
-                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="Decrease">−</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-minus" aria-label="{{ __('Decrease') }}">−</button>
                     <input type="number" step="1" min="1" name="investors" value="{{ old('investors', $s['investors'] ?? 1) }}" required class="footer-email-input" data-accel="int" />
-                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="Increase">+</button>
+                    <button type="button" class="btn btn-outline btn-sm accel-plus" aria-label="{{ __('Increase') }}">+</button>
                 </div>
             </label>
         </div>

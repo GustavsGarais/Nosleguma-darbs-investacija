@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="auth-page">
-	<section id="register-section" class="auth-card" aria-label="Register">
+	<section id="register-section" class="auth-card" aria-label="{{ __('Register') }}">
 		<h1>{{ __('Create your account') }}</h1>
 		<p>{{ __('Join and start simulating smarter strategies') }}</p>
 

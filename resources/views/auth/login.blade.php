@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="auth-page">
-	<section id="login-section" class="auth-card" aria-label="Login">
+	<section id="login-section" class="auth-card" aria-label="{{ __('Login') }}">
 		<h1>{{ __('Welcome back') }}</h1>
 		<p>{{ __('Sign in to continue your simulations') }}</p>
 

@@ -24,6 +24,19 @@ function runnerSettingsFingerprint(settingsObj) {
     ].join('|');
 }
 
+const DAYS_PER_YEAR = 365;
+const DAYS_PER_MONTH = DAYS_PER_YEAR / 12;
+
+/** Mēneša svārstīgumu pārveido dienas svārstīgumā (√laiks). */
+function monthlyVolatilityToDaily(monthlyVol) {
+    return monthlyVol / Math.sqrt(DAYS_PER_MONTH);
+}
+
+/** Nelielu mēneša nobīdi pārveido dienas solim. */
+function monthlyIncrementToDaily(monthlyIncrement) {
+    return monthlyIncrement / DAYS_PER_MONTH;
+}
+
 function gaussianRandom() {
     let u = 0;
     let v = 0;
@@ -32,16 +45,16 @@ function gaussianRandom() {
     return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
 }
 
-/** Biežākas ekstrēmas vērtības + tipiska mēnešu grupēšanās */
-function realisticReturn(monthlyBase, volatility) {
+/** Dienas atdeve: reti ekstrēmi notikumi mērogoti vienam dienas solim. */
+function realisticReturn(dailyBase, volatility) {
     const roll = Math.random();
-    if (roll < 0.03) {
-        return -0.15 - Math.random() * 0.2;
+    if (roll < 0.002) {
+        return -0.06 - Math.random() * 0.06;
     }
-    if (roll < 0.06) {
-        return 0.08 + Math.random() * 0.1;
+    if (roll < 0.004) {
+        return 0.025 + Math.random() * 0.035;
     }
-    return monthlyBase + gaussianRandom() * volatility;
+    return dailyBase + gaussianRandom() * volatility;
 }
 
 /**
@@ -56,28 +69,25 @@ function evolveCrowdSentiment(prev, settings, lastMonthlyReturn) {
     const risk = Math.max(0, Math.min(1, Number(settings?.riskAppetite) || 0));
 
     // Jo vairāk investoru un augstāka tirgus ietekme, jo lielākas un biežākas noskaņojuma kustības.
-    const amp = 0.004 + investorFactor * market * (0.006 + 0.006 * risk);
+    const amp = monthlyIncrementToDaily(0.004 + investorFactor * market * (0.006 + 0.006 * risk));
     const persistence = 0.9 - investorFactor * market * 0.12;
 
     let s = persistence * prev + gaussianRandom() * amp;
 
-    // Reizēm viļņi (panika / eiforija), mērogo pēc tirgus ietekmes.
-    const waveBase = 0.055 + market * 0.08;
+    const waveBase = monthlyIncrementToDaily(0.055 + market * 0.08);
     if (Math.random() < waveBase) {
-        const panic = 0.008 + Math.random() * (0.025 + 0.03 * market);
+        const panic = monthlyIncrementToDaily(0.008 + Math.random() * (0.025 + 0.03 * market));
         s -= panic * (0.6 + 0.8 * investorFactor);
     }
     if (Math.random() < waveBase * 0.75) {
-        const hype = 0.005 + Math.random() * (0.014 + 0.018 * market);
+        const hype = monthlyIncrementToDaily(0.005 + Math.random() * (0.014 + 0.018 * market));
         s += hype * (0.6 + 0.8 * investorFactor);
     }
 
-    // Vidējās atgriešanās spiediens, kas pastiprinās ar dalībnieku skaitu:
-    // pēc spēcīga augšup mēneša -> peļņas fiksēšana, pēc kritiena -> pirkšana “dibenā”.
     const mr = Math.tanh((Number(lastMonthlyReturn) || 0) * 18);
-    s -= mr * (0.002 + 0.006 * investorFactor) * (0.35 + 0.65 * market);
+    s -= mr * monthlyIncrementToDaily(0.002 + 0.006 * investorFactor) * (0.35 + 0.65 * market);
 
-    return Math.max(-0.18, Math.min(0.14, s));
+    return Math.max(-0.06, Math.min(0.05, s));
 }
 
 const overlayPlugin = {
@@ -122,7 +132,7 @@ Chart.register(overlayPlugin, zoomPlugin);
 
 Chart.defaults.font.family = "'DM Sans', 'Segoe UI', system-ui, sans-serif";
 
-/** Floating tooltips for run-page ? icons — avoids clipping inside scroll panels. */
+/** Peldošie rīka padomi skrējiena lapas ? ikonām — neapgriežas ritināmos paneļos. */
 function initSimRunHelpTooltips() {
     const triggers = document.querySelectorAll('.sim-run-section-help[data-tooltip]');
     if (!triggers.length) return;
@@ -182,6 +192,12 @@ function initSimRunHelpTooltips() {
     triggers.forEach((el) => {
         el.addEventListener('mouseenter', () => show(el));
         el.addEventListener('focus', () => show(el));
+        el.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Enter' || ev.key === ' ') {
+                ev.preventDefault();
+                show(el);
+            }
+        });
         el.addEventListener('mouseleave', () => {
             if (active === el) hide();
         });
@@ -223,7 +239,7 @@ function initFromConfig(config) {
     const btnStep = document.getElementById('btn-step');
     const btnReset = document.getElementById('btn-reset');
     const btnSave = document.getElementById('btn-save');
-    const monthsInput = document.getElementById('months-input');
+    const horizonDaysInput = document.getElementById('horizon-days-input');
     const speedInput = document.getElementById('speed-input');
     const presetSelect = document.getElementById('preset-select');
     const secondarySelect = document.getElementById('secondary-scenario');
@@ -252,7 +268,7 @@ function initFromConfig(config) {
         cagr: document.getElementById('cagr-meta'),
     };
 
-    if (!chartCanvas || !btnRun || !btnReset || !monthsInput || !speedInput || !presetSelect) {
+    if (!chartCanvas || !btnRun || !btnReset || !horizonDaysInput || !speedInput || !presetSelect) {
         console.warn('Simulation controls are missing from the DOM. Skipping initialization.');
         return;
     }
@@ -270,8 +286,8 @@ function initFromConfig(config) {
     chartCanvas.style.height = '100%';
 
     function setRunPauseButtonState(running) {
-        const runLabel = btnRun.getAttribute('data-label-run') || i18n.run || 'Run';
-        const pauseLabel = btnRun.getAttribute('data-label-pause') || i18n.pause || 'Pause';
+        const runLabel = btnRun.getAttribute('data-label-run') || i18n.run || '';
+        const pauseLabel = btnRun.getAttribute('data-label-pause') || i18n.pause || '';
         const runIcon = btnRun.getAttribute('data-icon-run') || '▶';
         const pauseIcon = btnRun.getAttribute('data-icon-pause') || '⏸';
         btnRun.setAttribute('aria-pressed', running ? 'true' : 'false');
@@ -412,17 +428,27 @@ function initFromConfig(config) {
         },
     };
 
-    // Mēneša solis: gada likmes → mēneša likmes (12 mēnešu gads).
-    const baseMonthlyReturnRate = Math.pow(1 + settings.growthRate, 1 / 12) - 1;
-    const monthlyInflationRate = Math.pow(1 + settings.inflationRate, 1 / 12) - 1;
+    // Dienas solis: gada likmes → dienas likmes (365 dienu gads).
+    const baseDailyReturnRate = Math.pow(1 + settings.growthRate, 1 / DAYS_PER_YEAR) - 1;
+    const dailyInflationRate = Math.pow(1 + settings.inflationRate, 1 / DAYS_PER_YEAR) - 1;
     const volatilityInfluence = (settings.riskAppetite + settings.marketInfluence) / 2;
     const investorFactor = Math.max(0, Math.min(1, Math.log10(settings.investors) / 2));
 
     const annualFeeRate = 0.002;
-    const monthlyFeeRate = annualFeeRate / 12;
+    const dailyFeeRate = annualFeeRate / DAYS_PER_YEAR;
 
-    // Lietotāja ievade ir “mēneša iemaksa”; tiek piemērota vienreiz katrā mēneša solī.
     const monthlyContribution = settings.monthlyContribution;
+    // Ikmēneša iemaksu sadala pa dienām gadā.
+    const dailyContribution = (monthlyContribution * 12) / DAYS_PER_YEAR;
+
+    function readHorizonDays() {
+        return Math.min(7300, Math.max(1, parseInt(horizonDaysInput.value, 10) || 3650));
+    }
+
+    function dailyCompareExtra() {
+        const extra = Math.max(0, parseFloat(compareExtraInput?.value) || 0);
+        return (extra * 12) / DAYS_PER_YEAR;
+    }
 
     let isRunning = false;
     let currentMonth = 0;
@@ -433,7 +459,7 @@ function initFromConfig(config) {
     let peakValue = settings.initialInvestment;
     let maxDrawdown = 0;
     let activePresetKey = 'balanced';
-    let lastMonthlyReturn = baseMonthlyReturnRate;
+    let lastMonthlyReturn = baseDailyReturnRate;
 
     let sharedSmoothedReturns = null;
     let sharedSmoothedReturnsReversed = null;
@@ -744,7 +770,7 @@ function initFromConfig(config) {
                 x: {
                     title: {
                         display: true,
-                        text: i18n.xAxisDay || 'Day',
+                        text: i18n.xAxisDay || i18n.day || '',
                         font: { size: 13, weight: '600' },
                     },
                     grid: { display: false },
@@ -1026,6 +1052,8 @@ function initFromConfig(config) {
         const h = Math.round(chartCard.getBoundingClientRect().height);
         if (h < 120) return;
         const px = `${h}px`;
+        const leadPane = document.getElementById('sim-terminal-lead-pane');
+        if (leadPane) leadPane.style.maxHeight = px;
         if (leadSplit) leadSplit.style.height = px;
         if (railSplit) railSplit.style.height = px;
     }
@@ -1162,11 +1190,11 @@ function initFromConfig(config) {
         const LS_L = 'simTermGridLeft';
         const LS_R = 'simTermGridRight';
         const LS_LEAD_COLLAPSED = 'simTermLeadCollapsed';
-        const EXPANDED_MIN = 200;
+        const EXPANDED_MIN = 248;
         const EXPANDED_MAX = 440;
         const LEAD_DRAG_MIN = 0;
         const LEAD_SNAP_COLLAPSED = 56;
-        const LEAD_HIDE_WHILE_DRAGGING = 200;
+        const LEAD_HIDE_WHILE_DRAGGING = 0;
         const RAIL_MIN = 200;
         const RAIL_MAX = 400;
         const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
@@ -1351,22 +1379,26 @@ function initFromConfig(config) {
 
     function buildSmoothedPath(length) {
         const arr = [];
-        let last = baseMonthlyReturnRate;
+        let last = baseDailyReturnRate;
         let pathCrowd = 0;
         const preset = presetConfigs[activePresetKey] ?? presetConfigs.balanced;
+        const dailyShockChance =
+            activePresetKey === 'shock' ? (preset.shockChance || 0) / DAYS_PER_MONTH : 0;
 
         for (let step = 1; step <= length; step++) {
-            const targetMonthly = Math.pow(1 + preset.expectedAnnual, 1 / 12) - 1;
-            const cycleBias = Math.sin((step / 12) * Math.PI * 2) * 0.002;
-            const monthlyBase = targetMonthly + cycleBias + preset.recoveryBias;
-            const vol = preset.monthlyVolatility * (1 + volatilityInfluence * 0.6 + investorFactor * 0.25);
+            const targetDaily = Math.pow(1 + preset.expectedAnnual, 1 / DAYS_PER_YEAR) - 1;
+            const cycleBias =
+                Math.sin((step / DAYS_PER_YEAR) * Math.PI * 2) * monthlyIncrementToDaily(0.002);
+            const dailyBase = targetDaily + cycleBias + monthlyIncrementToDaily(preset.recoveryBias);
+            const vol = monthlyVolatilityToDaily(
+                preset.monthlyVolatility * (1 + volatilityInfluence * 0.6 + investorFactor * 0.25),
+            );
             pathCrowd = evolveCrowdSentiment(pathCrowd, settings, last);
-            let r = realisticReturn(monthlyBase, vol) + pathCrowd * (0.55 + settings.marketInfluence * 0.35);
-            if (activePresetKey === 'shock' && Math.random() < preset.shockChance) {
-                const extra = preset.shockImpact();
-                r += extra;
+            let r = realisticReturn(dailyBase, vol) + pathCrowd * (0.55 + settings.marketInfluence * 0.35);
+            if (dailyShockChance > 0 && Math.random() < dailyShockChance) {
+                r += preset.shockImpact();
             }
-            r = Math.max(-0.85, Math.min(r, 0.25));
+            r = Math.max(-0.35, Math.min(r, 0.15));
             const smoothed = 0.55 * last + 0.45 * r;
             last = smoothed;
             arr.push(smoothed);
@@ -1374,33 +1406,36 @@ function initFromConfig(config) {
         return arr;
     }
 
-    function ensureSharedPath(maxMonths) {
+    function ensureSharedPath(maxDays) {
         if (secondaryScenario === 'none') {
             invalidatePath();
             return;
         }
-        if (sharedSmoothedReturns && sharedSmoothedReturns.length >= maxMonths) {
+        if (sharedSmoothedReturns && sharedSmoothedReturns.length >= maxDays) {
             return;
         }
-        sharedSmoothedReturns = buildSmoothedPath(maxMonths);
+        sharedSmoothedReturns = buildSmoothedPath(maxDays);
         sharedSmoothedReturnsReversed = [...sharedSmoothedReturns].reverse();
     }
 
-    function computeMonthlyReturnSmoothed(stepMonth) {
+    function computeMonthlyReturnSmoothed(stepDay) {
         const preset = presetConfigs[activePresetKey] ?? presetConfigs.balanced;
-        const targetMonthly = Math.pow(1 + preset.expectedAnnual, 1 / 12) - 1;
-        const cycleBias = Math.sin((stepMonth / 12) * Math.PI * 2) * 0.002;
-        const monthlyBase = targetMonthly + cycleBias + preset.recoveryBias;
-        const vol = preset.monthlyVolatility * (1 + volatilityInfluence * 0.6 + investorFactor * 0.25);
+        const targetDaily = Math.pow(1 + preset.expectedAnnual, 1 / DAYS_PER_YEAR) - 1;
+        const cycleBias =
+            Math.sin((stepDay / DAYS_PER_YEAR) * Math.PI * 2) * monthlyIncrementToDaily(0.002);
+        const dailyBase = targetDaily + cycleBias + monthlyIncrementToDaily(preset.recoveryBias);
+        const vol = monthlyVolatilityToDaily(
+            preset.monthlyVolatility * (1 + volatilityInfluence * 0.6 + investorFactor * 0.25),
+        );
         crowdSentiment = evolveCrowdSentiment(crowdSentiment, settings, lastMonthlyReturn);
         let r =
-            realisticReturn(monthlyBase, vol) +
+            realisticReturn(dailyBase, vol) +
             crowdSentiment * (0.55 + settings.marketInfluence * 0.35);
-        if (activePresetKey === 'shock' && Math.random() < preset.shockChance) {
+        if (activePresetKey === 'shock' && Math.random() < (preset.shockChance || 0) / DAYS_PER_MONTH) {
             const extra = preset.shockImpact();
             r += extra * (0.65 + settings.marketInfluence * 0.7);
         }
-        r = Math.max(-0.85, Math.min(r, 0.25));
+        r = Math.max(-0.35, Math.min(r, 0.15));
         const smoothed = 0.55 * lastMonthlyReturn + 0.45 * r;
         lastMonthlyReturn = smoothed;
         return smoothed;
@@ -1422,15 +1457,15 @@ function initFromConfig(config) {
         return marketReturnForStep(stepMonth);
     }
 
-    function applyPortfolioStep(lastEntry, marketReturn, monthlyContribution) {
-        const nextMonth = lastEntry.month + 1;
+    function applyPortfolioStep(lastEntry, marketReturn, stepContribution) {
+        const nextDay = lastEntry.month + 1;
         const valueAfterGrowth = lastEntry.value * (1 + marketReturn);
-        const valueAfterFees = valueAfterGrowth * (1 - monthlyFeeRate);
-        const contributions = lastEntry.contributions + monthlyContribution;
-        const newValue = Math.max(0, valueAfterFees + monthlyContribution);
-        const inflationAdjusted = newValue / Math.pow(1 + monthlyInflationRate, nextMonth);
+        const valueAfterFees = valueAfterGrowth * (1 - dailyFeeRate);
+        const contributions = lastEntry.contributions + stepContribution;
+        const newValue = Math.max(0, valueAfterFees + stepContribution);
+        const inflationAdjusted = newValue / Math.pow(1 + dailyInflationRate, nextDay);
         return {
-            month: nextMonth,
+            month: nextDay,
             value: newValue,
             inflationAdjusted,
             contributions,
@@ -1470,7 +1505,7 @@ function initFromConfig(config) {
     ) {
         const marketValue = units * price;
         const netWorth = walletCash + marketValue;
-        const inflationAdjusted = netWorth / Math.pow(1 + monthlyInflationRate, month);
+        const inflationAdjusted = netWorth / Math.pow(1 + dailyInflationRate, month);
         return {
             month,
             price,
@@ -1552,10 +1587,10 @@ function initFromConfig(config) {
         const last = simulationData[simulationData.length - 1];
         const stepMonth = last.month + 1;
         const marketReturn = marketReturnForStep(stepMonth);
-        if (marketReturn < -0.12) {
+        if (marketReturn < -0.035) {
             crashMonths.add(stepMonth);
         }
-        const newPrice = last.price * (1 + marketReturn) * (1 - monthlyFeeRate);
+        const newPrice = last.price * (1 + marketReturn) * (1 - dailyFeeRate);
         const marketValue = last.units * newPrice;
         const netWorth = last.walletCash + marketValue;
         simulationData.push(
@@ -1614,7 +1649,7 @@ function initFromConfig(config) {
             unrealEl.classList.toggle('sim-playground-hud__value--down', unreal < 0);
         }
         if (realizedEl) {
-            const label = i18n.playgroundRealizedLabel || 'Realized P/L';
+            const label = i18n.playgroundRealizedLabel || '';
             realizedEl.textContent = `${label}: ${formatCurrency(last.realizedGainTotal)}`;
         }
     }
@@ -1623,7 +1658,7 @@ function initFromConfig(config) {
 
     function seedInitialState() {
         crowdSentiment = 0;
-        lastMonthlyReturn = baseMonthlyReturnRate;
+        lastMonthlyReturn = baseDailyReturnRate;
         currentMonth = 0;
         peakValue = settings.initialInvestment;
         maxDrawdown = 0;
@@ -1676,10 +1711,11 @@ function initFromConfig(config) {
     function buildRunnerPayload() {
         const pgc = document.getElementById('playground-custom-amount');
         return {
-            v: 2,
+            v: 3,
             settingsFingerprint: runnerSettingsFingerprint(settings),
             mode: isPlaygroundMode ? 'playground' : 'classic',
-            months: parseInt(monthsInput.value, 10) || 120,
+            days: readHorizonDays(),
+            months: readHorizonDays(),
             speed: parseFloat(speedInput.value) || 0.25,
             activePresetKey,
             secondaryScenario,
@@ -1748,7 +1784,7 @@ function initFromConfig(config) {
     }
 
     function validateSavedRunner(saved) {
-        if (!saved || saved.v !== 2) return false;
+        if (!saved || saved.v !== 3) return false;
         if (saved.settingsFingerprint !== runnerSettingsFingerprint(settings)) return false;
         const wantPlay = saved.mode === 'playground';
         const rows = saved.simulationData;
@@ -1786,7 +1822,9 @@ function initFromConfig(config) {
             if (modePlaygroundRadio) modePlaygroundRadio.checked = false;
         }
         isPlaygroundMode = wantPlay;
-        monthsInput.value = String(Math.min(600, Math.max(1, saved.months)));
+        horizonDaysInput.value = String(
+            Math.min(7300, Math.max(365, saved.days ?? saved.months ?? 3650)),
+        );
         speedInput.value = String(Math.max(0.1, Math.min(10, saved.speed)));
         if (presetSelect && presetConfigs[saved.activePresetKey]) {
             presetSelect.value = saved.activePresetKey;
@@ -1815,7 +1853,7 @@ function initFromConfig(config) {
         crashMonths = new Set(Array.isArray(saved.crashMonths) ? saved.crashMonths : []);
         peakValue = asNumber(saved.peakValue, settings.initialInvestment);
         maxDrawdown = asNumber(saved.maxDrawdown, 0);
-        lastMonthlyReturn = asNumber(saved.lastMonthlyReturn, baseMonthlyReturnRate);
+        lastMonthlyReturn = asNumber(saved.lastMonthlyReturn, baseDailyReturnRate);
         crowdSentiment = asNumber(saved.crowdSentiment, 0);
         currentMonth = simulationData[simulationData.length - 1].month;
         syncModeUi();
@@ -1825,8 +1863,8 @@ function initFromConfig(config) {
         updateSummary();
         chart.$pauseMonth = currentMonth > 0 ? currentMonth : null;
         chart.$crashMonths = Array.from(crashMonths).sort((a, b) => a - b);
-        const maxM = parseInt(monthsInput.value, 10) || 120;
-        if (currentMonth >= maxM) {
+        const maxD = readHorizonDays();
+        if (currentMonth >= maxD) {
             statusDisplay.textContent = i18n.complete;
             statusDisplay.style.background =
                 'color-mix(in srgb, var(--c-primary) 30%, var(--c-surface))';
@@ -1845,29 +1883,29 @@ function initFromConfig(config) {
     function calculateNextMonth() {
         const lastEntry = simulationData[simulationData.length - 1];
         const stepMonth = lastEntry.month + 1;
-        const maxM = parseInt(monthsInput.value, 10) || 120;
-        ensureSharedPath(maxM);
+        const maxDays = readHorizonDays();
+        ensureSharedPath(maxDays);
 
         const marketReturn = marketReturnForStep(stepMonth);
-        if (marketReturn < -0.12) {
+        if (marketReturn < -0.035) {
             crashMonths.add(stepMonth);
         }
 
-        const nextEntry = applyPortfolioStep(lastEntry, marketReturn, monthlyContribution);
+        const nextEntry = applyPortfolioStep(lastEntry, marketReturn, dailyContribution);
         simulationData.push(nextEntry);
         currentMonth = nextEntry.month;
 
         if (secondaryScenario === 'compare') {
             const lastC = simulationDataCompare[simulationDataCompare.length - 1];
-            const extra = Math.max(0, parseFloat(compareExtraInput?.value) || 0);
-            const mc = monthlyContribution + extra;
-            simulationDataCompare.push(applyPortfolioStep(lastC, marketReturn, mc));
+            simulationDataCompare.push(
+                applyPortfolioStep(lastC, marketReturn, dailyContribution + dailyCompareExtra()),
+            );
         }
 
         if (secondaryScenario === 'sor') {
             const lastS = simulationDataSor[simulationDataSor.length - 1];
             const mrSor = marketReturnForStepSor(stepMonth);
-            simulationDataSor.push(applyPortfolioStep(lastS, mrSor, monthlyContribution));
+            simulationDataSor.push(applyPortfolioStep(lastS, mrSor, dailyContribution));
         }
 
         if (nextEntry.value > peakValue) {
@@ -1944,7 +1982,7 @@ function initFromConfig(config) {
         const prev = simulationData.length > 1 ? simulationData[simulationData.length - 2] : null;
         const contribBase = lifetimeContributedOf(data);
         const totalGain = data.value - contribBase;
-        const years = Math.max(data.month, 1) / 12;
+        const years = Math.max(data.month, 1) / DAYS_PER_YEAR;
         const cagr = Math.pow(data.value / Math.max(contribBase, 1e-6), 1 / years) - 1;
 
         currentValueEl.textContent = formatCurrency(data.value);
@@ -1965,7 +2003,7 @@ function initFromConfig(config) {
         if (meta.contributed && prev) {
             const d = data.contributions - prev.contributions;
             meta.contributed.textContent =
-                d > 0 ? `+${formatConverted(convertAmount(d))} ${i18n.thisMonth}` : '';
+                d > 0 ? `+${formatConverted(convertAmount(d))} ${i18n.thisDay || i18n.thisMonth}` : '';
         } else if (meta.contributed) meta.contributed.textContent = '';
 
         if (meta.gain) {
@@ -2030,8 +2068,8 @@ function initFromConfig(config) {
         }
 
         isPlaygroundMode = readPlaygroundModeFromUi();
-        const maxMonths = parseInt(monthsInput.value, 10);
-        ensureSharedPath(maxMonths);
+        const maxDays = readHorizonDays();
+        ensureSharedPath(maxDays);
 
         isRunning = true;
         setRunPauseButtonState(true);
@@ -2044,7 +2082,7 @@ function initFromConfig(config) {
         chart.$pauseMonth = null;
 
         intervalId = setInterval(() => {
-            if (currentMonth >= maxMonths) {
+            if (currentMonth >= maxDays) {
                 pauseSimulation();
                 statusDisplay.textContent = i18n.complete;
                 statusDisplay.style.background =
@@ -2061,16 +2099,16 @@ function initFromConfig(config) {
             updateSummary();
         statusDisplay.textContent = i18n.month
                 .replace(':current', String(currentMonth))
-                .replace(':total', String(maxMonths));
+                .replace(':total', String(maxDays));
         }, speed);
     }
 
     function stepOnce() {
         pauseSimulation();
         isPlaygroundMode = readPlaygroundModeFromUi();
-        const maxMonths = parseInt(monthsInput.value, 10) || 120;
-        ensureSharedPath(maxMonths);
-        if (currentMonth >= maxMonths) {
+        const maxDays = readHorizonDays();
+        ensureSharedPath(maxDays);
+        if (currentMonth >= maxDays) {
             statusDisplay.textContent = i18n.complete;
             statusDisplay.style.background =
                 'color-mix(in srgb, var(--c-primary) 30%, var(--c-surface))';
@@ -2085,7 +2123,7 @@ function initFromConfig(config) {
         updateSummary();
         statusDisplay.textContent = i18n.month
             .replace(':current', String(currentMonth))
-            .replace(':total', String(maxMonths));
+            .replace(':total', String(maxDays));
     }
 
     function pauseSimulation() {
@@ -2141,7 +2179,7 @@ function initFromConfig(config) {
                 contributions: contrib,
                 total_gain: totalGain,
                 currency: activeCurrency,
-                horizon_months: Math.min(7300, Math.max(1, parseInt(monthsInput.value, 10) || 120)),
+                horizon_months: readHorizonDays(),
                 history,
             }),
             redirect: 'manual',
@@ -2221,7 +2259,7 @@ function initFromConfig(config) {
             maxDrawdown = Math.min(maxDrawdown, dd);
         }
         crowdSentiment = 0;
-        lastMonthlyReturn = baseMonthlyReturnRate;
+        lastMonthlyReturn = baseDailyReturnRate;
         crashMonths = new Set();
         const horizonFromSnap =
             savedSnapshot && typeof savedSnapshot.horizon_months === 'number'
@@ -2231,12 +2269,12 @@ function initFromConfig(config) {
             7300,
             Math.max(
                 horizonFromSnap || 0,
-                parseInt(monthsInput.value, 10) || 120,
+                readHorizonDays(),
                 last.month + 1,
-                120,
+                365,
             ),
         );
-        monthsInput.value = String(horizon);
+        horizonDaysInput.value = String(horizon);
         invalidatePath();
         rebuildChartData('resize');
         safeResetChartZoom();
@@ -2245,10 +2283,10 @@ function initFromConfig(config) {
         chart.$crashMonths = [];
         syncModeUi();
         syncSecondaryUi();
-        const totalMonths = parseInt(monthsInput.value, 10) || 120;
+        const totalDays = readHorizonDays();
         statusDisplay.textContent = i18n.month
             .replace(':current', String(last.month))
-            .replace(':total', String(totalMonths));
+            .replace(':total', String(totalDays));
         statusDisplay.style.background =
             'color-mix(in srgb, var(--c-primary) 30%, var(--c-surface))';
         schedulePersistRunnerState();
@@ -2329,7 +2367,7 @@ function initFromConfig(config) {
         });
     });
 
-    monthsInput?.addEventListener('change', () => {
+    horizonDaysInput?.addEventListener('change', () => {
         invalidatePath();
         schedulePersistRunnerState();
     });

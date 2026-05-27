@@ -34,7 +34,7 @@
 
 @section('content')
 <div class="home-ambient">
-<section id="hero-section" role="region" aria-label="Hero" class="hero hero--frameless">
+<section id="hero-section" role="region" aria-label="{{ __('Hero') }}" class="hero hero--frameless">
     <div class="hero-content">
         <h1 class="home-hero-title hero-title">
             {{ config('app.name') }}<br>

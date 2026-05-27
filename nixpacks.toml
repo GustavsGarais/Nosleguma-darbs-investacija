@@ -1,5 +1,5 @@
 [variables]
-NODE_ENV = 'development'
+NODE_ENV = 'production'
 
 [phases.install]
 cmds = [
@@ -9,4 +9,4 @@ cmds = [
 ]
 
 [start]
-cmd = 'mkdir -p /var/log/nginx && mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE -e "CREATE TABLE IF NOT EXISTS sessions (id VARCHAR(255) PRIMARY KEY, user_id BIGINT UNSIGNED NULL, ip_address VARCHAR(45) NULL, user_agent TEXT NULL, payload LONGTEXT NOT NULL, last_activity INT NOT NULL, INDEX sessions_last_activity_index (last_activity));" 2>/dev/null; php artisan migrate --force && if [ "$BOOTSTRAP_DEFAULT_ACCOUNTS" = "true" ]; then php artisan db:seed --force --class=SchoolProjectAccountsSeeder || true; fi && php artisan storage:link --force && node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf && sed -i "46,50d" /etc/nginx.conf && php-fpm -y /assets/php-fpm.conf -D && nginx -c /etc/nginx.conf'
+cmd = 'mkdir -p /var/log/nginx && mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE -e "CREATE TABLE IF NOT EXISTS sessions (id VARCHAR(255) PRIMARY KEY, user_id BIGINT UNSIGNED NULL, ip_address VARCHAR(45) NULL, user_agent TEXT NULL, payload LONGTEXT NOT NULL, last_activity INT NOT NULL, INDEX sessions_last_activity_index (last_activity));" 2>/dev/null; php artisan optimize:clear && php artisan migrate --force && if [ "$BOOTSTRAP_DEFAULT_ACCOUNTS" = "true" ]; then php artisan db:seed --force --class=SchoolProjectAccountsSeeder || true; fi && php artisan storage:link --force && node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf && sed -i "46,50d" /etc/nginx.conf && php-fpm -y /assets/php-fpm.conf -D && nginx -c /etc/nginx.conf'

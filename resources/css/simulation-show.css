@@ -781,18 +781,10 @@
 	border: 1px solid color-mix(in srgb, var(--c-border) 70%, var(--c-secondary) 30%);
 }
 
-/* Šaura praktiskā kolonna: paslēpt skaitlisko HUD un darījumu režģus (lai cipari nesaspiežas). */
+/* Šaura praktiskā kolonna: nekad neslēpt tirdzniecības vadības (248px+ kolonna) */
 .sim-run-shell--terminal #playground-panel.sim-dash-hands-on {
 	container-type: inline-size;
 	container-name: sim-hands-on;
-}
-
-/* Tikai ļoti šaurā kolonnā paslēpt blīvos režģus (288px terminālis to parasti nerada) */
-@container sim-hands-on (max-width: 220px) {
-	#playground-panel .sim-playground-hud,
-	#playground-panel .sim-playground-actions {
-		display: none;
-	}
 }
 
 .sim-playground-actions__titleRow {
@@ -1277,7 +1269,7 @@ html[data-theme="dark"] .sim-param-tile {
 
 /* ─── Simulācijas skrējiens: tirdzniecības termināļa izkārtojums (show lapa) ─── */
 .sim-run-shell--terminal {
-	--sim-grid-left: 288px;
+	--sim-grid-left: minmax(248px, 288px);
 	--sim-grid-right: 268px;
 	--sim-splitter-lead: 10px;
 }
@@ -1285,33 +1277,28 @@ html[data-theme="dark"] .sim-param-tile {
 .sim-run-shell--terminal .sim-dash-body {
 	display: grid;
 	grid-template-columns:
-		minmax(0, var(--sim-grid-left))
+		minmax(248px, var(--sim-grid-left))
 		var(--sim-splitter-lead)
 		minmax(240px, 1fr)
 		6px
 		minmax(200px, var(--sim-grid-right));
 	gap: 16px 8px;
-	align-items: start;
+	align-items: stretch;
 }
 
-/* Kreisā vadības josla — ritināšana caur .sim-dash-controls__scroller (nevis apgriezt saturu). */
+/* Kreisā vadības josla — augstums sinhronizēts ar diagrammu (JS); ritināšana tikai scrollerī */
 .sim-terminal-lead-pane {
 	min-width: 0;
 	min-height: 0;
-	max-height: calc(100vh - var(--nav-h, 64px) - 24px);
-	overflow-x: hidden;
-	overflow-y: auto;
-	overscroll-behavior: contain;
-	-webkit-overflow-scrolling: touch;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	align-self: stretch;
 	contain: layout style;
 }
 
 .sim-run-shell--terminal-lead-collapsed .sim-terminal-lead-pane {
 	pointer-events: none;
-}
-
-.sim-run-shell--terminal-lead-drag-narrow:not(.sim-run-shell--terminal-lead-collapsed) .sim-terminal-lead-pane .sim-dash-lead {
-	visibility: hidden;
 }
 
 .sim-run-shell--terminal .sim-dash-work,
@@ -1696,7 +1683,7 @@ html[data-theme="dark"] .sim-param-tile {
 	hyphens: manual;
 }
 
-/* Label + ? on one row (matches Simulation Controls; nowrap so ? never drops below) */
+/* Kopsavilkuma etiķete + ? vienā rindā (kā Simulācijas kontroles; nowrap, lai ? neizlūzt) */
 .sim-dash-rail .sim-rail-kpi__labelRow {
 	display: flex;
 	align-items: center;
@@ -1872,20 +1859,31 @@ html[data-theme="dark"] .sim-param-tile {
 	min-width: 0;
 }
 
+.sim-run-shell--terminal .sim-dash-lead {
+	flex: 1 1 auto;
+	min-height: 0;
+	width: 100%;
+}
+
+.sim-run-shell--terminal .sim-dash-flyout-stack {
+	height: 100%;
+	min-height: 0;
+	flex: 1 1 auto;
+}
+
 .sim-run-shell--terminal .sim-controls-flyout--lead {
 	width: 100%;
 	max-width: 100%;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	min-height: 0;
+	height: 100%;
 }
 
 .sim-run-shell--terminal .sim-controls-flyout--lead .sim-controls-flyout__rail {
 	display: none;
-}
-
-.sim-run-shell--terminal .sim-controls-flyout--lead {
-	display: flex;
-	flex-direction: column;
-	min-height: 0;
-	max-height: calc(100vh - var(--nav-h, 64px) - 24px);
 }
 
 .sim-run-shell--terminal .sim-controls-flyout--lead .sim-controls-flyout__panel {
@@ -1898,7 +1896,10 @@ html[data-theme="dark"] .sim-param-tile {
 	width: 100% !important;
 	min-width: 0 !important;
 	max-width: none !important;
-	max-height: calc(100vh - var(--nav-h, 64px) - 24px);
+	max-height: none !important;
+	height: 100%;
+	flex: 1 1 auto;
+	min-height: 0;
 	overflow: hidden;
 	border-radius: 12px;
 	border: 1px solid var(--c-border);
@@ -1906,8 +1907,6 @@ html[data-theme="dark"] .sim-param-tile {
 	display: flex;
 	flex-direction: column;
 	gap: 0;
-	min-height: 0;
-	flex: 1 1 auto;
 }
 
 .sim-run-shell--terminal .sim-dash-controls__scroller {
@@ -1916,7 +1915,6 @@ html[data-theme="dark"] .sim-param-tile {
 	gap: 14px;
 	flex: 1 1 auto;
 	min-height: 0;
-	max-height: none;
 	overflow-x: hidden;
 	overflow-y: auto;
 	overscroll-behavior: contain;
@@ -1925,7 +1923,6 @@ html[data-theme="dark"] .sim-param-tile {
 	padding-right: 4px;
 }
 
-/* Viens ritinājums visam panelim — nevis atsevišķi laukam un tirdzniecības blokam */
 .sim-run-shell--terminal .sim-dash-settings-panel__fields,
 .sim-run-shell--terminal .sim-playground-panel__inner {
 	flex: 0 0 auto;
@@ -1934,7 +1931,7 @@ html[data-theme="dark"] .sim-param-tile {
 	overflow: visible;
 }
 
-/* Run-page ? tooltips: JS floating layer (simulation-runner.js) — hide pseudo tooltips that clip in panels */
+/* Skrējiena lapas ? rīka padomi: JS peldošais slānis — paslēpt pseudo-rīka padomus, kas apgriežas panelī */
 .sim-run-section-help[data-tooltip]::after,
 .sim-run-section-help[data-tooltip]::before {
 	content: none !important;
@@ -1988,7 +1985,7 @@ html[data-theme="dark"] .sim-param-tile {
 	z-index: 12;
 }
 
-/* Legacy pseudo rules (fallback if JS disabled) — kept for reference; disabled above for .sim-run-section-help */
+/* Mantotie pseudo noteikumi (rezerve, ja JS izslēgts) — atsauce; augstāk atspējoti .sim-run-section-help */
 .sim-run-shell--terminal .sim-dash-controls .info-bubble.sim-run-section-help::after {
 	top: calc(100% + 10px);
 	bottom: auto;

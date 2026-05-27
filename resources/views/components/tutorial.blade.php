@@ -19,7 +19,7 @@
                 'content' => __('tutorial.dashboard.1'),
             ],
             [
-                'target' => 'section[aria-label="Simulations"] h2, .auth-card[aria-label="Simulations"] h2',
+                'target' => 'h2.sim-dash-list__title, .auth-card h2.sim-dash-list__title',
                 'position' => 'bottom',
                 'heading' => __('tutorial.dashboard.h3'),
                 'content' => __('tutorial.dashboard.2'),
@@ -32,7 +32,7 @@
                 'navigate' => true,
             ],
             [
-                'target' => 'table tbody a[href*="simulations/"]:not([href*="edit"]):not([href*="create"])',
+                'target' => 'a.sim-card__title, .sim-cardGrid a[href*="simulations/"]:not([href*="edit"]):not([href*="create"])',
                 'position' => 'bottom',
                 'heading' => __('tutorial.dashboard.h5'),
                 'content' => __('tutorial.dashboard.4'),
@@ -103,7 +103,7 @@
                 'content' => __('tutorial.show.0'),
             ],
             [
-                'target' => 'section[aria-label="Simulation details"] h1, .sim-run-shell h1',
+                'target' => 'h1.sim-dash-toolbar__title, .sim-run-shell h1',
                 'position' => 'bottom',
                 'heading' => __('tutorial.show.h2'),
                 'content' => __('tutorial.show.1'),
@@ -128,7 +128,7 @@
                 'content' => __('tutorial.show.2'),
             ],
             [
-                'target' => '#months-input',
+                'target' => '#horizon-days-input',
                 'position' => 'right',
                 'heading' => __('tutorial.show.h4'),
                 'content' => __('tutorial.show.3'),

@@ -7,7 +7,7 @@
 	<section class="auth-card" aria-label="{{ __('Verify Email') }}">
 		<h1 style="margin:0 0 6px;">{{ __('Verify Email') }}</h1>
 		<p style="margin:0 0 16px; color: var(--c-on-surface-2);">
-			{{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn’t receive the email, we will gladly send you another.') }}
+			{{ __("Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.") }}
 		</p>
 
 		@if (session('status') === 'verification-link-sent')
@@ -30,4 +30,3 @@
 	</section>
 </div>
 @endsection
-
