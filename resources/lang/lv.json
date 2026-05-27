@@ -629,6 +629,7 @@
     "sim.terminal.chart_range_all": "Viss",
     "sim.terminal.coaching_title": "Dinamiskie padomi",
     "sim.terminal.drag_resize_panels": "Velc, lai mainītu sānu paneļu platumu",
+    "sim.terminal.drag_resize_lead": "Velc, lai mainītu platumu; pavelc pa kreisi, lai paslēptu, pa labi — lai atvērtu",
     "sim.terminal.hands_on_title": "Praktiskā tirdzniecība",
     "sim.terminal.hide_controls": "Paslēpt",
     "sim.terminal.mode_auto": "Auto režīms",

@@ -181,13 +181,6 @@
                             'tooltip' => __('sim.tooltip.simulation_controls'),
                             'label' => __('sim.help.simulation_controls'),
                         ])
-                        <button
-                            type="button"
-                            id="sim-terminal-hide-controls"
-                            class="btn btn-outline btn-sm sim-terminal-hide-controls"
-                            title="{{ __('sim.terminal.hide_controls') }}"
-                            aria-label="{{ __('sim.terminal.hide_controls') }}"
-                        >{{ __('sim.terminal.hide_controls') }}</button>
                     </div>
                 </div>
                 <fieldset class="sr-only" aria-hidden="true" tabindex="-1">
@@ -317,20 +310,13 @@
             aria-orientation="vertical"
             aria-expanded="true"
             aria-controls="sim-terminal-lead-pane"
-            aria-label="{{ __('sim.terminal.drag_resize_panels') }}"
+            aria-label="{{ __('sim.terminal.drag_resize_lead') }}"
+            title="{{ __('sim.terminal.drag_resize_lead') }}"
             tabindex="0"
             data-sim-resize-edge="lead"
         ></div>
 
         <div class="sim-dash-work sim-dash-terminal-center">
-            <button
-                type="button"
-                id="sim-terminal-show-controls"
-                class="btn btn-outline btn-sm sim-terminal-show-controls"
-                hidden
-                aria-expanded="false"
-                aria-controls="sim-terminal-lead-pane"
-            >{{ __('sim.terminal.show_controls') }}</button>
             <div class="sim-dash-chartCol">
             <div class="sim-dash-chartCard" aria-label="{{ __('Chart') }}">
                 <div class="sim-chart-hero">

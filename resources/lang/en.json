@@ -629,6 +629,7 @@
     "sim.terminal.chart_range_all": "All",
     "sim.terminal.coaching_title": "Live tips",
     "sim.terminal.drag_resize_panels": "Drag to resize side panels",
+    "sim.terminal.drag_resize_lead": "Drag to resize; pull left to hide, right to show controls",
     "sim.terminal.hands_on_title": "Hands-on trading",
     "sim.terminal.hide_controls": "Hide",
     "sim.terminal.mode_auto": "Auto mode",
