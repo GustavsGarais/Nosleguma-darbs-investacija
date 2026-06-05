@@ -1942,14 +1942,17 @@ html[data-theme="dark"] .sim-param-tile {
 	flex: 1 1 auto;
 	min-height: 0;
 	width: 100%;
+	align-items: stretch;
 }
 
 .sim-run-shell--terminal .sim-dash-flyout-stack {
 	height: 100%;
 	min-height: 0;
 	flex: 1 1 auto;
+	align-items: stretch;
 }
 
+/* Terminālis: flyout hover/focus no desktop „sānu joslas” režīma — citādi panelis uz hover sarūk (scrollbar-gutter, align-items). */
 .sim-run-shell--terminal .sim-controls-flyout--lead {
 	width: 100%;
 	max-width: 100%;
@@ -1959,11 +1962,18 @@ html[data-theme="dark"] .sim-param-tile {
 	flex: 1 1 auto;
 	min-height: 0;
 	height: 100%;
+	align-items: stretch;
+	align-self: stretch;
+	border: none;
+	background: transparent;
+	box-shadow: none;
+	transition: none;
 }
 
 .sim-run-shell--terminal .sim-controls-flyout--lead:hover,
 .sim-run-shell--terminal .sim-controls-flyout--lead:focus-within {
-	border-color: transparent;
+	align-items: stretch;
+	border: none;
 	background: transparent;
 	box-shadow: none;
 }
@@ -1972,7 +1982,9 @@ html[data-theme="dark"] .sim-param-tile {
 	display: none;
 }
 
-.sim-run-shell--terminal .sim-controls-flyout--lead .sim-controls-flyout__panel {
+.sim-run-shell--terminal .sim-controls-flyout--lead .sim-controls-flyout__panel,
+.sim-run-shell--terminal .sim-controls-flyout--lead:hover .sim-controls-flyout__panel,
+.sim-run-shell--terminal .sim-controls-flyout--lead:focus-within .sim-controls-flyout__panel {
 	position: relative;
 	left: auto;
 	top: auto;
@@ -1986,6 +1998,7 @@ html[data-theme="dark"] .sim-param-tile {
 	height: 100%;
 	flex: 1 1 auto;
 	min-height: 0;
+	align-self: stretch;
 	overflow: hidden;
 	border-radius: 12px;
 	border: 1px solid var(--c-border);
@@ -1993,21 +2006,48 @@ html[data-theme="dark"] .sim-param-tile {
 	display: flex;
 	flex-direction: column;
 	gap: 0;
+	padding: 0 !important;
+	scrollbar-gutter: auto;
 	transition: none;
 }
 
 .sim-run-shell--terminal .sim-dash-controls__scroller {
 	display: flex;
 	flex-direction: column;
-	gap: 14px;
+	gap: 0;
 	flex: 1 1 auto;
 	min-height: 0;
+	width: 100%;
+	max-width: 100%;
 	overflow-x: hidden;
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	-webkit-overflow-scrolling: touch;
 	scrollbar-gutter: stable;
-	padding-right: 4px;
+	padding: 0;
+}
+
+.sim-run-shell--terminal .sim-dash-controls__scroller > .sim-dash-controlsBlock {
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+	border-radius: 0;
+	border-right: none;
+}
+
+.sim-run-shell--terminal .sim-dash-controls__scroller > .sim-dash-settings-panel {
+	border-top: none;
+	border-radius: 0;
+}
+
+.sim-run-shell--terminal .sim-dash-controls__scroller > .sim-dash-hands-on.sim-dash-controlsBlock {
+	border-left: none;
+	border-bottom: none;
+}
+
+.sim-run-shell--terminal .sim-dash-controls__scroller > .sim-dash-hands-on {
+	margin-top: 0;
+	border-top: 1px solid color-mix(in srgb, var(--c-border) 80%, var(--c-secondary) 20%);
 }
 
 .sim-run-shell--terminal .sim-dash-settings-panel__fields,
